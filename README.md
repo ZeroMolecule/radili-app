@@ -1,6 +1,6 @@
 # radili
 
-A new Flutter project.
+Radi.li is a platform for Croatian consumers to track Sunday operating hours of stores. It provides location-based open store findings, real-time hours, and personalized notifications. Your go-to solution for convenient shopping planning in Croatia.
 
 ## Getting Started
 
