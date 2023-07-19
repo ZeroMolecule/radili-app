@@ -1,0 +1,12 @@
+{
+  "@@locale": "hr",
+  "appName": "Radi.li",
+  "errorMessage": "Došlo je do greške",
+  "mapSearchHint": "Pronađi lokaciju",
+  "resultsCount": "{count, plural, one{1 Rezultat} few{{count} Rezultata} other{{count} Rezultata}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  }
+}
