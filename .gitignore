@@ -52,3 +52,6 @@ lib/generated/*
 **.gr.dart
 **.gen.dart
 .mason
+
+.fvm/*
+!.fvm/fvm_config.json
