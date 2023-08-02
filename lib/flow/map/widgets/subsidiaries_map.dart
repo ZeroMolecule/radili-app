@@ -45,7 +45,17 @@ class SubsidiariesMap extends HookWidget {
           point: subsidiary.coordinates,
           width: markerSize,
           height: markerSize,
-          builder: (ctx) => StoreIcon.subsidiary(subsidiary, size: markerSize),
+          builder: (ctx) => Container(
+              decoration: const BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: StoreIcon.subsidiary(subsidiary, size: markerSize)),
         ),
       );
       clusterController.replaceAll(markers.toList());

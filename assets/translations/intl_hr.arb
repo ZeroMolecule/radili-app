@@ -8,5 +8,13 @@
     "placeholders": {
       "count": {}
     }
-  }
+  },
+  "noDataForWorkHours": "Nema podataka za radno vrijeme",
+  "workingHours": "Radno vrijeme",
+  "dayOfTheWeek": "{value, select, monday{Ponedjeljak} tuesday{Utorak} wednesday{Srijeda} thursday{Četvrtak} friday{Petak} saturday{Subota} sunday{Nedjelja} other{Nepoznato}}",
+    "@dayOfTheWeek": {
+      "placeholders": {
+        "value": {}
+      }
+    }
 }

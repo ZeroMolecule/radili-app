@@ -8,10 +8,14 @@ import 'package:radili/hooks/translations_hook.dart';
 
 class SubsidiariesSidebar extends HookWidget {
   final List<Subsidiary> subsidiaries;
+  final Subsidiary? selectedSubsidiary;
+  final Function(Subsidiary subsidiary) onSubsidiarySelected;
 
   const SubsidiariesSidebar({
     Key? key,
     required this.subsidiaries,
+    required this.onSubsidiarySelected,
+    this.selectedSubsidiary,
   }) : super(key: key);
 
   @override
@@ -46,7 +50,13 @@ class SubsidiariesSidebar extends HookWidget {
                     horizontal: 12,
                     vertical: 5,
                   ),
-                  child: SubsidiaryItem(subsidiary: subsidiary),
+                  child: RawMaterialButton(
+                    onPressed: () => onSubsidiarySelected(subsidiary),
+                    child: SubsidiaryItem(
+                      subsidiary: subsidiary,
+                      isSelected: subsidiary.id == selectedSubsidiary?.id,
+                    ),
+                  ),
                 );
               },
               childCount: subsidiaries.length,

@@ -2,4 +2,6 @@
 <resources>
     <color name="lightBlue">#328FFD</color>
     <color name="darkBlue">#0060D2</color>
+    <color name="workingHoursBackground">#00DC3E</color>
+    <color name="workingHoursText">#008B2F</color>
 </resources>
