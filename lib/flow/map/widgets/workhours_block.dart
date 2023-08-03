@@ -5,19 +5,19 @@ import 'package:radili/generated/colors.gen.dart';
 import 'package:radili/hooks/theme_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 
-class WorkHoursSection extends HookWidget {
+class WorkHoursBlock extends HookWidget {
   final WorkHours workHours;
-  final bool isSelected;
+  final bool expanded;
 
-  const WorkHoursSection({
+  const WorkHoursBlock({
     Key? key,
     required this.workHours,
-    this.isSelected = false,
+    this.expanded = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return isSelected
+    return expanded
         ? _ExpandedWorkHours(workHours: workHours)
         : _CollapsedWorkHours(workHours: workHours);
   }
@@ -38,16 +38,16 @@ class _CollapsedWorkHours extends HookWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(2),
-        color: AppColors.workingHoursBackground.withOpacity(0.2),
+        color: AppColors.backgroundGreen.withOpacity(0.2),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: 4,
         vertical: 2,
       ),
       child: Text(
-        workHours.getToday() ?? t.noDataForWorkHours,
+        workHours.getForToday() ?? t.noDataForWorkHours,
         style: textTheme.bodySmall?.copyWith(
-          color: AppColors.workingHoursText,
+          color: AppColors.darkGreen,
           fontWeight: FontWeight.w600,
           overflow: TextOverflow.ellipsis,
         ),
@@ -70,7 +70,7 @@ class _ExpandedWorkHours extends HookWidget {
     final t = useTranslations();
 
     final workHoursByDay = useMemoized(() {
-      return workHours.getMapped().entries.map<Widget>(
+      return workHours.toJson().entries.map<Widget>(
         (e) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,7 +119,7 @@ class _ExpandedWorkHours extends HookWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [...workHoursByDay],
+            children: workHoursByDay,
           ),
         ),
       ],

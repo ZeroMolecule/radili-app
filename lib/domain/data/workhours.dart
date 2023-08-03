@@ -20,8 +20,8 @@ class WorkHours with _$WorkHours {
   factory WorkHours.fromJson(Map<String, Object?> json) =>
       _$WorkHoursFromJson(json);
 
-  String? getToday() {
-    switch (DateTime.now().weekday) {
+  String? getForDay(DateTime date) {
+    switch (date.weekday) {
       case DateTime.monday:
         return monday;
       case DateTime.tuesday:
@@ -41,15 +41,7 @@ class WorkHours with _$WorkHours {
     }
   }
 
-  Map<String, String?> getMapped() {
-    return {
-      'monday': monday,
-      'tuesday': tuesday,
-      'wednesday': wednesday,
-      'thursday': thursday,
-      'friday': friday,
-      'saturday': saturday,
-      'sunday': sunday,
-    };
+  String? getForToday() {
+    return getForDay(DateTime.now());
   }
 }

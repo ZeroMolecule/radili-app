@@ -45,13 +45,13 @@ class SubsidiariesSidebar extends HookWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final subsidiary = subsidiaries[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 5,
-                  ),
-                  child: RawMaterialButton(
-                    onPressed: () => onSubsidiarySelected(subsidiary),
+                return RawMaterialButton(
+                  onPressed: () => onSubsidiarySelected(subsidiary),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 5,
+                    ),
                     child: SubsidiaryItem(
                       subsidiary: subsidiary,
                       isSelected: subsidiary.id == selectedSubsidiary?.id,

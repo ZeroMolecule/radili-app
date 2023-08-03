@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/flow/map/widgets/workhours_section.dart';
+import 'package:radili/flow/map/widgets/workhours_block.dart';
 import 'package:radili/hooks/theme_hook.dart';
 import 'package:radili/widgets/store_icon.dart';
 
@@ -52,9 +52,9 @@ class SubsidiaryItem extends HookWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: WorkHoursSection(
+                    child: WorkHoursBlock(
                       workHours: subsidiary.workHours,
-                      isSelected: isSelected,
+                      expanded: isSelected,
                     ),
                   ),
                 ],

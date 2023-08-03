@@ -37,7 +37,6 @@ class MapPage extends HookConsumerWidget {
     void onSubsidiarySelected(Subsidiary subsidiary) {
       if (subsidiary == selectedSubsidiary.value) {
         selectedSubsidiary.value = null;
-        return;
       } else if (subsidiary.address != null) {
         address.value = AddressInfo(
           rawLat: subsidiary.coordinates.latitude.toString(),
@@ -72,7 +71,7 @@ class MapPage extends HookConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const Flexible(flex: 3, child: SizedBox()),
+                      const Spacer(flex: 3),
                       Flexible(
                         flex: 1,
                         child: SubsidiariesSidebar(
