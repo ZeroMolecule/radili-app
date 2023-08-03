@@ -6,9 +6,9 @@ import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/marker_cluster.dart';
+import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
-import 'package:radili/widgets/store_icon.dart';
 
 class SubsidiariesMap extends HookWidget {
   final List<Subsidiary> subsidiaries;
@@ -45,7 +45,10 @@ class SubsidiariesMap extends HookWidget {
           point: subsidiary.coordinates,
           width: markerSize,
           height: markerSize,
-          builder: (ctx) => StoreIcon.subsidiary(subsidiary, size: markerSize),
+          builder: (ctx) => SubsidiaryMarker(
+            subsidiary: subsidiary,
+            markerSize: markerSize,
+          ),
         ),
       );
       clusterController.replaceAll(markers.toList());

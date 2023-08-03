@@ -8,10 +8,14 @@ import 'package:radili/hooks/translations_hook.dart';
 
 class SubsidiariesSidebar extends HookWidget {
   final List<Subsidiary> subsidiaries;
+  final Subsidiary? selectedSubsidiary;
+  final Function(Subsidiary subsidiary) onSubsidiarySelected;
 
   const SubsidiariesSidebar({
     Key? key,
     required this.subsidiaries,
+    required this.onSubsidiarySelected,
+    this.selectedSubsidiary,
   }) : super(key: key);
 
   @override
@@ -41,12 +45,18 @@ class SubsidiariesSidebar extends HookWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final subsidiary = subsidiaries[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 5,
+                return RawMaterialButton(
+                  onPressed: () => onSubsidiarySelected(subsidiary),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 5,
+                    ),
+                    child: SubsidiaryItem(
+                      subsidiary: subsidiary,
+                      isSelected: subsidiary.id == selectedSubsidiary?.id,
+                    ),
                   ),
-                  child: SubsidiaryItem(subsidiary: subsidiary),
                 );
               },
               childCount: subsidiaries.length,
