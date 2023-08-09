@@ -12,6 +12,26 @@ class AppTheme {
       _themeData.copyWith(
         colorScheme: const ColorScheme.light(
           primary: AppColors.darkBlue,
+          background: Colors.white,
+          primaryContainer: AppColors.background,
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          fillColor: Colors.white,
+          hoverColor: Colors.white,
+          filled: true,
+          border: OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        dividerTheme: const DividerThemeData(
+          thickness: 1,
+          color: AppColors.lightGrey,
+        ),
+        iconTheme: const IconThemeData(
+          color: AppColors.lightGrey,
         ),
       ),
     );

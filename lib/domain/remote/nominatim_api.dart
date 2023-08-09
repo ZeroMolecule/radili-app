@@ -8,11 +8,11 @@ part 'nominatim_api.g.dart';
 abstract class _NominatimApi {
   factory _NominatimApi(Dio dio) = __NominatimApi;
 
-  @GET('/search/{address}')
+  @GET('/search')
   Future<List<AddressInfo>> _search({
-    @Path('address') required String address,
+    @Query('street') required String address,
     @Query('format') String format = 'json',
-    @Query('countrycodes') String countryCodes = 'hr',
+    @Query('country') String countryCodes = 'HR',
   });
 }
 

@@ -10,7 +10,7 @@ class AuthorizationInterceptor extends InterceptorsWrapper {
     RequestInterceptorHandler handler,
   ) async {
     options.headers.addAll({
-      HttpHeaders.authorizationHeader: 'bearer ${Env.apiKey}',
+      HttpHeaders.authorizationHeader: 'Bearer ${Env.apiKey}',
     });
 
     return handler.next(options);

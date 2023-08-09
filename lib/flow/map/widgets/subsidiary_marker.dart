@@ -6,25 +6,30 @@ import 'package:radili/widgets/store_icon.dart';
 class SubsidiaryMarker extends HookWidget {
   final Subsidiary subsidiary;
   final double markerSize;
+  final Function(Subsidiary)? onMarkerPressed;
   const SubsidiaryMarker({
     Key? key,
     required this.subsidiary,
     required this.markerSize,
+    this.onMarkerPressed,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+    return InkWell(
+      onTap: () => onMarkerPressed?.call(subsidiary),
+      child: Container(
+        decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: StoreIcon.subsidiary(subsidiary, size: markerSize),
       ),
-      child: StoreIcon.subsidiary(subsidiary, size: markerSize),
     );
   }
 }

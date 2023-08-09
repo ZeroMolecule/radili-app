@@ -13,6 +13,7 @@ import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
 class SubsidiariesMap extends HookWidget {
   final List<Subsidiary> subsidiaries;
   final Function(LatLng position)? onPositionChanged;
+  final Function(Subsidiary)? onSubsidiaryPressed;
   final LatLng? position;
   final double zoom;
 
@@ -22,6 +23,7 @@ class SubsidiariesMap extends HookWidget {
     this.position,
     this.zoom = 16,
     this.onPositionChanged,
+    this.onSubsidiaryPressed,
   }) : super(key: key);
 
   @override
@@ -48,6 +50,8 @@ class SubsidiariesMap extends HookWidget {
           builder: (ctx) => SubsidiaryMarker(
             subsidiary: subsidiary,
             markerSize: markerSize,
+            onMarkerPressed: (subsidiary) =>
+                onSubsidiaryPressed?.call(subsidiary),
           ),
         ),
       );

@@ -14,6 +14,9 @@ abstract class Env {
   @EnviedField(varName: 'NOMINATIM_API_URL')
   static const String nominatimApiUrl = _Env.nominatimApiUrl;
 
+  @EnviedField(varName: 'VAPID_KEY')
+  static const String vapidKey = _Env.vapidKey;
+
   static void init() {
     if (kDebugMode) {
       print('''
