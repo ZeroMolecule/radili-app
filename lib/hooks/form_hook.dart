@@ -3,34 +3,22 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 FormGroup useForm(
   Map<String, AbstractControl<dynamic>> controls, {
-  List<ValidatorFunction> validators = const [],
-  List<AsyncValidatorFunction> asyncValidators = const [],
+  List<Validator> validators = const [],
+  List<AsyncValidator> asyncValidators = const [],
   int asyncValidatorsDebounceTime = 250,
   bool disabled = false,
-  bool observeChanges = true,
-  List<Object?> keys = const [],
 }) {
-  final form = useMemoized(() {
-    return FormGroup(
+  final form = useRef(
+    FormGroup(
       controls,
-      validators: [],
-      asyncValidators: [],
+      validators: validators,
+      asyncValidators: asyncValidators,
       asyncValidatorsDebounceTime: asyncValidatorsDebounceTime,
       disabled: disabled,
-    );
-  }, keys);
+    ),
+  ).value;
 
-  final stream = useMemoized(() {
-    if (observeChanges) {
-      return form.statusChanged;
-    }
-    return const Stream.empty();
-  }, [observeChanges]);
+  useStream(form.statusChanged);
 
-  useStream(stream);
   return form;
-}
-
-T? useFormControl<T>(FormControl<T> control) {
-  return useStream(control.valueChanges, initialData: control.value).data;
 }

@@ -6,16 +6,12 @@ import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/providers/di/repository_providers.dart';
 
-class MapSearch extends HookConsumerWidget {
+class AddressSearch extends HookConsumerWidget {
   final AddressInfo? address;
-  final Function() onNotifyPressed;
-  final Function() onShowMorePressed;
   final Function(AddressInfo option) onOptionSelected;
 
-  const MapSearch({
+  const AddressSearch({
     Key? key,
-    required this.onNotifyPressed,
-    required this.onShowMorePressed,
     required this.onOptionSelected,
     this.address,
   }) : super(key: key);

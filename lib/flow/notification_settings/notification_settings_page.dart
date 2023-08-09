@@ -1,13 +1,12 @@
-import 'dart:developer';
-
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/address_info.dart';
-import 'package:radili/flow/map/widgets/map_search.dart';
+import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/notification_settings/providers/notification_settings_provider.dart';
 import 'package:radili/generated/colors.gen.dart';
 import 'package:radili/hooks/async_callback.dart';
+import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/form_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -24,10 +23,10 @@ class NotificationSettingsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
-    final saveSettings = ref.watch(
-      notificationSettingsProvider.select(
-        (value) => value.saveSettings,
-      ),
+    final colors = useColorScheme();
+
+    final notificationSettingsNotifier = ref.watch(
+      notificationSettingsProvider.notifier,
     );
     final form = useForm(
       {
@@ -52,7 +51,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
     final handleSubmit = useAsyncCallback(
       () async {
         if (form.valid) {
-          await saveSettings(
+          await notificationSettingsNotifier.saveSettings(
             coords: form.control('address').value!.latLng,
             isPushNotificationsSelected:
                 form.control('pushNotifications').value,
@@ -62,8 +61,14 @@ class NotificationSettingsPage extends HookConsumerWidget {
           );
         }
       },
-      onError: (error) => log('$error'),
-      keys: [form],
+      onError: (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(t.erroSomethingWentWrong),
+          ),
+        );
+      },
+      keys: [form, t],
     );
 
     return ReactiveForm(
@@ -82,9 +87,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
           title: Text(t.backButton),
           centerTitle: false,
           leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: Navigator.of(context).pop,
             icon: const Icon(Icons.arrow_back),
           ),
         ),
@@ -118,7 +121,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 24),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.background,
+                        color: colors.primaryContainer,
                         borderRadius: BorderRadius.circular(2),
                       ),
                       child: Column(
@@ -131,10 +134,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.location_on_outlined,
-                                  color: AppColors.lightGrey,
-                                ),
+                                const Icon(Icons.location_on_outlined),
                                 const SizedBox(width: 8),
                                 Text(
                                   t.location,
@@ -154,10 +154,8 @@ class NotificationSettingsPage extends HookConsumerWidget {
                                 borderRadius: BorderRadius.circular(2),
                                 color: Colors.white,
                               ),
-                              child: MapSearch(
+                              child: AddressSearch(
                                 address: form.control('address').value,
-                                onNotifyPressed: () {},
-                                onShowMorePressed: () {},
                                 onOptionSelected: (AddressInfo option) {
                                   form.control('address').value = option;
                                 },
@@ -172,7 +170,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.background,
+                        color: colors.primaryContainer,
                         borderRadius: BorderRadius.circular(2),
                       ),
                       child: Column(
@@ -185,10 +183,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.notifications_none_outlined,
-                                  color: AppColors.lightGrey,
-                                ),
+                                const Icon(Icons.notifications_none_outlined),
                                 const SizedBox(width: 8),
                                 Text(
                                   t.notifications,
@@ -210,7 +205,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
                               ),
                             ),
                           ),
-                          const Divider(color: AppColors.lightGrey),
+                          const Divider(),
                           Padding(
                             padding: const EdgeInsets.only(
                               bottom: 16,
@@ -231,9 +226,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
                                   ),
                                   Text(
                                     t.emailNotificationsDescription,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                 ],
                               ),
@@ -248,18 +241,8 @@ class NotificationSettingsPage extends HookConsumerWidget {
                                   ),
                                   child: ReactiveTextField(
                                     formControlName: 'email',
-                                    decoration: InputDecoration(
-                                      labelText: t.email,
-                                      fillColor: Colors.white,
-                                      hoverColor: Colors.white,
-                                      filled: true,
-                                      border: const OutlineInputBorder(),
-                                      enabledBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
+                                    decoration:
+                                        InputDecoration(labelText: t.email),
                                   ),
                                 )
                               : const SizedBox.shrink(),

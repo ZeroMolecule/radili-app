@@ -8,7 +8,7 @@ class PushNotificationService {
 
   PushNotificationService._();
 
-  static void init() async {
+  static Future<void> init() async {
     await FirebaseMessaging.instance.requestPermission(
       alert: true,
       announcement: false,
@@ -19,17 +19,23 @@ class PushNotificationService {
       sound: true,
     );
     try {
-      await PushNotificationService.initFirebaseMessaging();
+      await PushNotificationService
+          ._setForegroundNotificationPresentationOptions();
     } catch (e) {
       print(e);
     }
   }
 
-  static Future<void> initFirebaseMessaging() async {
-    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  static Future<void> _setForegroundNotificationPresentationOptions() async {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
     );
+  }
+
+  static Future<String?> getToken({String? vapidKey}) async {
+    return await FirebaseMessaging.instance.getToken(vapidKey: vapidKey ?? '');
   }
 }

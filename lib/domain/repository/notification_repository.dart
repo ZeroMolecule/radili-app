@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/remote/notifications_api.dart';
 import 'package:radili/util/env.dart';
@@ -19,16 +18,16 @@ class NotificationsRepository {
   }) async {
     String? token;
     if (isPushNotificationsSelected) {
-      final messaging = FirebaseMessaging.instance;
-      token = await messaging.getToken(
+      await PushNotificationService.init();
+      token = await PushNotificationService.getToken(
         vapidKey: Env.vapidKey,
+      ).timeout(
+        const Duration(seconds: 5),
       );
-      print('token: $token');
     }
     if (token == null) {
       return;
     }
-    PushNotificationService.init();
     await _notificationsApi.subscribeToNotifications(
       email: email,
       pushToken: token,

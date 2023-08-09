@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/flow/map/widgets/map_search.dart';
+import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_sidebar.dart';
 import 'package:radili/generated/colors.gen.dart';
@@ -53,61 +53,52 @@ class MapPage extends HookConsumerWidget {
       }
     }
 
-    void handleNotifyPressed() {}
-
-    void handleShowMorePressed() {}
-
     return Scaffold(
       body: Column(
         children: [
-          Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                color: colors.background,
-                border: Border(
-                  bottom: BorderSide(
-                    color: colors.onBackground.withOpacity(0.1),
-                    width: 1,
-                  ),
+          Container(
+            decoration: BoxDecoration(
+              color: colors.background,
+              border: Border(
+                bottom: BorderSide(
+                  color: colors.onBackground.withOpacity(0.1),
+                  width: 1,
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Flexible(
-                    flex: 3,
-                    child: MapSearch(
-                      onNotifyPressed: handleNotifyPressed,
-                      onShowMorePressed: handleShowMorePressed,
-                      onOptionSelected: handleOptionSelected,
-                    ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Flexible(
+                  flex: 3,
+                  child: AddressSearch(
+                    onOptionSelected: handleOptionSelected,
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: TextButton.icon(
-                      onPressed: () => AutoRouter.of(context).navigate(
-                        NotificationSettingsRoute(
-                          address: address.value,
-                        ),
-                      ),
-                      icon: const Icon(
-                        Icons.notifications_outlined,
-                        color: AppColors.lightBlue,
-                      ),
-                      label: Text(
-                        t.notifyMe,
-                        style: TextStyle(
-                          color: colors.onBackground,
-                        ),
+                ),
+                Flexible(
+                  flex: 1,
+                  child: TextButton.icon(
+                    onPressed: () => AutoRouter.of(context).navigate(
+                      NotificationSettingsRoute(
+                        address: address.value,
                       ),
                     ),
+                    icon: const Icon(
+                      Icons.notifications_outlined,
+                      color: AppColors.lightBlue,
+                    ),
+                    label: Text(
+                      t.notifyMe,
+                      style: TextStyle(
+                        color: colors.onBackground,
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Expanded(
-            flex: 10,
+          Flexible(
             child: Stack(
               children: [
                 SubsidiariesMap(
