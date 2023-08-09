@@ -58,7 +58,10 @@ dependencies:
   cached_network_image: ^3.2.3
   flutter_map_supercluster: ^4.3.0
   flutter_map_animations: ^0.4.1
-  sliver_tools: ^0.2.10
+  sliver_tools: ^0.2.12
+  firebase_messaging: ^14.6.5
+  firebase_core: ^2.15.0
+  flutter_local_notifications: ^15.1.0+1
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +84,7 @@ dev_dependencies:
   flutter_native_splash: ^2.3.1
   flutter_application_id: ^2.0.0-dev
   intl_utils: ^2.8.3
+  reactive_forms: ^16.0.3
 
 flutter_intl:
   enabled: true

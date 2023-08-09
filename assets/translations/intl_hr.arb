@@ -16,5 +16,17 @@
       "placeholders": {
         "value": {}
       }
-    }
+    },
+  "notifyMe": "Obavijesti me o promijeni radnog vremena",
+  "saveNotificationSettings": "Spremi postavke",
+  "backButton": "Natrag",
+  "notifyMeTitle": "Obavijesti me",
+  "notifyMeDescription": "Odobrite primanje obavijesti radi informiranja o radnom vremenu trgovina.",
+  "location": "Lokacija",
+  "notifications": "Obavijesti",
+  "emailNotifications": "Email obavijesti",
+  "pushNotifications": "Push obavijesti",
+  "invalidMail": "Nevažeća email adresa",
+  "email": "Email",
+  "emailNotificationsDescription": "Upiši Email adresu na koju želiš primati obavijesti:"
 }

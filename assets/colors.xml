@@ -4,4 +4,6 @@
     <color name="darkBlue">#0060D2</color>
     <color name="backgroundGreen">#00DC3E</color>
     <color name="darkGreen">#008B2F</color>
+    <color name="background">#F6F6F6</color>
+    <color name="lightGrey">#A4A4A4</color>
 </resources>

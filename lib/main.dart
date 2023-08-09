@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:radili/firebase_options.dart';
 import 'package:radili/generated/l10n.dart';
 import 'package:radili/providers/di/navigation_providers.dart';
 import 'package:radili/providers/di/theme_providers.dart';
@@ -13,6 +15,10 @@ void main() async {
 }
 
 Future<void> _beforeRun() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   Env.init();
   WidgetsFlutterBinding.ensureInitialized();
 }

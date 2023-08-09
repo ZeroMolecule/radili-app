@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/remote/interceptors/authorization_interceptor.dart';
 import 'package:radili/domain/remote/nominatim_api.dart';
+import 'package:radili/domain/remote/notifications_api.dart';
 import 'package:radili/domain/remote/stores_api.dart';
 import 'package:radili/util/env.dart';
 
@@ -22,4 +23,8 @@ final nominatimApiProvider = Provider<NominatimApi>((ref) {
 
 final storesApiProvider = Provider<StoresApi>((ref) {
   return StoresApi(ref.watch(dioProvider));
+});
+
+final notificationsApiProvider = Provider<NotificationsApi>((ref) {
+  return NotificationsApi(ref.watch(dioProvider));
 });
