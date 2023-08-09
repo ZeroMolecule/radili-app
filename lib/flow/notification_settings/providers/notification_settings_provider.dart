@@ -17,13 +17,11 @@ class NotificationSettingsNotifier extends StateNotifier<void> {
   ) : super(null);
 
   Future<void> saveSettings({
-    required bool isEmailNotificationsSelected,
     required bool isPushNotificationsSelected,
     required LatLng coords,
     String? email,
   }) async {
     await _repository.subscribeToNotifications(
-      isEmailNotificationsSelected: isEmailNotificationsSelected,
       isPushNotificationsSelected: isPushNotificationsSelected,
       email: email,
       coords: coords,

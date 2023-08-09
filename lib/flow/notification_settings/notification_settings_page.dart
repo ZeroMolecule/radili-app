@@ -1,4 +1,4 @@
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/address_info.dart';
@@ -31,7 +31,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
     final form = useForm(
       {
         'email': FormControl<String?>(
-          validators: [Validators.required, Validators.email],
+          validators: [Validators.email],
         ),
         'pushNotifications': FormControl<bool>(
           value: false,
@@ -55,8 +55,6 @@ class NotificationSettingsPage extends HookConsumerWidget {
             coords: form.control('address').value!.latLng,
             isPushNotificationsSelected:
                 form.control('pushNotifications').value,
-            isEmailNotificationsSelected:
-                form.control('emailNotifications').value,
             email: form.control('email').value,
           );
         }
@@ -68,6 +66,7 @@ class NotificationSettingsPage extends HookConsumerWidget {
           ),
         );
       },
+      onDone: AutoRouter.of(context).pop,
       keys: [form, t],
     );
 

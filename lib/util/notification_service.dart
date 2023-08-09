@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:radili/util/env.dart';
 
 class PushNotificationService {
   static late final PushNotificationService _instance =
@@ -35,7 +36,7 @@ class PushNotificationService {
     );
   }
 
-  static Future<String?> getToken({String? vapidKey}) async {
-    return await FirebaseMessaging.instance.getToken(vapidKey: vapidKey ?? '');
+  static Future<String?> getToken() async {
+    return await FirebaseMessaging.instance.getToken(vapidKey: Env.vapidKey);
   }
 }

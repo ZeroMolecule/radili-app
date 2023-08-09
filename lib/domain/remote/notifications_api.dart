@@ -19,7 +19,7 @@ class NotificationsApi extends __NotificationsApi {
 
   Future<void> subscribeToNotifications({
     String? email,
-    required String pushToken,
+    String? pushToken,
     required LatLng coords,
   }) async {
     await _subscribeToNotifications(
