@@ -8,6 +8,7 @@ import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_sidebar.dart';
+import 'package:radili/flow/notification_settings/providers/notification_settings_provider.dart';
 import 'package:radili/generated/colors.gen.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/debouncer_hook.dart';
@@ -27,6 +28,7 @@ class MapPage extends HookConsumerWidget {
     final address = useState<AddressInfo?>(null);
     final selectedSubsidiary = useState<Subsidiary?>(null);
 
+    final notificationSettings = ref.watch(notificationSettingsProvider);
     final subsidiariesNotifier = ref.watch(nearbySubsidiariesProvider.notifier);
     final subsidiaries = ref.watch(nearbySubsidiariesProvider);
 
@@ -83,8 +85,10 @@ class MapPage extends HookConsumerWidget {
                         address: address.value,
                       ),
                     ),
-                    icon: const Icon(
-                      Icons.notifications_outlined,
+                    icon: Icon(
+                      notificationSettings.valueOrNull != null
+                          ? Icons.notifications_active
+                          : Icons.notifications_outlined,
                       color: AppColors.lightBlue,
                     ),
                     label: Text(

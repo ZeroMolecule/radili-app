@@ -29,5 +29,6 @@
   "invalidMail": "Nevažeća email adresa",
   "email": "Email",
   "emailNotificationsDescription": "Upiši Email adresu na koju želiš primati obavijesti:",
-  "erroSomethingWentWrong": "Nešto je pošlo po zlu, pokušajte ponovo!"
+  "erroSomethingWentWrong": "Nešto je pošlo po zlu, pokušajte ponovo!",
+  "deleteNotificationSettings": "Obriši postavke"
 }

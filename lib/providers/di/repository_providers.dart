@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/repository/notification_repository.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
 import 'package:radili/providers/di/network_providers.dart';
+import 'package:radili/providers/di/store_providers.dart';
 
 final storesRepositoryProvider = Provider(
   (ref) => StoresRepository(
@@ -13,5 +14,6 @@ final storesRepositoryProvider = Provider(
 final notificationRepositoryProvider = Provider(
   (ref) => NotificationsRepository(
     ref.watch(notificationsApiProvider),
+    ref.read(sharedPreferencesProvider),
   ),
 );

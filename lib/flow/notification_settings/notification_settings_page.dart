@@ -25,24 +25,27 @@ class NotificationSettingsPage extends HookConsumerWidget {
     final t = useTranslations();
     final colors = useColorScheme();
 
+    final notificationSettings = ref.watch(notificationSettingsProvider);
+
     final notificationSettingsNotifier = ref.watch(
       notificationSettingsProvider.notifier,
     );
     final form = useForm(
       {
         'email': FormControl<String?>(
+          value: notificationSettings.valueOrNull?.email,
           validators: [Validators.email],
         ),
         'pushNotifications': FormControl<bool>(
-          value: false,
+          value: notificationSettings.valueOrNull?.pushToken != null,
           validators: [Validators.required],
         ),
         'emailNotifications': FormControl<bool>(
-          value: false,
+          value: notificationSettings.valueOrNull?.email != null,
           validators: [Validators.required],
         ),
         'address': FormControl<AddressInfo>(
-          value: address,
+          value: notificationSettings.valueOrNull?.addressInfo ?? address,
           validators: [Validators.required],
         ),
       },
@@ -52,10 +55,11 @@ class NotificationSettingsPage extends HookConsumerWidget {
       () async {
         if (form.valid) {
           await notificationSettingsNotifier.saveSettings(
-            coords: form.control('address').value!.latLng,
+            id: notificationSettings.valueOrNull?.id,
             isPushNotificationsSelected:
                 form.control('pushNotifications').value,
             email: form.control('email').value,
+            address: form.control('address').value,
           );
         }
       },
@@ -67,20 +71,56 @@ class NotificationSettingsPage extends HookConsumerWidget {
         );
       },
       onDone: AutoRouter.of(context).pop,
-      keys: [form, t],
+      keys: [form, t, notificationSettingsNotifier, notificationSettings],
+    );
+
+    final handleDelete = useAsyncCallback(
+      () async {
+        await notificationSettingsNotifier.deleteSubscription(
+          notificationSettings.valueOrNull!.id,
+        );
+        AutoRouter.of(context).pop();
+      },
+      onError: (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(t.erroSomethingWentWrong),
+          ),
+        );
+      },
+      onDone: AutoRouter.of(context).pop,
+      keys: [form, t, notificationSettingsNotifier, notificationSettings],
     );
 
     return ReactiveForm(
       formGroup: form,
       child: Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: handleSubmit,
-          backgroundColor: AppColors.lightBlue,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(2),
-          ),
-          label: Text(t.saveNotificationSettings),
+        floatingActionButton: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton.extended(
+              onPressed: handleSubmit,
+              backgroundColor: AppColors.lightBlue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(2),
+              ),
+              label: Text(t.saveNotificationSettings),
+            ),
+            if (notificationSettings.valueOrNull != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: FloatingActionButton.extended(
+                  onPressed: handleDelete,
+                  backgroundColor: AppColors.semanticRed,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  label: Text(t.deleteNotificationSettings),
+                ),
+              ),
+          ],
         ),
         appBar: AppBar(
           title: Text(t.backButton),
