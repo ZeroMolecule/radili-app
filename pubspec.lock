@@ -399,7 +399,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_application_id:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_application_id
       sha256: "2fc044048811008a613e6b75b2e1d24ece68b749983c9b6c80d5381f1b419f3c"
@@ -503,7 +503,7 @@ packages:
     source: hosted
     version: "1.0.0"
   flutter_launcher_icons:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_launcher_icons
       sha256: "526faf84284b86a4cb36d20a5e45147747b7563d921373d4ee0559c54fcdbcea"
@@ -588,7 +588,7 @@ packages:
     source: hosted
     version: "4.3.0"
   flutter_native_splash:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_native_splash
       sha256: ecff62b3b893f2f665de7e4ad3de89f738941fcfcaaba8ee601e749efafa4698
