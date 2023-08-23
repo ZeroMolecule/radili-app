@@ -67,6 +67,7 @@ dependencies:
   quickalert: ^1.0.1
   flutter_map_location_marker: ^7.0.4
   location: ^5.0.3
+  flutter_native_splash: ^2.3.2
 
 dev_dependencies:
   flutter_test:
@@ -89,7 +90,6 @@ dev_dependencies:
   reactive_forms: ^16.0.3
   flutter_application_id: ^2.0.0-dev
   flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.3.2
 
 flutter_intl:
   enabled: true
