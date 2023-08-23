@@ -1,8 +1,10 @@
+import 'dart:convert';
+
+import 'package:radili/domain/data/notification_subscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSharedPreferences {
-  static const String _keyUserSubscriptionSettings =
-      'user_subscription_settings';
+  static const String _keyNotificationSettings = 'notification_settings';
 
   SharedPreferences? _prefs;
 
@@ -11,22 +13,24 @@ class AppSharedPreferences {
     return _prefs!;
   }
 
-  Future<void> sync() async {
+  Future<NotificationSubscription?> getNotificationSubscription() async {
     final prefs = await _getPrefs();
-    await prefs.reload();
+    final json = prefs.getString(_keyNotificationSettings);
+    if (json == null) {
+      return null;
+    }
+    return NotificationSubscription.fromJson(jsonDecode(json));
   }
 
-  Future<String> getUserSubscriptionSettings() async {
-    final prefs = await _getPrefs();
-    return prefs.getString(_keyUserSubscriptionSettings) ?? '';
-  }
-
-  Future<void> setUserSubscriptionSettings(String? value) async {
+  Future<void> setNotificationSubscription(
+    NotificationSubscription? value,
+  ) async {
     final prefs = await _getPrefs();
     if (value == null) {
-      await prefs.remove(_keyUserSubscriptionSettings);
-      return;
+      await prefs.remove(_keyNotificationSettings);
+    } else {
+      final json = jsonEncode(value.toJson());
+      await prefs.setString(_keyNotificationSettings, json);
     }
-    await prefs.setString(_keyUserSubscriptionSettings, value);
   }
 }

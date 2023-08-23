@@ -3,20 +3,20 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/converters/latlng_converter.dart';
 import 'package:radili/domain/data/address_info.dart';
 
-part 'notification_settings.freezed.dart';
-part 'notification_settings.g.dart';
+part 'notification_subscription.freezed.dart';
+part 'notification_subscription.g.dart';
 
 @freezed
-class NotificationSettings with _$NotificationSettings {
-  const NotificationSettings._();
+class NotificationSubscription with _$NotificationSubscription {
+  const NotificationSubscription._();
 
-  const factory NotificationSettings({
+  const factory NotificationSubscription({
     required int id,
     required String? email,
     required String? pushToken,
     @JsonKey(name: 'coordinates') required Map<String, dynamic>? coordinatesRaw,
     required String? address,
-  }) = _NotificationSettings;
+  }) = _NotificationSubscription;
 
   LatLng get coordinates => const LatLngConverter().fromJson(coordinatesRaw)!;
 
@@ -28,6 +28,6 @@ class NotificationSettings with _$NotificationSettings {
     );
   }
 
-  factory NotificationSettings.fromJson(Map<String, dynamic> json) =>
-      _$NotificationSettingsFromJson(json);
+  factory NotificationSubscription.fromJson(Map<String, dynamic> json) =>
+      _$NotificationSubscriptionFromJson(json);
 }

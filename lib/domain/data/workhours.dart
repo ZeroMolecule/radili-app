@@ -44,4 +44,16 @@ class WorkHours with _$WorkHours {
   String? getForToday() {
     return getForDay(DateTime.now());
   }
+
+  Map<int, String?> byDay() {
+    return {
+      DateTime.monday: monday,
+      DateTime.tuesday: tuesday,
+      DateTime.wednesday: wednesday,
+      DateTime.thursday: thursday,
+      DateTime.friday: friday,
+      DateTime.saturday: saturday,
+      DateTime.sunday: sunday,
+    };
+  }
 }

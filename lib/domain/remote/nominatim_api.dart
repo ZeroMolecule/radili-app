@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:retrofit/http.dart';
 
@@ -14,6 +15,14 @@ abstract class _NominatimApi {
     @Query('format') String format = 'json',
     @Query('country') String countryCodes = 'HR',
   });
+
+  @GET('/reverse')
+  Future<AddressInfo?> _reverse({
+    @Query('format') String format = 'json',
+    @Query('country') String countryCodes = 'HR',
+    @Query('lat') required double lat,
+    @Query('lon') required double lon,
+  });
 }
 
 class NominatimApi extends __NominatimApi {
@@ -21,5 +30,9 @@ class NominatimApi extends __NominatimApi {
 
   Future<List<AddressInfo>> search({required String address}) {
     return _search(address: address);
+  }
+
+  Future<AddressInfo?> reverse({required LatLng position}) {
+    return _reverse(lat: position.latitude, lon: position.longitude);
   }
 }

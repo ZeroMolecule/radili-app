@@ -8,6 +8,8 @@ import 'package:radili/generated/l10n.dart';
 import 'package:radili/providers/di/navigation_providers.dart';
 import 'package:radili/providers/di/theme_providers.dart';
 import 'package:radili/util/env.dart';
+import 'package:responsive_framework/breakpoint.dart';
+import 'package:responsive_framework/responsive_breakpoints.dart';
 
 void main() async {
   await _beforeRun();
@@ -46,6 +48,14 @@ class App extends HookConsumerWidget {
       theme: themeLight.material,
       darkTheme: themeDark.material,
       themeMode: ThemeMode.light,
+      builder: (context, child) => ResponsiveBreakpoints.builder(
+        child: child!,
+        breakpoints: [
+          const Breakpoint(start: 0, end: 600, name: PHONE),
+          const Breakpoint(start: 601, end: 900, name: TABLET),
+          const Breakpoint(start: 901, end: double.infinity, name: DESKTOP),
+        ],
+      ),
     );
   }
 }

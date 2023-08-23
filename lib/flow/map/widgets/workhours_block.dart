@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/domain/data/workhours.dart';
 import 'package:radili/generated/colors.gen.dart';
+import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/theme_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
+import 'package:radili/util/extensions/date_time_extensions.dart';
 
 class WorkHoursBlock extends HookWidget {
   final WorkHours workHours;
@@ -35,10 +37,11 @@ class _CollapsedWorkHours extends HookWidget {
   Widget build(BuildContext context) {
     final textTheme = useTheme().material.textTheme;
     final t = useTranslations();
+    final colors = useColorScheme();
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2),
-        color: AppColors.backgroundGreen.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(10),
+        color: colors.primary.withOpacity(0.2),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: 4,
@@ -68,16 +71,29 @@ class _ExpandedWorkHours extends HookWidget {
   Widget build(BuildContext context) {
     final textTheme = useTheme().material.textTheme;
     final t = useTranslations();
+    final currentWeekDay = DateTime.now().weekday;
+    final colors = useColorScheme();
 
     final workHoursByDay = useMemoized(() {
-      return workHours.toJson().entries.map<Widget>(
-        (e) {
-          return Row(
+      return workHours.byDay().entries.map((e) {
+        final BoxDecoration? decoration;
+        if (currentWeekDay == e.key) {
+          decoration = BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: AppColors.backgroundGreen.withOpacity(0.2),
+          );
+        } else {
+          decoration = null;
+        }
+        return Container(
+          decoration: decoration,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Text(
-                  t.dayOfTheWeek(e.key),
+                  t.dayOfTheWeek(dayKey(e.key)),
                   style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     overflow: TextOverflow.ellipsis,
@@ -93,16 +109,16 @@ class _ExpandedWorkHours extends HookWidget {
                 ),
               ),
             ],
-          );
-        },
-      ).toList();
-    }, [workHours, t, textTheme]);
+          ),
+        );
+      }).toList();
+    }, [workHours, t, textTheme, currentWeekDay]);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.only(bottom: 4),
           child: Text(
             t.workingHours,
             style: textTheme.bodySmall?.copyWith(
@@ -110,17 +126,9 @@ class _ExpandedWorkHours extends HookWidget {
             ),
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(2),
-          ),
-          padding: const EdgeInsets.symmetric(
-            vertical: 2,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: workHoursByDay,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: workHoursByDay,
         ),
       ],
     );

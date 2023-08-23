@@ -14,6 +14,10 @@ class StoresRepository {
     return _nominatimApi.search(address: address);
   }
 
+  Future<AddressInfo?> reverseSearchAddress(LatLng position) {
+    return _nominatimApi.reverse(position: position);
+  }
+
   Future<List<Subsidiary>> searchNearbySubsidiaries(LatLng position) {
     return _storesApi.getNearbySubsidiaries(position);
   }

@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/app_shared_preferences.dart';
-import 'package:radili/domain/data/notification_settings.dart';
+import 'package:radili/domain/data/notification_subscription.dart';
 import 'package:radili/domain/remote/notifications_api.dart';
 import 'package:radili/util/notification_service.dart';
 
@@ -15,11 +13,10 @@ class NotificationsRepository {
     this._sharedPreferences,
   );
 
-  Future<NotificationSettings> subscribeToNotifications({
-    int? id,
+  Future<NotificationSubscription> createSubscription({
     String? email,
     required bool isPushNotificationsSelected,
-    required LatLng coords,
+    required LatLng coordinates,
     String? address,
   }) async {
     String? token;
@@ -29,41 +26,41 @@ class NotificationsRepository {
         const Duration(seconds: 5),
       );
     }
-    final settings = await _notificationsApi.subscribeToNotifications(
+    final stored = await _sharedPreferences.getNotificationSubscription();
+    final subscription = await _notificationsApi.subscribeToNotifications(
+      id: stored?.id,
       email: email,
-      id: id,
       pushToken: token,
-      coords: coords,
+      coordinates: coordinates,
       address: address,
     );
 
-    await _sharedPreferences.setUserSubscriptionSettings(
-      jsonEncode(settings),
-    );
+    await _sharedPreferences.setNotificationSubscription(subscription);
 
-    return settings;
+    return subscription;
   }
 
-  Future<void> deleteNotificationSubscription(int id) async {
-    await _notificationsApi.deleteNotificationSubscription(id);
-    await _sharedPreferences.setUserSubscriptionSettings(null);
+  Future<void> deleteSubscription() async {
+    final subscription = await _sharedPreferences.getNotificationSubscription();
+    if (subscription != null) {
+      await _notificationsApi.deleteNotificationSubscription(subscription.id);
+      await _sharedPreferences.setNotificationSubscription(null);
+    }
   }
 
-  Future<NotificationSettings?> getNotificationSubscriptions({
-    String? email,
-    String? pushToken,
-    String? id,
-  }) async {
-    final settings = await _notificationsApi.getNotificationSubscriptions(
-      email: email,
-      pushToken: pushToken,
-      id: id,
+  Future<NotificationSubscription?> getSubscription() async {
+    final stored = await _sharedPreferences.getNotificationSubscription();
+    if (stored == null) {
+      return null;
+    }
+    final subscription = await _notificationsApi.getNotificationSubscriptions(
+      email: stored.email,
+      pushToken: stored.pushToken,
+      id: stored.id.toString(),
     );
 
-    await _sharedPreferences.setUserSubscriptionSettings(
-      jsonEncode(settings),
-    );
+    await _sharedPreferences.setNotificationSubscription(subscription);
 
-    return settings;
+    return subscription;
   }
 }

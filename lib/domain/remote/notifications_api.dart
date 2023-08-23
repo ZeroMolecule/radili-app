@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart' hide Path;
-import 'package:radili/domain/data/notification_settings.dart';
+import 'package:radili/domain/data/notification_subscription.dart';
 import 'package:radili/domain/remote/strapi/strapi.dart';
 import 'package:radili/domain/remote/strapi/strapi_response.dart';
 import 'package:retrofit/retrofit.dart';
@@ -24,18 +24,18 @@ abstract class _NotificationsApi {
   });
 
   @DELETE('/notification-subscriptions/{id}')
-  Future<void> _deleteNotificationSubscription(@Path('id') int id);
+  Future<void> deleteNotificationSubscription(@Path('id') int id);
 }
 
 class NotificationsApi extends __NotificationsApi {
   NotificationsApi(Dio dio) : super(dio);
 
-  Future<NotificationSettings> subscribeToNotifications({
+  Future<NotificationSubscription> subscribeToNotifications({
     String? email,
     String? pushToken,
     String? address,
     int? id,
-    required LatLng coords,
+    required LatLng coordinates,
   }) async {
     final response = await _subscribeToNotifications(
       body: {
@@ -45,25 +45,21 @@ class NotificationsApi extends __NotificationsApi {
           'pushToken': pushToken,
           'address': address,
           'coordinates': {
-            'lat': coords.latitude,
-            'lng': coords.longitude,
+            'lat': coordinates.latitude,
+            'lng': coordinates.longitude,
           },
         },
       },
     );
 
-    final settings = NotificationSettings.fromJson(
+    final settings = NotificationSubscription.fromJson(
       Strapi.parseData(response.raw),
     );
 
     return settings;
   }
 
-  Future<void> deleteNotificationSubscription(int id) async {
-    await _deleteNotificationSubscription(id);
-  }
-
-  Future<NotificationSettings?> getNotificationSubscriptions({
+  Future<NotificationSubscription?> getNotificationSubscriptions({
     String? email,
     String? pushToken,
     String? id,
@@ -74,14 +70,8 @@ class NotificationsApi extends __NotificationsApi {
       id: id,
     );
 
-    final notificationSettings = NotificationSettings.fromJson(
+    return NotificationSubscription.fromJson(
       Strapi.parseData(response.raw),
     );
-
-    if (notificationSettings.coordinatesRaw == null) {
-      return null;
-    }
-
-    return notificationSettings;
   }
 }

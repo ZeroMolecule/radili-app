@@ -3,19 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
-import 'package:radili/flow/notification_settings/providers/notification_settings_provider.dart';
-import 'package:radili/generated/colors.gen.dart';
+import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
 import 'package:radili/hooks/async_callback.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/form_hook.dart';
+import 'package:radili/hooks/router_hook.dart';
+import 'package:radili/hooks/show_error_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
+import 'package:radili/util/extensions/form_extensions.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 @RoutePage()
-class NotificationSettingsPage extends HookConsumerWidget {
+class NotificationSubscriptionPage extends HookConsumerWidget {
   final AddressInfo? address;
-  const NotificationSettingsPage({
+
+  const NotificationSubscriptionPage({
     Key? key,
     this.address,
   }) : super(key: key);
@@ -24,28 +27,28 @@ class NotificationSettingsPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
     final colors = useColorScheme();
+    final showError = useShowError();
+    final router = useRouter();
 
-    final notificationSettings = ref.watch(notificationSettingsProvider);
+    final notifier = ref.watch(notificationSubscriptionProvider.notifier);
+    final subscription = ref.watch(notificationSubscriptionProvider);
 
-    final notificationSettingsNotifier = ref.watch(
-      notificationSettingsProvider.notifier,
-    );
     final form = useForm(
       {
         'email': FormControl<String?>(
-          value: notificationSettings.valueOrNull?.email,
+          value: subscription.valueOrNull?.email,
           validators: [Validators.email],
         ),
         'pushNotifications': FormControl<bool>(
-          value: notificationSettings.valueOrNull?.pushToken != null,
+          value: subscription.valueOrNull?.pushToken != null,
           validators: [Validators.required],
         ),
         'emailNotifications': FormControl<bool>(
-          value: notificationSettings.valueOrNull?.email != null,
+          value: subscription.valueOrNull?.email != null,
           validators: [Validators.required],
         ),
         'address': FormControl<AddressInfo>(
-          value: notificationSettings.valueOrNull?.addressInfo ?? address,
+          value: subscription.valueOrNull?.addressInfo ?? address,
           validators: [Validators.required],
         ),
       },
@@ -53,75 +56,21 @@ class NotificationSettingsPage extends HookConsumerWidget {
 
     final handleSubmit = useAsyncCallback(
       () async {
-        if (form.valid) {
-          await notificationSettingsNotifier.saveSettings(
-            id: notificationSettings.valueOrNull?.id,
-            isPushNotificationsSelected:
-                form.control('pushNotifications').value,
-            email: form.control('email').value,
-            address: form.control('address').value,
-          );
-        }
-      },
-      onError: (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(t.erroSomethingWentWrong),
-          ),
+        form.throwIfInvalid({'address': t.errorAddressRequired});
+        await notifier.save(
+          isPushNotificationsSelected: form.control('pushNotifications').value,
+          email: form.control('email').value,
+          address: form.control('address').value,
         );
       },
-      onDone: AutoRouter.of(context).pop,
-      keys: [form, t, notificationSettingsNotifier, notificationSettings],
-    );
-
-    final handleDelete = useAsyncCallback(
-      () async {
-        await notificationSettingsNotifier.deleteSubscription(
-          notificationSettings.valueOrNull!.id,
-        );
-        AutoRouter.of(context).pop();
-      },
-      onError: (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(t.erroSomethingWentWrong),
-          ),
-        );
-      },
-      onDone: AutoRouter.of(context).pop,
-      keys: [form, t, notificationSettingsNotifier, notificationSettings],
+      onError: showError,
+      onDone: router.pop,
+      keys: [form, notifier, showError, t],
     );
 
     return ReactiveForm(
       formGroup: form,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton.extended(
-              onPressed: handleSubmit,
-              backgroundColor: AppColors.lightBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(2),
-              ),
-              label: Text(t.saveNotificationSettings),
-            ),
-            if (notificationSettings.valueOrNull != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: FloatingActionButton.extended(
-                  onPressed: handleDelete,
-                  backgroundColor: AppColors.semanticRed,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  label: Text(t.deleteNotificationSettings),
-                ),
-              ),
-          ],
-        ),
         appBar: AppBar(
           title: Text(t.backButton),
           centerTitle: false,
@@ -289,6 +238,16 @@ class NotificationSettingsPage extends HookConsumerWidget {
                       ),
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(160, 50),
+                      ),
+                      onPressed: handleSubmit,
+                      child: Text(t.saveNotificationSettings),
+                    ),
+                  )
                 ],
               ),
             ),

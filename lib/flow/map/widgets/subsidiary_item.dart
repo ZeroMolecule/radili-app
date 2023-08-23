@@ -1,9 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/workhours_block.dart';
 import 'package:radili/hooks/theme_hook.dart';
-import 'package:radili/widgets/store_icon.dart';
 
 class SubsidiaryItem extends HookWidget {
   final Subsidiary subsidiary;
@@ -18,6 +18,7 @@ class SubsidiaryItem extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = useTheme().material.textTheme;
+    final cover = subsidiary.store.cover?.largeOr;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -25,23 +26,29 @@ class SubsidiaryItem extends HookWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (subsidiary.store.icon != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: StoreIcon.subsidiary(
-                  subsidiary,
-                  size: 24,
-                ),
-              ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (cover != null)
+                    Container(
+                      clipBehavior: Clip.antiAlias,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      child: CachedNetworkImage(imageUrl: cover.toString()),
+                    ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 3),
+                    padding: const EdgeInsets.only(top: 16),
                     child: Text(
                       subsidiary.store.name,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                   Text(
@@ -51,7 +58,7 @@ class SubsidiaryItem extends HookWidget {
                     style: textTheme.bodySmall,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.only(top: 16),
                     child: WorkHoursBlock(
                       workHours: subsidiary.workHours,
                       expanded: isSelected,
