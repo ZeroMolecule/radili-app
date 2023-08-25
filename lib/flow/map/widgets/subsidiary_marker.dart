@@ -1,7 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/widgets/store_icon.dart';
 
 class SubsidiaryMarker extends HookWidget {
   final Subsidiary subsidiary;
@@ -17,9 +17,18 @@ class SubsidiaryMarker extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onMarkerPressed?.call(subsidiary),
-      child: StoreIcon.subsidiary(subsidiary, size: markerSize),
+    final icon = subsidiary.store.icon?.thumbnailOr?.toString() ?? '';
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(markerSize / 2),
+      clipBehavior: Clip.hardEdge,
+      child: GestureDetector(
+        onTap: () => onMarkerPressed?.call(subsidiary),
+        child: CachedNetworkImage(
+          imageUrl: icon.toString(),
+          width: markerSize,
+          height: markerSize,
+        ),
+      ),
     );
   }
 }
