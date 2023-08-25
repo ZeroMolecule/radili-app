@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
+import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
   final List<Subsidiary> subsidiaries;
@@ -31,6 +34,7 @@ class SubsidiariesMap extends HookConsumerWidget {
     const clusterSize = 50.0;
 
     final controller = useMapControllerAnimated();
+    final clusterController = useSuperClusterMutableController();
     final onSubsidiaryPressedRef = useRef(onSubsidiaryPressed)
       ..value = onSubsidiaryPressed;
 
@@ -39,7 +43,7 @@ class SubsidiariesMap extends HookConsumerWidget {
         controller.animateTo(dest: position!);
       }
       return null;
-    }, [position, controller, zoom]);
+    }, [position, controller]);
 
     final markers = useMemoized(() {
       return subsidiaries
@@ -53,24 +57,25 @@ class SubsidiariesMap extends HookConsumerWidget {
                 markerSize: markerSize,
                 onMarkerPressed: (subsidiary) =>
                     onSubsidiaryPressedRef.value?.call(subsidiary),
+                onMarkerDoublePressed: (subsidiary) async {
+                  await controller.centerOnPoint(subsidiary.coordinates);
+                  await controller.animatedZoomIn();
+                },
               ),
             ),
           )
           .toList();
-    }, [subsidiaries]);
+    }, [subsidiaries, controller]);
 
     useValueChanged<List<Marker>, void>(markers, (oldMarkers, _) {
-      final added = markers.where((marker) => !oldMarkers.contains(marker));
-      final removed = oldMarkers.where((marker) => !markers.contains(marker));
-      for (final marker in added) {}
-      for (final marker in removed) {}
+      clusterController.replaceAll(markers);
     });
 
     return FlutterMap(
       mapController: controller.mapController,
       options: MapOptions(
         maxZoom: 17,
-        minZoom: 2,
+        minZoom: 8,
         bounds: LatLngBounds(
           const LatLng(42.3649, 13.3836),
           const LatLng(46.5547, 19.4481),
@@ -90,7 +95,22 @@ class SubsidiariesMap extends HookConsumerWidget {
           subdomains: const ['a', 'b', 'c', 'd'],
           tileDisplay: const TileDisplay.instantaneous(),
         ),
-        MarkerLayer(markers: markers),
+        SuperclusterLayer.mutable(
+          controller: clusterController,
+          clusterWidgetSize: const Size(clusterSize, clusterSize),
+          indexBuilder: IndexBuilders.computeWithOriginalMarkers,
+          calculateAggregatedClusterData: true,
+          minimumClusterSize: 2,
+          maxClusterRadius: clusterSize.round(),
+          loadingOverlayBuilder: (_) => const SizedBox.shrink(),
+          moveMap: (position, zoom) {
+            controller.animateTo(dest: position, zoom: zoom);
+          },
+          builder: (_, __, markerCount, ___) => MarkerCluster(
+            count: markerCount,
+            size: clusterSize,
+          ),
+        ),
       ],
     );
   }

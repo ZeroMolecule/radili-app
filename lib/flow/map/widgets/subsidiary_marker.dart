@@ -7,12 +7,14 @@ class SubsidiaryMarker extends HookWidget {
   final Subsidiary subsidiary;
   final double markerSize;
   final Function(Subsidiary)? onMarkerPressed;
+  final Function(Subsidiary)? onMarkerDoublePressed;
 
   const SubsidiaryMarker({
     Key? key,
     required this.subsidiary,
     required this.markerSize,
     this.onMarkerPressed,
+    this.onMarkerDoublePressed,
   }) : super(key: key);
 
   @override
@@ -20,9 +22,10 @@ class SubsidiaryMarker extends HookWidget {
     final icon = subsidiary.store.icon?.thumbnailOr?.toString() ?? '';
     return ClipRRect(
       borderRadius: BorderRadius.circular(markerSize / 2),
-      clipBehavior: Clip.hardEdge,
+      clipBehavior: Clip.antiAlias,
       child: GestureDetector(
         onTap: () => onMarkerPressed?.call(subsidiary),
+        onDoubleTap: () => onMarkerDoublePressed?.call(subsidiary),
         child: CachedNetworkImage(
           imageUrl: icon.toString(),
           width: markerSize,

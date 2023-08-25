@@ -16,7 +16,6 @@ import 'package:responsive_framework/responsive_breakpoints.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
-  await _beforeRun();
   await SentryFlutter.init(
     (options) {
       options.dsn = Env.sentryDsn;
@@ -27,7 +26,10 @@ void main() async {
         return event;
       };
     },
-    appRunner: () => runApp(const ProviderScope(child: App())),
+    appRunner: () async {
+      await _beforeRun();
+      runApp(const ProviderScope(child: App()));
+    },
   );
 }
 
