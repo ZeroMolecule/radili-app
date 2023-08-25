@@ -88,6 +88,13 @@ class MapPage extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ResponsiveIconButton(
+                    icon: const Icon(Icons.error_outline),
+                    label: 'Sruši me',
+                    onPressed: () {
+                      throw Exception('Test crash');
+                    },
+                  ),
+                  ResponsiveIconButton(
                     icon: const Icon(Icons.my_location_outlined),
                     label: 'Moja lokacija',
                     onPressed: handleUseMyCurrentLocation,

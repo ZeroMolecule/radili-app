@@ -105,8 +105,7 @@ class SubsidiariesMap extends HookConsumerWidget {
         SuperclusterLayer.mutable(
           controller: clusterController,
           clusterWidgetSize: const Size(clusterSize, clusterSize),
-          indexBuilder: IndexBuilders.rootIsolate,
-          calculateAggregatedClusterData: true,
+          indexBuilder: IndexBuilders.computeWithOriginalMarkers,
           loadingOverlayBuilder: (_) => const SizedBox.shrink(),
           moveMap: (position, zoom) {
             controller.animateTo(dest: position, zoom: zoom);
