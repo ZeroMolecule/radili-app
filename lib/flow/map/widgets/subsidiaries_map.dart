@@ -80,8 +80,8 @@ class SubsidiariesMap extends HookConsumerWidget {
       return null;
     }, [position, controller, zoom]);
 
-    useEffect(() {
-      final markers = subsidiaries
+    final markers = useMemoized(() {
+      return subsidiaries
           .map(
             (subsidiary) => Marker(
               point: subsidiary.coordinates,
@@ -96,9 +96,18 @@ class SubsidiariesMap extends HookConsumerWidget {
             ),
           )
           .toList();
-      clusterController.replaceAll(markers);
-      return null;
-    }, [clusterController, onSubsidiaryPressedRef, subsidiaries]);
+    }, [subsidiaries]);
+
+    useValueChanged<List<Marker>, void>(markers, (oldMarkers, _) {
+      final added = markers.where((marker) => !oldMarkers.contains(marker));
+      final removed = oldMarkers.where((marker) => !markers.contains(marker));
+      for (final marker in added) {
+        clusterController.add(marker);
+      }
+      for (final marker in removed) {
+        clusterController.remove(marker);
+      }
+    });
 
     useEffect(() {
       locationNotifier.watch();
@@ -130,7 +139,7 @@ class SubsidiariesMap extends HookConsumerWidget {
           // Subdomains for the tile layer
           retinaMode: kIsWeb,
           additionalOptions: const {'ext': 'svg'},
-          tileDisplay: const TileDisplay.fadeIn(),
+          tileDisplay: const TileDisplay.instantaneous(),
         ),
         currentLocationLayer,
         SuperclusterLayer.mutable(
