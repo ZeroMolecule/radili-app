@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -12,10 +13,22 @@ import 'package:radili/providers/di/theme_providers.dart';
 import 'package:radili/util/env.dart';
 import 'package:responsive_framework/breakpoint.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
   await _beforeRun();
-  runApp(const ProviderScope(child: App()));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = Env.sentryDsn;
+      options.beforeSend = (SentryEvent event, {Hint? hint}) async {
+        if (kDebugMode) {
+          return null;
+        }
+        return event;
+      };
+    },
+    appRunner: () => runApp(const ProviderScope(child: App())),
+  );
 }
 
 Future<void> _beforeRun() async {

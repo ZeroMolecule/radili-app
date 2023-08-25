@@ -17,6 +17,12 @@ abstract class Env {
   @EnviedField(varName: 'VAPID_KEY')
   static const String vapidKey = _Env.vapidKey;
 
+  @EnviedField(varName: 'SENTRY_DSN')
+  static const String sentryDsn = _Env.sentryDsn;
+
+  @EnviedField(varName: 'SENTRY_ENVIRONMENT')
+  static const String sentryEnvironment = _Env.sentryEnvironment;
+
   static void init() {
     if (kDebugMode) {
       print('''
@@ -24,6 +30,9 @@ abstract class Env {
         API_KEY=$apiKey
         API_URL=$apiUrl
         NOMINATIM_API_URL=$nominatimApiUrl
+        VAPID_KEY=$vapidKey
+        SENTRY_DSN=$sentryDsn
+        SENTRY_ENVIRONMENT=$sentryEnvironment
     ''');
     }
   }

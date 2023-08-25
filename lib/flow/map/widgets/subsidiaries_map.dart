@@ -2,18 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
-import 'package:radili/hooks/location_permission_enabled_hook.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
-import 'package:radili/providers/location_provider.dart';
-import 'package:rxdart/rxdart.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
   final List<Subsidiary> subsidiaries;
@@ -38,40 +34,10 @@ class SubsidiariesMap extends HookConsumerWidget {
     const markerSize = 45.0;
     const clusterSize = 50.0;
 
-    final locationNotifier = ref.watch(locationProvider.notifier);
     final controller = useMapControllerAnimated();
     final clusterController = useSuperClusterMutableController();
     final onSubsidiaryPressedRef = useRef(onSubsidiaryPressed)
       ..value = onSubsidiaryPressed;
-
-    final isLocationPermissionEnabled = useIsLocationPermissionEnabled();
-
-    final currentLocationLayer = useMemoized(() {
-      final locationStream = locationNotifier.stream
-          .map((event) => event.valueOrNull)
-          .whereNotNull()
-          .distinct();
-
-      final headingStream = locationStream.map(
-        (location) => LocationMarkerHeading(
-          heading: location.heading,
-          accuracy: location.accuracy,
-        ),
-      );
-
-      final positionStream = locationStream.map(
-        (location) => LocationMarkerPosition(
-          latitude: location.latitude,
-          longitude: location.longitude,
-          accuracy: location.accuracy,
-        ),
-      );
-
-      return CurrentLocationLayer(
-        positionStream: positionStream,
-        headingStream: headingStream,
-      );
-    }, [locationNotifier.stream]);
 
     useEffect(() {
       if (position != null) {
@@ -109,11 +75,6 @@ class SubsidiariesMap extends HookConsumerWidget {
       }
     });
 
-    useEffect(() {
-      locationNotifier.watch();
-      return locationNotifier.stopWatching;
-    }, [locationNotifier, isLocationPermissionEnabled]);
-
     return FlutterMap(
       mapController: controller.mapController,
       options: MapOptions(
@@ -141,7 +102,6 @@ class SubsidiariesMap extends HookConsumerWidget {
           additionalOptions: const {'ext': 'svg'},
           tileDisplay: const TileDisplay.instantaneous(),
         ),
-        currentLocationLayer,
         SuperclusterLayer.mutable(
           controller: clusterController,
           clusterWidgetSize: const Size(clusterSize, clusterSize),
