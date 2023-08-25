@@ -7,6 +7,7 @@ class SubsidiaryMarker extends HookWidget {
   final Subsidiary subsidiary;
   final double markerSize;
   final Function(Subsidiary)? onMarkerPressed;
+
   const SubsidiaryMarker({
     Key? key,
     required this.subsidiary,
@@ -18,18 +19,7 @@ class SubsidiaryMarker extends HookWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => onMarkerPressed?.call(subsidiary),
-      child: Container(
-        decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: StoreIcon.subsidiary(subsidiary, size: markerSize),
-      ),
+      child: StoreIcon.subsidiary(subsidiary, size: markerSize),
     );
   }
 }

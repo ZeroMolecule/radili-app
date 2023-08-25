@@ -94,6 +94,7 @@ class SubsidiariesMap extends HookConsumerWidget {
           additionalOptions: const {'ext': 'svg'},
           tileDisplay: const TileDisplay.instantaneous(),
         ),
+        MarkerLayer(markers: markers),
       ],
     );
   }
