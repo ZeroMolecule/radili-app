@@ -1,0 +1,8 @@
+flutter_native_splash:
+  color: "#FFFFFF"
+  fullscreen: false
+  image: assets/app_icon/foreground.png
+  web: true
+  android_12:
+    color: "#FFFFFF"
+    image: assets/app_icon/foreground.png

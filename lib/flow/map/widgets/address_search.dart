@@ -9,11 +9,15 @@ import 'package:radili/providers/di/repository_providers.dart';
 class AddressSearch extends HookConsumerWidget {
   final AddressInfo? address;
   final Function(AddressInfo option) onOptionSelected;
+  final EdgeInsets padding;
+  final Widget? suffix;
 
   const AddressSearch({
     Key? key,
     required this.onOptionSelected,
     this.address,
+    this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+    this.suffix,
   }) : super(key: key);
 
   @override
@@ -24,36 +28,43 @@ class AddressSearch extends HookConsumerWidget {
       text: address?.displayName,
     );
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      child: Row(
-        children: [
-          Expanded(
-            child: TypeAheadField<AddressInfo>(
-              itemBuilder: (_, AddressInfo option) => ListTile(
-                title: Text(option.displayName),
-              ),
-              debounceDuration: const Duration(seconds: 1),
-              suggestionsCallback: repo.searchAddress,
-              loadingBuilder: (_) => const SizedBox.shrink(),
-              errorBuilder: (_, __) => const SizedBox.shrink(),
-              noItemsFoundBuilder: (_) => const SizedBox.shrink(),
-              onSuggestionSelected: (option) {
-                controller.text = option.displayName;
-                onOptionSelected(option);
-              },
-              textFieldConfiguration: TextFieldConfiguration(
-                controller: controller,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  hintText: t.mapSearchHint,
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ),
-        ],
+    useValueChanged<String?, void>(address?.displayName, (oldValue, oldResult) {
+      final name = address?.displayName;
+      if (name != null && name != controller.text) {
+        controller.text = name;
+      }
+    });
+
+    return TypeAheadField<AddressInfo>(
+      itemBuilder: (_, AddressInfo option) => ListTile(
+        title: Text(option.displayName),
+      ),
+      debounceDuration: const Duration(seconds: 1),
+      suggestionsCallback: repo.searchAddress,
+      loadingBuilder: (_) => const SizedBox.shrink(),
+      errorBuilder: (_, __) => const SizedBox.shrink(),
+      noItemsFoundBuilder: (_) => const SizedBox.shrink(),
+      onSuggestionSelected: (option) {
+        controller.text = option.displayName;
+        onOptionSelected(option);
+      },
+      textFieldConfiguration: TextFieldConfiguration(
+        controller: controller,
+        onTap: () {
+          controller.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: controller.text.length,
+          );
+        },
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.search),
+          hintText: t.mapSearchHint,
+          border: InputBorder.none,
+          hoverColor: Colors.transparent,
+          contentPadding: padding,
+          suffixIcon: suffix,
+        ),
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }

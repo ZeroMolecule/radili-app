@@ -9,7 +9,7 @@
       "count": {}
     }
   },
-  "noDataForWorkHours": "Nema podataka za radno vrijeme",
+  "noDataForWorkHours": "Zatvoreno",
   "workingHours": "Radno vrijeme",
   "dayOfTheWeek": "{value, select, monday{Ponedjeljak} tuesday{Utorak} wednesday{Srijeda} thursday{Četvrtak} friday{Petak} saturday{Subota} sunday{Nedjelja} other{Nepoznato}}",
     "@dayOfTheWeek": {
@@ -17,8 +17,8 @@
         "value": {}
       }
     },
-  "notifyMe": "Obavijesti me o promijeni radnog vremena",
-  "saveNotificationSettings": "Spremi postavke",
+  "notifyMe": "Obavijesti me",
+  "saveNotificationSettings": "Spremi",
   "backButton": "Natrag",
   "notifyMeTitle": "Obavijesti me",
   "notifyMeDescription": "Odobrite primanje obavijesti radi informiranja o radnom vremenu trgovina.",
@@ -29,5 +29,7 @@
   "invalidMail": "Nevažeća email adresa",
   "email": "Email",
   "emailNotificationsDescription": "Upiši Email adresu na koju želiš primati obavijesti:",
-  "erroSomethingWentWrong": "Nešto je pošlo po zlu, pokušajte ponovo!"
+  "deleteNotificationSettings": "Obriši postavke",
+  "errorAddressRequired": "Validna adresa je obavezna kako bismo znali prikazati trgovine u blizini",
+  "errorPushInvalid": "Push obavijesti nisu omogućene"
 }

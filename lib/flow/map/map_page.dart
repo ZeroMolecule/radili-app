@@ -5,15 +5,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
-import 'package:radili/flow/map/widgets/subsidiaries_sidebar.dart';
-import 'package:radili/generated/colors.gen.dart';
+import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
+import 'package:radili/hooks/async_callback.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/debouncer_hook.dart';
+import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/navigation/app_router.dart';
+import 'package:radili/providers/address_selected_provider.dart';
 import 'package:radili/providers/nearby_subsidiaries_provider.dart';
+import 'package:radili/widgets/responsive_icon_button.dart';
 
 @RoutePage()
 class MapPage extends HookConsumerWidget {
@@ -22,17 +26,17 @@ class MapPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
+    final router = useRouter();
     final colors = useColorScheme();
     final debouncer = useDebouncer();
-    final address = useState<AddressInfo?>(null);
+    final address = ref.watch(addressSelectedProvider);
     final selectedSubsidiary = useState<Subsidiary?>(null);
 
+    final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
+    final notificationSettings = ref.watch(notificationSubscriptionProvider);
     final subsidiariesNotifier = ref.watch(nearbySubsidiariesProvider.notifier);
     final subsidiaries = ref.watch(nearbySubsidiariesProvider);
-
-    void handleOptionSelected(AddressInfo option) {
-      address.value = option;
-    }
+    final showSubsidiary = useShowSubsidiaryMarker();
 
     void handleFindNearby(LatLng position) {
       debouncer.debounce(
@@ -40,16 +44,27 @@ class MapPage extends HookConsumerWidget {
       );
     }
 
-    void onSubsidiarySelected(Subsidiary subsidiary) {
-      if (subsidiary == selectedSubsidiary.value) {
-        selectedSubsidiary.value = null;
-      } else if (subsidiary.address != null) {
-        address.value = AddressInfo(
-          rawLat: subsidiary.coordinates.latitude.toString(),
-          rawLon: subsidiary.coordinates.longitude.toString(),
-          displayName: subsidiary.address!,
+    final handleUseMyCurrentLocation = useAsyncCallback(
+      addressSelectedNotifier.selectCurrent,
+    );
+
+    void handleEditNotificationSubscription() {
+      router.navigate(
+        NotificationSubscriptionRoute(address: address),
+      );
+    }
+
+    void onSubsidiarySelected(Subsidiary? subsidiary) {
+      selectedSubsidiary.value = subsidiary;
+      if (subsidiary != null) {
+        addressSelectedNotifier.select(
+          AddressInfo(
+            rawLat: subsidiary.coordinates.latitude.toString(),
+            rawLon: subsidiary.coordinates.longitude.toString(),
+            displayName: subsidiary.address ?? '',
+          ),
         );
-        selectedSubsidiary.value = subsidiary;
+        showSubsidiary(subsidiary);
       }
     }
 
@@ -66,63 +81,37 @@ class MapPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: AddressSearch(
-                    onOptionSelected: handleOptionSelected,
+            child: AddressSearch(
+              address: address,
+              onOptionSelected: addressSelectedNotifier.select,
+              suffix: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ResponsiveIconButton(
+                    icon: const Icon(Icons.my_location_outlined),
+                    label: 'Moja lokacija',
+                    onPressed: handleUseMyCurrentLocation,
                   ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: TextButton.icon(
-                    onPressed: () => AutoRouter.of(context).navigate(
-                      NotificationSettingsRoute(
-                        address: address.value,
-                      ),
+                  ResponsiveIconButton(
+                    onPressed: handleEditNotificationSubscription,
+                    icon: Icon(
+                      notificationSettings.valueOrNull != null
+                          ? Icons.notifications_active
+                          : Icons.notifications_outlined,
                     ),
-                    icon: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppColors.lightBlue,
-                    ),
-                    label: Text(
-                      t.notifyMe,
-                      style: TextStyle(
-                        color: colors.onBackground,
-                      ),
-                    ),
+                    label: t.notifyMe,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          Flexible(
-            child: Stack(
-              children: [
-                SubsidiariesMap(
-                  position: address.value?.latLng,
-                  subsidiaries: subsidiaries.valueOrNull ?? [],
-                  onPositionChanged: handleFindNearby,
-                  onSubsidiaryPressed: onSubsidiarySelected,
-                ),
-                if (subsidiaries.valueOrNull?.isNotEmpty == true)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Spacer(flex: 3),
-                      Flexible(
-                        flex: 1,
-                        child: SubsidiariesSidebar(
-                          subsidiaries: subsidiaries.valueOrNull!,
-                          onSubsidiarySelected: onSubsidiarySelected,
-                          selectedSubsidiary: selectedSubsidiary.value,
-                        ),
-                      ),
-                    ],
-                  )
-              ],
+          Expanded(
+            child: SubsidiariesMap(
+              position: address?.latLng,
+              subsidiaries: subsidiaries.valueOrNull ?? [],
+              onPositionChanged: handleFindNearby,
+              onSubsidiaryPressed: onSubsidiarySelected,
+              subsidiary: selectedSubsidiary.value,
             ),
           ),
         ],

@@ -3,19 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
-import 'package:radili/flow/notification_settings/providers/notification_settings_provider.dart';
-import 'package:radili/generated/colors.gen.dart';
+import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
 import 'package:radili/hooks/async_callback.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/form_hook.dart';
+import 'package:radili/hooks/router_hook.dart';
+import 'package:radili/hooks/show_error_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
+import 'package:radili/util/extensions/form_extensions.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 @RoutePage()
-class NotificationSettingsPage extends HookConsumerWidget {
+class NotificationSubscriptionPage extends HookConsumerWidget {
   final AddressInfo? address;
-  const NotificationSettingsPage({
+
+  const NotificationSubscriptionPage({
     Key? key,
     this.address,
   }) : super(key: key);
@@ -24,25 +27,28 @@ class NotificationSettingsPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
     final colors = useColorScheme();
+    final showError = useShowError();
+    final router = useRouter();
 
-    final notificationSettingsNotifier = ref.watch(
-      notificationSettingsProvider.notifier,
-    );
+    final notifier = ref.watch(notificationSubscriptionProvider.notifier);
+    final subscription = ref.watch(notificationSubscriptionProvider);
+
     final form = useForm(
       {
         'email': FormControl<String?>(
+          value: subscription.valueOrNull?.email,
           validators: [Validators.email],
         ),
         'pushNotifications': FormControl<bool>(
-          value: false,
+          value: subscription.valueOrNull?.pushToken != null,
           validators: [Validators.required],
         ),
         'emailNotifications': FormControl<bool>(
-          value: false,
+          value: subscription.valueOrNull?.email != null,
           validators: [Validators.required],
         ),
         'address': FormControl<AddressInfo>(
-          value: address,
+          value: subscription.valueOrNull?.addressInfo ?? address,
           validators: [Validators.required],
         ),
       },
@@ -50,38 +56,21 @@ class NotificationSettingsPage extends HookConsumerWidget {
 
     final handleSubmit = useAsyncCallback(
       () async {
-        if (form.valid) {
-          await notificationSettingsNotifier.saveSettings(
-            coords: form.control('address').value!.latLng,
-            isPushNotificationsSelected:
-                form.control('pushNotifications').value,
-            email: form.control('email').value,
-          );
-        }
-      },
-      onError: (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(t.erroSomethingWentWrong),
-          ),
+        form.throwIfInvalid({'address': t.errorAddressRequired});
+        await notifier.save(
+          isPushNotificationsSelected: form.control('pushNotifications').value,
+          email: form.control('email').value,
+          address: form.control('address').value,
         );
       },
-      onDone: AutoRouter.of(context).pop,
-      keys: [form, t],
+      onError: showError,
+      onDone: router.pop,
+      keys: [form, notifier, showError, t],
     );
 
     return ReactiveForm(
       formGroup: form,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: handleSubmit,
-          backgroundColor: AppColors.lightBlue,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(2),
-          ),
-          label: Text(t.saveNotificationSettings),
-        ),
         appBar: AppBar(
           title: Text(t.backButton),
           centerTitle: false,
@@ -249,6 +238,16 @@ class NotificationSettingsPage extends HookConsumerWidget {
                       ),
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(160, 50),
+                      ),
+                      onPressed: handleSubmit,
+                      child: Text(t.saveNotificationSettings),
+                    ),
+                  )
                 ],
               ),
             ),

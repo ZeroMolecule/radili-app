@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/flow/map/map_page.dart';
-import 'package:radili/flow/notification_settings/notification_settings_page.dart';
+import 'package:radili/flow/notification_subscription/notification_subscription_page.dart';
 
 part 'app_router.gr.dart';
 
@@ -15,7 +15,7 @@ class AppRouter extends _$AppRouter {
           initial: true,
         ),
         AutoRoute(
-          page: NotificationSettingsRoute.page,
+          page: NotificationSubscriptionRoute.page,
           path: '/notification-settings',
         )
       ];
