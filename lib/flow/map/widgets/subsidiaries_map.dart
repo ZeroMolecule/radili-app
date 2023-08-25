@@ -6,7 +6,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
-import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
   final List<Subsidiary> subsidiaries;
@@ -32,7 +31,6 @@ class SubsidiariesMap extends HookConsumerWidget {
     const clusterSize = 50.0;
 
     final controller = useMapControllerAnimated();
-    final clusterController = useSuperClusterMutableController();
     final onSubsidiaryPressedRef = useRef(onSubsidiaryPressed)
       ..value = onSubsidiaryPressed;
 
@@ -64,12 +62,8 @@ class SubsidiariesMap extends HookConsumerWidget {
     useValueChanged<List<Marker>, void>(markers, (oldMarkers, _) {
       final added = markers.where((marker) => !oldMarkers.contains(marker));
       final removed = oldMarkers.where((marker) => !markers.contains(marker));
-      for (final marker in added) {
-        clusterController.add(marker);
-      }
-      for (final marker in removed) {
-        clusterController.remove(marker);
-      }
+      for (final marker in added) {}
+      for (final marker in removed) {}
     });
 
     return FlutterMap(
