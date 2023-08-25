@@ -2,11 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
@@ -102,19 +100,7 @@ class SubsidiariesMap extends HookConsumerWidget {
           additionalOptions: const {'ext': 'svg'},
           tileDisplay: const TileDisplay.instantaneous(),
         ),
-        SuperclusterLayer.mutable(
-          controller: clusterController,
-          clusterWidgetSize: const Size(clusterSize, clusterSize),
-          indexBuilder: IndexBuilders.computeWithOriginalMarkers,
-          loadingOverlayBuilder: (_) => const SizedBox.shrink(),
-          moveMap: (position, zoom) {
-            controller.animateTo(dest: position, zoom: zoom);
-          },
-          builder: (_, __, markerCount, ___) => MarkerCluster(
-            count: markerCount,
-            size: clusterSize,
-          ),
-        ),
+        MarkerLayer(markers: markers),
       ],
     );
   }
