@@ -571,6 +571,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.4"
+  flutter_map_marker_cluster:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: dee990295b4ae2022fa3de89ba78944c3d5d83e2
+      url: "https://github.com/andreystavitsky/flutter_map_marker_cluster.git"
+    source: git
+    version: "1.2.0"
   flutter_map_marker_popup:
     dependency: transitive
     description:
@@ -579,14 +588,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.2.0"
-  flutter_map_supercluster:
-    dependency: "direct main"
-    description:
-      name: flutter_map_supercluster
-      sha256: "1b5526c7f93750214067541752331d501ef70d646f7e15d1d3299be84fa2c1f8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.0"
   flutter_native_splash:
     dependency: "direct main"
     description:
@@ -821,14 +822,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.7.1"
-  kdbush:
-    dependency: transitive
-    description:
-      name: kdbush
-      sha256: f48295414e5d6b28f49f3b446ecc2900f578ed700af53e68829777b8b253fb62
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   latlong2:
     dependency: "direct main"
     description:
@@ -1133,14 +1126,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  rbush:
-    dependency: transitive
-    description:
-      name: rbush
-      sha256: f86e54440608969be381a60eefaaa2e76010d90f4c3189e164d4e0ed2caf7172
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   reactive_forms:
     dependency: "direct main"
     description:
@@ -1370,14 +1355,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  supercluster:
-    dependency: transitive
-    description:
-      name: supercluster
-      sha256: b956072ae2e5f9430c227a0b6a5863b261abd6eb7488411c042bd620a203aab9
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.0"
   synchronized:
     dependency: transitive
     description:

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
-import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
 import 'package:radili/providers/location_provider.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
@@ -39,10 +38,6 @@ class SubsidiariesMap extends HookConsumerWidget {
     const clusterSize = 50.0;
 
     final controller = useMapControllerAnimated();
-    final clusterController = useSuperClusterMutableController();
-    final onSubsidiaryPressedRef = useRef(onSubsidiaryPressed)
-      ..value = onSubsidiaryPressed;
-
     final location = ref.watch(locationProvider);
 
     useEffect(() {
@@ -73,11 +68,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             ),
           )
           .toList();
-    }, [subsidiaries, controller]);
-
-    useValueChanged<List<Marker>, void>(markers, (oldMarkers, _) {
-      clusterController.replaceAll(markers);
-    });
+    }, [subsidiaries]);
 
     return FlutterMap(
       mapController: controller.mapController,
@@ -95,7 +86,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             onPositionChanged?.call(latLng, bounds.northEast, bounds.southWest);
           }
         },
-        onTap: (_, __) => onSubsidiaryPressedRef.value?.call(null),
+        onTap: (_, __) => onSubsidiaryPressed?.call(null),
       ),
       children: [
         TileLayer(
@@ -104,27 +95,28 @@ class SubsidiariesMap extends HookConsumerWidget {
           subdomains: const ['a', 'b', 'c', 'd'],
           tileDisplay: const TileDisplay.instantaneous(),
         ),
-        SuperclusterLayer.mutable(
-          controller: clusterController,
-          clusterWidgetSize: const Size(clusterSize, clusterSize),
-          indexBuilder: IndexBuilders.computeWithOriginalMarkers,
-          calculateAggregatedClusterData: true,
-          minimumClusterSize: 2,
-          maxClusterRadius: clusterSize.round() * 3,
-          loadingOverlayBuilder: (_) => const SizedBox.shrink(),
-          moveMap: (position, zoom) {
-            controller.animateTo(dest: position, zoom: zoom);
-          },
-          builder: (_, __, markerCount, ___) => MarkerCluster(
-            count: markerCount,
-            size: clusterSize,
+        MarkerClusterLayerWidget(
+          options: MarkerClusterLayerOptions(
+            maxClusterRadius: clusterSize.round() * 3,
+            size: const Size(clusterSize, clusterSize),
+            anchorPos: AnchorPos.align(AnchorAlign.center),
+            fitBoundsOptions: const FitBoundsOptions(
+              padding: EdgeInsets.all(50),
+              maxZoom: 15,
+            ),
+            markers: markers,
+            builder: (_, markers) => MarkerCluster(
+              count: markers.length,
+              size: clusterSize,
+            ),
+            centerMarkerOnClick: true,
+            onMarkerTap: (marker) {
+              final key = marker.key;
+              if (key is ValueKey<Subsidiary>) {
+                onSubsidiaryPressed?.call(key.value);
+              }
+            },
           ),
-          onMarkerTap: (marker) {
-            final key = marker.key;
-            if (key is ValueKey<Subsidiary>) {
-              onSubsidiaryPressed?.call(key.value);
-            }
-          },
         ),
       ],
     );
