@@ -38,9 +38,13 @@ class MapPage extends HookConsumerWidget {
     final subsidiaries = ref.watch(nearbySubsidiariesProvider);
     final showSubsidiary = useShowSubsidiaryMarker();
 
-    void handleFindNearby(LatLng position) {
+    void handleFindNearby(LatLng position, LatLng northeast, LatLng southwest) {
       debouncer.debounce(
-        () => subsidiariesNotifier.fetch(position),
+        () => subsidiariesNotifier.fetch(
+          center: position,
+          northeast: northeast,
+          southwest: southwest,
+        ),
       );
     }
 

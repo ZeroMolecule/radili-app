@@ -9,10 +9,15 @@ import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/hooks/supercluster_mutable_controller_hook.dart';
+import 'package:radili/providers/location_provider.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
   final List<Subsidiary> subsidiaries;
-  final Function(LatLng position)? onPositionChanged;
+  final Function(
+    LatLng center,
+    LatLng northeast,
+    LatLng southwest,
+  )? onPositionChanged;
   final Function(Subsidiary?)? onSubsidiaryPressed;
   final LatLng? position;
   final Subsidiary? subsidiary;
@@ -38,12 +43,20 @@ class SubsidiariesMap extends HookConsumerWidget {
     final onSubsidiaryPressedRef = useRef(onSubsidiaryPressed)
       ..value = onSubsidiaryPressed;
 
+    final location = ref.watch(locationProvider);
+
     useEffect(() {
       if (position != null) {
         controller.animateTo(dest: position!);
       }
       return null;
     }, [position, controller]);
+
+    useEffect(() {
+      if (location.valueOrNull != null) {
+        controller.mapController.move(location.value!.latLng, 13);
+      }
+    }, [location, controller]);
 
     final markers = useMemoized(() {
       return subsidiaries
@@ -82,8 +95,9 @@ class SubsidiariesMap extends HookConsumerWidget {
         ),
         onPositionChanged: (position, _) {
           final latLng = position.center;
-          if (latLng != null) {
-            onPositionChanged?.call(latLng);
+          final bounds = position.bounds;
+          if (latLng != null && bounds != null) {
+            onPositionChanged?.call(latLng, bounds.northEast, bounds.southWest);
           }
         },
         onTap: (_, __) => onSubsidiaryPressedRef.value?.call(null),

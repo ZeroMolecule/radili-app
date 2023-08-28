@@ -1,11 +1,15 @@
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:radili/domain/data/ip_info.dart';
+import 'package:radili/domain/remote/ip_api.dart';
+import 'package:radili/domain/remote/util_api.dart';
 
 class LocationService {
   final Location _location;
+  final IpApi _ipApi;
+  final UtilApi _utilApi;
 
-  LocationService(this._location);
+  LocationService(this._location, this._ipApi, this._utilApi);
 
   Future<bool> isPermissionEnabled() async {
     final permissionStatus = await _location.hasPermission();
@@ -25,28 +29,22 @@ class LocationService {
     return permissionStatus.isGranted && serviceEnabled;
   }
 
-  Future<AppLocation?> getCurrent() async {
+  Future<AppLocation> _getFallback() async {
+    final ip = await _utilApi.getMyIp();
+    final info = await _ipApi.getInfo(ip: ip);
+    return info.toAppLocation();
+  }
+
+  Future<AppLocation> getCurrent() async {
     final isPermissionAllowed = await requestPermissions();
     if (isPermissionAllowed) {
       final data = await _location.getLocation();
-      return data.toAppLocation();
+      final location = data.toAppLocation();
+      if (location != null) {
+        return location;
+      }
     }
-    return null;
-  }
-
-  Stream<AppLocation> watchCurrent() async* {
-    var isPermissionEnabled = await requestPermissions();
-    while (!isPermissionEnabled) {
-      await Future.delayed(const Duration(seconds: 5));
-      isPermissionEnabled = await this.isPermissionEnabled();
-    }
-    final current = await getCurrent();
-    if (current != null) {
-      yield current;
-      yield* _location.onLocationChanged
-          .map((event) => event.toAppLocation())
-          .whereNotNull();
-    }
+    return await _getFallback();
   }
 }
 
@@ -72,6 +70,18 @@ extension _LocationDataExtensions on LocationData {
       accuracy: accuracy ?? 0.0,
       heading: heading ?? 0.0,
       isMock: isMock ?? false,
+    );
+  }
+}
+
+extension _IpInfoExtensions on IpInfo {
+  AppLocation toAppLocation() {
+    return AppLocation(
+      latitude: lat,
+      longitude: lon,
+      accuracy: 0.0,
+      heading: 0.0,
+      isMock: false,
     );
   }
 }

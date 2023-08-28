@@ -31,12 +31,15 @@ class StoresApi extends __StoresApi {
     return Strapi.parseList(response.raw, fromJson: Store.fromJson);
   }
 
-  Future<List<Subsidiary>> getNearbySubsidiaries(LatLng latLng) async {
+  Future<List<Subsidiary>> getNearbySubsidiaries({
+    required LatLng northeast,
+    required LatLng southwest,
+  }) async {
     final response = await _getNearbySubsidiaries(query: {
       'populate[store][populate][0]': 'icon',
       'populate[store][populate][1]': 'cover',
-      'lat': latLng.latitude,
-      'lng': latLng.longitude,
+      'northeast': [northeast.latitude, northeast.longitude].join(','),
+      'southwest': [southwest.latitude, southwest.longitude].join(','),
     });
     return Strapi.parseList(response.raw, fromJson: Subsidiary.fromJson);
   }

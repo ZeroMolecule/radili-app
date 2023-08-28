@@ -19,15 +19,22 @@ class NearbySubsidiariesProvider
   NearbySubsidiariesProvider(this._repository)
       : super(const AsyncValue.data([]));
 
-  Future<void> fetch(LatLng position) async {
+  Future<void> fetch({
+    required LatLng center,
+    required LatLng northeast,
+    required LatLng southwest,
+  }) async {
     state = const AsyncLoading<List<Subsidiary>>().copyWithPrevious(state);
     try {
-      final nearby = await _repository.searchNearbySubsidiaries(position);
+      final nearby = await _repository.searchNearbySubsidiaries(
+        northeast: northeast,
+        southwest: southwest,
+      );
       state = AsyncData(
         [...nearby, ...?state.valueOrNull]
             .distinctBy((e) => e.id)
             .sortedByCompare(
-              (e) => const Distance().distance(e.coordinates, position),
+              (e) => const Distance().distance(e.coordinates, center),
               (a, b) => a.compareTo(b),
             )
             .toList(),
