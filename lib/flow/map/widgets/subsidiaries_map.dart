@@ -115,7 +115,7 @@ class SubsidiariesMap extends HookConsumerWidget {
           indexBuilder: IndexBuilders.computeWithOriginalMarkers,
           calculateAggregatedClusterData: true,
           minimumClusterSize: 2,
-          maxClusterRadius: clusterSize.round(),
+          maxClusterRadius: clusterSize.round() * 3,
           loadingOverlayBuilder: (_) => const SizedBox.shrink(),
           moveMap: (position, zoom) {
             controller.animateTo(dest: position, zoom: zoom);

@@ -31,5 +31,6 @@
   "emailNotificationsDescription": "Upiši Email adresu na koju želiš primati obavijesti:",
   "deleteNotificationSettings": "Obriši postavke",
   "errorAddressRequired": "Validna adresa je obavezna kako bismo znali prikazati trgovine u blizini",
-  "errorPushInvalid": "Push obavijesti nisu omogućene"
+  "errorPushInvalid": "Push obavijesti nisu omogućene",
+  "myLocation": "Moja lokacija"
 }
