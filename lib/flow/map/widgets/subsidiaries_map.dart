@@ -62,18 +62,13 @@ class SubsidiariesMap extends HookConsumerWidget {
       return subsidiaries
           .map(
             (subsidiary) => Marker(
+              key: ValueKey(subsidiary),
               point: subsidiary.coordinates,
               width: markerSize,
               height: markerSize,
               builder: (ctx) => SubsidiaryMarker(
                 subsidiary: subsidiary,
                 markerSize: markerSize,
-                onMarkerPressed: (subsidiary) =>
-                    onSubsidiaryPressedRef.value?.call(subsidiary),
-                onMarkerDoublePressed: (subsidiary) async {
-                  await controller.centerOnPoint(subsidiary.coordinates);
-                  await controller.animatedZoomIn();
-                },
               ),
             ),
           )
@@ -124,6 +119,12 @@ class SubsidiariesMap extends HookConsumerWidget {
             count: markerCount,
             size: clusterSize,
           ),
+          onMarkerTap: (marker) {
+            final key = marker.key;
+            if (key is ValueKey<Subsidiary>) {
+              onSubsidiaryPressed?.call(key.value);
+            }
+          },
         ),
       ],
     );

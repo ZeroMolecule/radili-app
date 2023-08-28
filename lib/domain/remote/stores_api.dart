@@ -38,6 +38,7 @@ class StoresApi extends __StoresApi {
     final response = await _getNearbySubsidiaries(query: {
       'populate[store][populate][0]': 'icon',
       'populate[store][populate][1]': 'cover',
+      'populate[store][populate][2]': 'marker',
       'northeast': [northeast.latitude, northeast.longitude].join(','),
       'southwest': [southwest.latitude, southwest.longitude].join(','),
     });

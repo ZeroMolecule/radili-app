@@ -14,6 +14,7 @@ class Store with _$Store {
     required String slug,
     RemoteAsset? icon,
     RemoteAsset? cover,
+    RemoteAsset? marker,
   }) = _Store;
 
   factory Store.fromJson(Map<String, Object?> json) => _$StoreFromJson(json);
