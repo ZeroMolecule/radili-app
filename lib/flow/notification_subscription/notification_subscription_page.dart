@@ -143,6 +143,7 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
                                 color: Colors.white,
                               ),
                               child: AddressSearch(
+                                isLoading: true,
                                 address: form.control('address').value,
                                 onOptionSelected: (AddressInfo option) {
                                   form.control('address').value = option;

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
+import 'package:radili/util/extensions/iterable_extensions.dart';
 import 'package:retrofit/http.dart';
 
 part 'nominatim_api.g.dart';
@@ -28,8 +29,9 @@ abstract class _NominatimApi {
 class NominatimApi extends __NominatimApi {
   NominatimApi(Dio dio) : super(dio);
 
-  Future<List<AddressInfo>> search({required String address}) {
-    return _search(address: address);
+  Future<List<AddressInfo>> search({required String address}) async {
+    final results = await _search(address: address);
+    return results.distinctBy((it) => it.displayName).toList();
   }
 
   Future<AddressInfo?> reverse({required LatLng position}) {

@@ -16,6 +16,7 @@ import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/navigation/app_router.dart';
 import 'package:radili/providers/address_selected_provider.dart';
+import 'package:radili/providers/location_provider.dart';
 import 'package:radili/providers/nearby_subsidiaries_provider.dart';
 import 'package:radili/widgets/responsive_icon_button.dart';
 
@@ -36,6 +37,7 @@ class MapPage extends HookConsumerWidget {
     final notificationSettings = ref.watch(notificationSubscriptionProvider);
     final subsidiariesNotifier = ref.watch(nearbySubsidiariesProvider.notifier);
     final subsidiaries = ref.watch(nearbySubsidiariesProvider);
+    final location = ref.watch(locationProvider);
     final showSubsidiary = useShowSubsidiaryMarker();
 
     void handleFindNearby(LatLng position, LatLng northeast, LatLng southwest) {
@@ -88,6 +90,7 @@ class MapPage extends HookConsumerWidget {
             child: SafeArea(
               bottom: false,
               child: AddressSearch(
+                isLoading: subsidiaries.isLoading || location.isLoading,
                 address: address,
                 onOptionSelected: addressSelectedNotifier.select,
                 suffix: Row(

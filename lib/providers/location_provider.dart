@@ -16,7 +16,7 @@ class LocationNotifier extends StateNotifier<AsyncValue<AppLocation?>> {
   }
 
   Future<void> _init() async {
-    state = await AsyncValue.guard(_locationService.getCurrent);
+    state = await AsyncValue.guard(_locationService.getFallback);
   }
 
   Future<void> fetch() async {

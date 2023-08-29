@@ -15,9 +15,10 @@ class AddressSearchProvider
   AddressSearchProvider(this._storesRepository)
       : super(const AsyncValue.data([]));
 
-  Future<void> search(String query) async {
-    state = const AsyncLoading<List<AddressInfo>>().copyWithPrevious(state);
-    state = await AsyncValue.guard<List<AddressInfo>>(
+  Stream<AsyncValue<List<AddressInfo>>> search(String query) async* {
+    yield state =
+        const AsyncLoading<List<AddressInfo>>().copyWithPrevious(state);
+    yield state = await AsyncValue.guard<List<AddressInfo>>(
       () => _storesRepository.searchAddress(query),
     );
   }

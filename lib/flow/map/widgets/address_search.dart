@@ -4,17 +4,20 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/hooks/translations_hook.dart';
-import 'package:radili/providers/di/repository_providers.dart';
+import 'package:radili/providers/address_search_provider.dart';
+import 'package:radili/widgets/loading.dart';
 
 class AddressSearch extends HookConsumerWidget {
   final AddressInfo? address;
   final Function(AddressInfo option) onOptionSelected;
   final EdgeInsets padding;
   final Widget? suffix;
+  final bool isLoading;
 
   const AddressSearch({
     Key? key,
     required this.onOptionSelected,
+    this.isLoading = false,
     this.address,
     this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
     this.suffix,
@@ -23,7 +26,8 @@ class AddressSearch extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
-    final repo = ref.watch(storesRepositoryProvider);
+    final addresses = ref.watch(addressSearchProvider);
+    final notifier = ref.watch(addressSearchProvider.notifier);
     final controller = useTextEditingController(
       text: address?.displayName,
     );
@@ -40,7 +44,10 @@ class AddressSearch extends HookConsumerWidget {
         title: Text(option.displayName),
       ),
       debounceDuration: const Duration(seconds: 1),
-      suggestionsCallback: repo.searchAddress,
+      suggestionsCallback: (query) => notifier
+          .search(query)
+          .firstWhere((element) => !element.isLoading)
+          .then((value) => value.valueOrNull ?? []),
       loadingBuilder: (_) => const SizedBox.shrink(),
       errorBuilder: (_, __) => const SizedBox.shrink(),
       noItemsFoundBuilder: (_) => const SizedBox.shrink(),
@@ -57,7 +64,15 @@ class AddressSearch extends HookConsumerWidget {
           );
         },
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.search),
+          prefixIcon: isLoading || addresses.isLoading
+              ? const SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: Loading(
+                    constraints: BoxConstraints(maxWidth: 36),
+                  ),
+                )
+              : const Icon(Icons.search),
           hintText: t.mapSearchHint,
           border: InputBorder.none,
           hoverColor: Colors.transparent,

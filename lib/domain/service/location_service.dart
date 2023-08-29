@@ -29,7 +29,7 @@ class LocationService {
     return permissionStatus.isGranted && serviceEnabled;
   }
 
-  Future<AppLocation> _getFallback() async {
+  Future<AppLocation> getFallback() async {
     final location = await _ipApi.getLocation();
     return AppLocation.fromLatLng(location);
   }
@@ -43,7 +43,7 @@ class LocationService {
         return location;
       }
     }
-    return await _getFallback();
+    return await getFallback();
   }
 }
 

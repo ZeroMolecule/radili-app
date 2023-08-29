@@ -72,6 +72,7 @@ dependencies:
   flutter_map_marker_cluster:
     git:
       url: https://github.com/andreystavitsky/flutter_map_marker_cluster.git
+  lottie: ^2.6.0
 
 dev_dependencies:
   flutter_test:
@@ -106,6 +107,7 @@ flutter_gen:
 
   integrations:
     flutter_svg: true
+    lottie: true
 
   colors:
     inputs:

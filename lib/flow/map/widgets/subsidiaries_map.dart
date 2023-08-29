@@ -41,6 +41,7 @@ class SubsidiariesMap extends HookConsumerWidget {
     final controller = useMapControllerAnimated();
     final cameraBounds = useState<LatLngBounds?>(null);
     final location = ref.watch(locationProvider);
+    final isLoading = location.isLoading && !location.hasValue;
 
     useEffect(() {
       if (position != null) {
@@ -95,42 +96,44 @@ class SubsidiariesMap extends HookConsumerWidget {
         onTap: (_, __) => onSubsidiaryPressed?.call(null),
       ),
       children: [
-        TileLayer(
-          urlTemplate:
-              'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
-          subdomains: const ['a', 'b', 'c', 'd'],
-          tileDisplay: const TileDisplay.instantaneous(),
-        ),
-        MarkerClusterLayerWidget(
-          options: MarkerClusterLayerOptions(
-            maxClusterRadius: clusterRadius,
-            size: const Size(clusterSize, clusterSize),
-            anchorPos: AnchorPos.align(AnchorAlign.center),
-            fitBoundsOptions: const FitBoundsOptions(
-              padding: EdgeInsets.all(50),
-              maxZoom: 15,
-            ),
-            animationsOptions: const AnimationsOptions(
-              spiderfy: Duration(milliseconds: 0),
-              centerMarker: Duration(milliseconds: 0),
-              fitBound: Duration(milliseconds: 0),
-              zoom: Duration(milliseconds: 0),
-            ),
-            markers: markers,
-            spiderfyCluster: false,
-            builder: (_, markers) => MarkerCluster(
-              count: markers.length,
-              size: clusterSize,
-            ),
-            centerMarkerOnClick: true,
-            onMarkerTap: (marker) {
-              final key = marker.key;
-              if (key is ValueKey<Subsidiary>) {
-                onSubsidiaryPressed?.call(key.value);
-              }
-            },
+        if (!isLoading)
+          TileLayer(
+            urlTemplate:
+                'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
+            subdomains: const ['a', 'b', 'c', 'd'],
+            tileDisplay: const TileDisplay.instantaneous(),
           ),
-        ),
+        if (!isLoading)
+          MarkerClusterLayerWidget(
+            options: MarkerClusterLayerOptions(
+              maxClusterRadius: clusterRadius,
+              size: const Size(clusterSize, clusterSize),
+              anchorPos: AnchorPos.align(AnchorAlign.center),
+              fitBoundsOptions: const FitBoundsOptions(
+                padding: EdgeInsets.all(50),
+                maxZoom: 15,
+              ),
+              animationsOptions: const AnimationsOptions(
+                spiderfy: Duration(milliseconds: 0),
+                centerMarker: Duration(milliseconds: 0),
+                fitBound: Duration(milliseconds: 0),
+                zoom: Duration(milliseconds: 0),
+              ),
+              markers: markers,
+              spiderfyCluster: false,
+              builder: (_, markers) => MarkerCluster(
+                count: markers.length,
+                size: clusterSize,
+              ),
+              centerMarkerOnClick: true,
+              onMarkerTap: (marker) {
+                final key = marker.key;
+                if (key is ValueKey<Subsidiary>) {
+                  onSubsidiaryPressed?.call(key.value);
+                }
+              },
+            ),
+          ),
       ],
     );
   }
