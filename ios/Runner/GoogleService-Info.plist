@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>51796373713-5ntoolqhe469o92osko9u09fm9nedgsn.apps.googleusercontent.com</string>
+	<string>51796373713-jiei1db0vbffk36li1ud7q7lo3smjef4.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.51796373713-5ntoolqhe469o92osko9u09fm9nedgsn</string>
+	<string>com.googleusercontent.apps.51796373713-jiei1db0vbffk36li1ud7q7lo3smjef4</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDNCrw7JL-BYLp_yixPRb9ptUsloooWJ7o</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.zeromolecule.radili.radili</string>
+	<string>com.zeromolecule.radili</string>
 	<key>PROJECT_ID</key>
 	<string>radi-li</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:51796373713:ios:4acc7a448f0044281015f0</string>
+	<string>1:51796373713:ios:f4094eb6b212792f1015f0</string>
 </dict>
 </plist>

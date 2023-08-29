@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:51796373713:android:7174a4db7f25b9491015f0",
+        "mobilesdk_app_id": "1:51796373713:android:c22d66829f899a961015f0",
         "android_client_info": {
-          "package_name": "com.zeromolecule.radili.radili"
+          "package_name": "com.zeromolecule.radili"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "51796373713-r3cb0i233pp45v34fnbsh825sei50par.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "51796373713-5ntoolqhe469o92osko9u09fm9nedgsn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zeromolecule.radili.radili"
+              }
             }
           ]
         }
