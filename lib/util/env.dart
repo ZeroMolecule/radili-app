@@ -14,9 +14,6 @@ abstract class Env {
   @EnviedField(varName: 'NOMINATIM_API_URL')
   static const String nominatimApiUrl = _Env.nominatimApiUrl;
 
-  @EnviedField(varName: 'IP_API_URL')
-  static const String ipApiUrl = _Env.ipApiUrl;
-
   @EnviedField(varName: 'VAPID_KEY')
   static const String vapidKey = _Env.vapidKey;
 
@@ -33,7 +30,6 @@ abstract class Env {
         API_KEY=$apiKey
         API_URL=$apiUrl
         NOMINATIM_API_URL=$nominatimApiUrl
-        IP_API_URL=$ipApiUrl
         VAPID_KEY=$vapidKey
         SENTRY_DSN=$sentryDsn
         SENTRY_ENVIRONMENT=$sentryEnvironment

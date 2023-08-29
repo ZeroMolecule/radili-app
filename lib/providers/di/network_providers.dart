@@ -14,10 +14,6 @@ final _dioProvider = Provider<Dio>((ref) {
     ..interceptors.add(AuthorizationInterceptor());
 });
 
-final _ipDioProvider = Provider<Dio>((ref) {
-  return Dio()..options = BaseOptions(baseUrl: Env.ipApiUrl);
-});
-
 final _nominatimDioProvider = Provider<Dio>((ref) {
   final dio = Dio()..options = BaseOptions(baseUrl: Env.nominatimApiUrl);
   return dio;
@@ -40,5 +36,5 @@ final utilApiProvider = Provider<UtilApi>((ref) {
 });
 
 final ipApiProvider = Provider<IpApi>((ref) {
-  return IpApi(ref.watch(_ipDioProvider));
+  return IpApi(ref.watch(_dioProvider));
 });

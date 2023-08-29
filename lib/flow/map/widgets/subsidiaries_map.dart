@@ -36,6 +36,7 @@ class SubsidiariesMap extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const markerSize = 45.0;
     const clusterSize = 50.0;
+    const clusterRadius = 90;
 
     final controller = useMapControllerAnimated();
     final location = ref.watch(locationProvider);
@@ -73,7 +74,6 @@ class SubsidiariesMap extends HookConsumerWidget {
     return FlutterMap(
       mapController: controller.mapController,
       options: MapOptions(
-        maxZoom: 17,
         minZoom: 8,
         bounds: LatLngBounds(
           const LatLng(42.3649, 13.3836),
@@ -97,14 +97,21 @@ class SubsidiariesMap extends HookConsumerWidget {
         ),
         MarkerClusterLayerWidget(
           options: MarkerClusterLayerOptions(
-            maxClusterRadius: clusterSize.round() * 3,
+            maxClusterRadius: clusterRadius,
             size: const Size(clusterSize, clusterSize),
             anchorPos: AnchorPos.align(AnchorAlign.center),
             fitBoundsOptions: const FitBoundsOptions(
               padding: EdgeInsets.all(50),
               maxZoom: 15,
             ),
+            animationsOptions: const AnimationsOptions(
+              spiderfy: Duration(milliseconds: 0),
+              centerMarker: Duration(milliseconds: 0),
+              fitBound: Duration(milliseconds: 0),
+              zoom: Duration(milliseconds: 0),
+            ),
             markers: markers,
+            spiderfyCluster: false,
             builder: (_, markers) => MarkerCluster(
               count: markers.length,
               size: clusterSize,

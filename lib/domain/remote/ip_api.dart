@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:radili/domain/data/ip_info.dart';
+import 'package:latlong2/latlong.dart' hide Path;
+import 'package:radili/domain/remote/strapi/strapi.dart';
+import 'package:radili/domain/remote/strapi/strapi_response.dart';
 import 'package:retrofit/http.dart';
 
 part 'ip_api.g.dart';
@@ -8,17 +10,16 @@ part 'ip_api.g.dart';
 abstract class _IpApi {
   factory _IpApi(Dio dio) = __IpApi;
 
-  @GET('/{ip}')
-  Future<IpInfo> _getInfo({
-    @Path('ip') required String ip,
-    @Query('fields') String fields = 'lat,lon',
-  });
+  @GET('/ip-location/lookup')
+  Future<StrapiResponse> _getLocation();
 }
 
 class IpApi extends __IpApi {
   IpApi(Dio dio) : super(dio);
 
-  Future<IpInfo> getInfo({required String ip}) {
-    return _getInfo(ip: ip);
+  Future<LatLng> getLocation() async {
+    final response = await _getLocation();
+    final json = Strapi.parseData(response.raw);
+    return LatLng(json['lat'], json['lng']);
   }
 }

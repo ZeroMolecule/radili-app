@@ -30,9 +30,8 @@ class LocationService {
   }
 
   Future<AppLocation> _getFallback() async {
-    final ip = await _utilApi.getMyIp();
-    final info = await _ipApi.getInfo(ip: ip);
-    return info.toAppLocation();
+    final location = await _ipApi.getLocation();
+    return AppLocation.fromLatLng(location);
   }
 
   Future<AppLocation> getCurrent() async {
