@@ -3,6 +3,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
 import 'package:radili/providers/di/repository_providers.dart';
+import 'package:radili/util/extensions/iterable_extensions.dart';
 
 final nearbySubsidiariesProvider = StateNotifierProvider.autoDispose<
     NearbySubsidiariesProvider, AsyncValue<List<Subsidiary>>>((ref) {
@@ -28,7 +29,9 @@ class NearbySubsidiariesProvider
         northeast: northeast,
         southwest: southwest,
       );
-      state = AsyncData(nearby);
+      state = AsyncData(
+        [...nearby, ...?state.valueOrNull].distinctBy((e) => e.id).toList(),
+      );
     } catch (e, stack) {
       state = AsyncError<List<Subsidiary>>(e, stack).copyWithPrevious(state);
     }

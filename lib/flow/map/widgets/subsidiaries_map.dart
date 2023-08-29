@@ -39,6 +39,7 @@ class SubsidiariesMap extends HookConsumerWidget {
     const clusterRadius = 90;
 
     final controller = useMapControllerAnimated();
+    final cameraBounds = useState<LatLngBounds?>(null);
     final location = ref.watch(locationProvider);
 
     useEffect(() {
@@ -56,6 +57,10 @@ class SubsidiariesMap extends HookConsumerWidget {
 
     final markers = useMemoized(() {
       return subsidiaries
+          .where((it) {
+            final bounds = cameraBounds.value;
+            return bounds == null || bounds.contains(it.coordinates);
+          })
           .map(
             (subsidiary) => Marker(
               key: ValueKey(subsidiary),
@@ -69,7 +74,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             ),
           )
           .toList();
-    }, [subsidiaries]);
+    }, [subsidiaries, cameraBounds.value]);
 
     return FlutterMap(
       mapController: controller.mapController,
@@ -80,6 +85,7 @@ class SubsidiariesMap extends HookConsumerWidget {
           const LatLng(46.5547, 19.4481),
         ),
         onPositionChanged: (position, _) {
+          cameraBounds.value = position.bounds;
           final latLng = position.center;
           final bounds = position.bounds;
           if (latLng != null && bounds != null) {

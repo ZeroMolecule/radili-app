@@ -85,27 +85,30 @@ class MapPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            child: AddressSearch(
-              address: address,
-              onOptionSelected: addressSelectedNotifier.select,
-              suffix: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ResponsiveIconButton(
-                    icon: const Icon(Icons.my_location_outlined),
-                    label: t.myLocation,
-                    onPressed: handleUseMyCurrentLocation,
-                  ),
-                  ResponsiveIconButton(
-                    onPressed: handleEditNotificationSubscription,
-                    icon: Icon(
-                      notificationSettings.valueOrNull != null
-                          ? Icons.notifications_active
-                          : Icons.notifications_outlined,
+            child: SafeArea(
+              bottom: false,
+              child: AddressSearch(
+                address: address,
+                onOptionSelected: addressSelectedNotifier.select,
+                suffix: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ResponsiveIconButton(
+                      icon: const Icon(Icons.my_location_outlined),
+                      label: t.myLocation,
+                      onPressed: handleUseMyCurrentLocation,
                     ),
-                    label: t.notifyMe,
-                  ),
-                ],
+                    ResponsiveIconButton(
+                      onPressed: handleEditNotificationSubscription,
+                      icon: Icon(
+                        notificationSettings.valueOrNull != null
+                            ? Icons.notifications_active
+                            : Icons.notifications_outlined,
+                      ),
+                      label: t.notifyMe,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
