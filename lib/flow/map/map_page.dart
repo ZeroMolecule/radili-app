@@ -42,11 +42,13 @@ class MapPage extends HookConsumerWidget {
 
     void handleFindNearby(LatLng position, LatLng northeast, LatLng southwest) {
       debouncer.debounce(
-        () => subsidiariesNotifier.fetch(
-          center: position,
-          northeast: northeast,
-          southwest: southwest,
-        ),
+        () => subsidiariesNotifier
+            .fetch(
+              center: position,
+              northeast: northeast,
+              southwest: southwest,
+            )
+            .firstWhere((it) => it is! AsyncLoading),
       );
     }
 

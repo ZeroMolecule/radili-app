@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:radili/domain/data/remote_asset.dart';
+import 'package:radili/domain/local/collections/store_collection.dart';
 
 part 'store.freezed.dart';
 part 'store.g.dart';
@@ -18,4 +19,13 @@ class Store with _$Store {
   }) = _Store;
 
   factory Store.fromJson(Map<String, Object?> json) => _$StoreFromJson(json);
+
+  factory Store.fromCollection(StoreCollection collection) => Store(
+        id: collection.id,
+        name: collection.name,
+        slug: collection.slug,
+        icon: collection.icon,
+        cover: collection.cover,
+        marker: collection.marker,
+      );
 }

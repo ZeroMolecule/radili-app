@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/store.dart';
 import 'package:radili/domain/data/workhours.dart';
+import 'package:radili/domain/local/collections/subsidiary_collection.dart';
 
 part 'subsidiary.freezed.dart';
 part 'subsidiary.g.dart';
@@ -23,6 +24,18 @@ class Subsidiary with _$Subsidiary {
 
   factory Subsidiary.fromJson(Map<String, Object?> json) =>
       _$SubsidiaryFromJson(json);
+
+  factory Subsidiary.fromCollection(SubsidiaryCollection collection) =>
+      Subsidiary(
+        id: collection.id,
+        label: collection.label,
+        address: collection.address,
+        isWorkingOnSunday: collection.isWorkingOnSunday,
+        store: Store.fromCollection(collection.store),
+        workHours: collection.workHours,
+        lat: collection.lat,
+        lng: collection.lng,
+      );
 
   LatLng get coordinates => LatLng(lat, lng);
 }

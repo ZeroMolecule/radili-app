@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:radili/domain/local/app_hive.dart';
 import 'package:radili/firebase_options.dart';
 import 'package:radili/generated/l10n.dart';
 import 'package:radili/providers/di/navigation_providers.dart';
@@ -40,6 +41,7 @@ Future<void> _beforeRun() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Env.init();
+  await AppHive.init();
   FlutterNativeSplash.remove();
 }
 

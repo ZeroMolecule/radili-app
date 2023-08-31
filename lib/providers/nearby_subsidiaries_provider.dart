@@ -4,6 +4,7 @@ import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
 import 'package:radili/providers/di/repository_providers.dart';
 import 'package:radili/util/extensions/iterable_extensions.dart';
+import 'package:rxdart/rxdart.dart';
 
 final nearbySubsidiariesProvider = StateNotifierProvider.autoDispose<
     NearbySubsidiariesProvider, AsyncValue<List<Subsidiary>>>((ref) {
@@ -14,26 +15,41 @@ final nearbySubsidiariesProvider = StateNotifierProvider.autoDispose<
 class NearbySubsidiariesProvider
     extends StateNotifier<AsyncValue<List<Subsidiary>>> {
   final StoresRepository _repository;
+  final CompositeSubscription _subscriptions = CompositeSubscription();
 
-  NearbySubsidiariesProvider(this._repository)
-      : super(const AsyncValue.data([]));
+  NearbySubsidiariesProvider(this._repository) : super(const AsyncLoading()) {
+    _init();
+  }
 
-  Future<void> fetch({
+  Future<void> _init() async {
+    _subscriptions.add(_repository.watchSubsidiaries().listen((event) {
+      state = AsyncData(event);
+    }));
+  }
+
+  Stream<AsyncValue<List<Subsidiary>>> fetch({
     required LatLng center,
     required LatLng northeast,
     required LatLng southwest,
-  }) async {
-    state = const AsyncLoading<List<Subsidiary>>().copyWithPrevious(state);
-    try {
-      final nearby = await _repository.searchNearbySubsidiaries(
-        northeast: northeast,
-        southwest: southwest,
-      );
-      state = AsyncData(
-        [...nearby, ...?state.valueOrNull].distinctBy((e) => e.id).toList(),
-      );
-    } catch (e, stack) {
-      state = AsyncError<List<Subsidiary>>(e, stack).copyWithPrevious(state);
-    }
+  }) async* {
+    yield state =
+        const AsyncLoading<List<Subsidiary>>().copyWithPrevious(state);
+    yield state = await AsyncValue.guard(
+      () async {
+        final subsidiaries = await _repository.searchNearbySubsidiaries(
+          northeast: northeast,
+          southwest: southwest,
+        );
+        return [...?state.valueOrNull, ...subsidiaries]
+            .distinctBy((it) => it.id)
+            .toList();
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _subscriptions.dispose();
+    super.dispose();
   }
 }
