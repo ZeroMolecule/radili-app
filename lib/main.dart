@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:radili/domain/local/app_hive.dart';
@@ -35,6 +36,7 @@ void main() async {
 }
 
 Future<void> _beforeRun() async {
+  usePathUrlStrategy();
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
   await Firebase.initializeApp(

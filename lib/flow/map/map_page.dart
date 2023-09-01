@@ -23,7 +23,14 @@ import 'package:radili/widgets/responsive_icon_button.dart';
 
 @RoutePage()
 class MapPage extends HookConsumerWidget {
-  const MapPage({super.key});
+  final bool openSunday;
+  final bool openNow;
+
+  const MapPage({
+    super.key,
+    @queryParam this.openSunday = false,
+    @queryParam this.openNow = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +40,9 @@ class MapPage extends HookConsumerWidget {
     final debouncer = useDebouncer();
     final address = ref.watch(addressSelectedProvider);
     final selectedSubsidiary = useState<Subsidiary?>(null);
-    final query = useState(const NearbySubsidiariesQuery());
+    final query = useState(
+      NearbySubsidiariesQuery(openNow: openNow, openSunday: openSunday),
+    );
 
     final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
     final notificationSettings = ref.watch(notificationSubscriptionProvider);
@@ -79,7 +88,6 @@ class MapPage extends HookConsumerWidget {
     }
 
     useValueChanged<NearbySubsidiariesQuery?, void>(query.value, (_, __) {
-      print('Query: ${query.value}');
       subsidiariesNotifier.watch(query.value);
     });
 
@@ -143,9 +151,7 @@ class MapPage extends HookConsumerWidget {
                   label: Text('Otvoreno ovu nedjelju'),
                   selected: query.value.openSunday,
                   onSelected: (value) {
-                    print('Query before: ${query.value}');
                     query.value = query.value.copyWith(openSunday: value);
-                    print('Query after: ${query.value}');
                   },
                 ),
               ],
