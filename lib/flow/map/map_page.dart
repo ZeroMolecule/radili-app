@@ -141,14 +141,14 @@ class MapPage extends HookConsumerWidget {
               subsidiary: selectedSubsidiary.value,
               actions: [
                 ChoiceChip(
-                  label: Text('Otvoreno danas'),
+                  label: Text(t.openNow),
                   selected: query.value.openNow,
                   onSelected: (value) {
                     query.value = query.value.copyWith(openNow: value);
                   },
                 ),
                 ChoiceChip(
-                  label: Text('Otvoreno ovu nedjelju'),
+                  label: Text(t.openSunday),
                   selected: query.value.openSunday,
                   onSelected: (value) {
                     query.value = query.value.copyWith(openSunday: value);

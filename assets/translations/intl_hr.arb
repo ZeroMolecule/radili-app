@@ -32,5 +32,7 @@
   "deleteNotificationSettings": "Obriši postavke",
   "errorAddressRequired": "Validna adresa je obavezna kako bismo znali prikazati trgovine u blizini",
   "errorPushInvalid": "Push obavijesti nisu omogućene",
-  "myLocation": "Moja lokacija"
+  "myLocation": "Moja lokacija",
+  "openNow": "Otvoreno danas",
+  "openSunday": "Ovoreno ovu nedjelju"
 }
