@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -55,8 +57,9 @@ class SubsidiariesMap extends HookConsumerWidget {
 
     useEffect(() {
       final latLng = location.valueOrNull?.latLng;
-      if (latLng != null) {
-        controller.mapControllerOrNull?.move(latLng, 13);
+      final mapController = controller.mapControllerOrNull;
+      if (latLng != null && mapController != null) {
+        mapController.move(latLng, 13);
       }
       return null;
     }, [location, controller]);
@@ -90,6 +93,27 @@ class SubsidiariesMap extends HookConsumerWidget {
       [controller.mapControllerOrNull?.zoom],
     );
 
+    void handleMove(
+      LatLng latLng, {
+      double? zoom,
+      bool autoZoom = true,
+      bool animate = true,
+    }) {
+      final mapController = controller.mapControllerOrNull;
+      if (mapController != null) {
+        final currentZoom = mapController.zoom;
+        if (zoom == null && autoZoom) {
+          zoom = min(currentZoom * 1.2, 18.0);
+        }
+
+        if (animate) {
+          controller.animateTo(dest: latLng, zoom: zoom);
+        } else {
+          mapController.move(latLng, zoom ?? currentZoom);
+        }
+      }
+    }
+
     return FlutterMap(
       mapController: controller.mapController,
       options: MapOptions(
@@ -107,6 +131,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             onPositionChanged?.call(latLng, bounds.northEast, bounds.southWest);
           }
         },
+        enableMultiFingerGestureRace: true,
         onTap: (_, __) => onSubsidiaryPressed?.call(null),
       ),
       children: [
@@ -145,6 +170,9 @@ class SubsidiariesMap extends HookConsumerWidget {
                 if (key is ValueKey<Subsidiary>) {
                   onSubsidiaryPressed?.call(key.value);
                 }
+              },
+              onClusterTap: (node) {
+                handleMove(node.bounds.center);
               },
             ),
           ),
