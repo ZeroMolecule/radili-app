@@ -21,6 +21,7 @@ class SubsidiariesMap extends HookConsumerWidget {
   final LatLng? position;
   final Subsidiary? subsidiary;
   final double zoom;
+  final List<Widget>? actions;
 
   const SubsidiariesMap({
     Key? key,
@@ -30,6 +31,7 @@ class SubsidiariesMap extends HookConsumerWidget {
     this.onPositionChanged,
     this.onSubsidiaryPressed,
     this.subsidiary,
+    this.actions,
   }) : super(key: key);
 
   @override
@@ -133,6 +135,11 @@ class SubsidiariesMap extends HookConsumerWidget {
                 }
               },
             ),
+          ),
+        if (!isLoading && actions != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 13, right: 13, top: 13),
+            child: Wrap(runSpacing: 12, spacing: 12, children: actions!),
           ),
       ],
     );

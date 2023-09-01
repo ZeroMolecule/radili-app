@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
@@ -32,6 +33,7 @@ class MapPage extends HookConsumerWidget {
     final debouncer = useDebouncer();
     final address = ref.watch(addressSelectedProvider);
     final selectedSubsidiary = useState<Subsidiary?>(null);
+    final query = useState(const NearbySubsidiariesQuery());
 
     final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
     final notificationSettings = ref.watch(notificationSubscriptionProvider);
@@ -75,6 +77,11 @@ class MapPage extends HookConsumerWidget {
         showSubsidiary(subsidiary);
       }
     }
+
+    useValueChanged<NearbySubsidiariesQuery?, void>(query.value, (_, __) {
+      print('Query: ${query.value}');
+      subsidiariesNotifier.watch(query.value);
+    });
 
     return Scaffold(
       body: Column(
@@ -124,6 +131,24 @@ class MapPage extends HookConsumerWidget {
               onPositionChanged: handleFindNearby,
               onSubsidiaryPressed: onSubsidiarySelected,
               subsidiary: selectedSubsidiary.value,
+              actions: [
+                ChoiceChip(
+                  label: Text('Otvoreno danas'),
+                  selected: query.value.openNow,
+                  onSelected: (value) {
+                    query.value = query.value.copyWith(openNow: value);
+                  },
+                ),
+                ChoiceChip(
+                  label: Text('Otvoreno ovu nedjelju'),
+                  selected: query.value.openSunday,
+                  onSelected: (value) {
+                    print('Query before: ${query.value}');
+                    query.value = query.value.copyWith(openSunday: value);
+                    print('Query after: ${query.value}');
+                  },
+                ),
+              ],
             ),
           ),
         ],

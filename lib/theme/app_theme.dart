@@ -14,6 +14,8 @@ class AppTheme {
       primaryContainer: AppColors.background,
       surface: Colors.white,
       surfaceTint: Colors.white,
+      onBackground: AppColors.dynamicBlack,
+      surfaceVariant: AppColors.arcLight,
     );
     return AppTheme._(
       _themeData.copyWith(
@@ -78,6 +80,30 @@ class AppTheme {
         cardTheme: CardTheme(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        chipTheme: ChipThemeData(
+          side: BorderSide.none,
+          shape: RoundedRectangleBorder(
+            side: BorderSide.none,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          labelStyle: _textTheme.labelSmall!.copyWith(
+            fontWeight: FontWeight.w400,
+          ),
+          shadowColor: AppColors.millionGrey.withOpacity(0.2),
+          elevation: 4,
+          labelPadding: const EdgeInsets.all(4),
+          selectedColor: colorScheme.surfaceVariant,
+          surfaceTintColor: colorScheme.surfaceVariant,
+          checkmarkColor: colorScheme.primary,
+          color: MaterialStateProperty.resolveWith(
+            (states) {
+              if (states.contains(MaterialState.selected)) {
+                return colorScheme.surfaceVariant;
+              }
+              return colorScheme.surface;
+            },
           ),
         ),
       ),

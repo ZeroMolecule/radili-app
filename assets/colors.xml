@@ -4,8 +4,11 @@
     <color name="darkBlue">#0060D2</color>
     <color name="backgroundGreen">#00DC3E</color>
     <color name="darkGreen">#008B2F</color>
-    <color name="background">#F6F6F6</color>
+    <color name="background">#F2F2F2</color>
     <color name="lightGrey">#A4A4A4</color>
     <color name="darkGrey">#DCDCDC</color>
+    <color name="dynamicBlack">#1E1E1E</color>
     <color name="semanticRed">#E72245</color>
+    <color name="arcLight">#CCE3FF</color>
+    <color name="millionGrey">#999999</color>
 </resources>
