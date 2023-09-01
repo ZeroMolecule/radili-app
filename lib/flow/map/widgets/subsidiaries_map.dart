@@ -9,6 +9,7 @@ import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/providers/location_provider.dart';
+import 'package:radili/util/extensions/map_extensions.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
   final List<Subsidiary> subsidiaries;
@@ -46,16 +47,18 @@ class SubsidiariesMap extends HookConsumerWidget {
     final isLoading = location.isLoading && !location.hasValue;
 
     useEffect(() {
-      if (position != null) {
+      if (position != null && controller.isAttached) {
         controller.animateTo(dest: position!);
       }
       return null;
     }, [position, controller]);
 
     useEffect(() {
-      if (location.valueOrNull != null) {
-        controller.mapController.move(location.value!.latLng, 13);
+      final latLng = location.valueOrNull?.latLng;
+      if (latLng != null) {
+        controller.mapControllerOrNull?.move(latLng, 13);
       }
+      return null;
     }, [location, controller]);
 
     final markers = useMemoized(() {
@@ -79,10 +82,19 @@ class SubsidiariesMap extends HookConsumerWidget {
           .toList();
     }, [subsidiaries, cameraBounds.value]);
 
+    final spiderfyCluster = useMemoized(
+      () {
+        final zoom = controller.mapControllerOrNull?.zoom;
+        return zoom != null && zoom > 17;
+      },
+      [controller.mapControllerOrNull?.zoom],
+    );
+
     return FlutterMap(
       mapController: controller.mapController,
       options: MapOptions(
         minZoom: 8,
+        maxZoom: 18,
         bounds: LatLngBounds(
           const LatLng(42.3649, 13.3836),
           const LatLng(46.5547, 19.4481),
@@ -122,7 +134,7 @@ class SubsidiariesMap extends HookConsumerWidget {
                 zoom: Duration(milliseconds: 0),
               ),
               markers: markers,
-              spiderfyCluster: false,
+              spiderfyCluster: spiderfyCluster,
               builder: (_, markers) => MarkerCluster(
                 count: markers.length,
                 size: clusterSize,
