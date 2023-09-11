@@ -16,6 +16,7 @@ import 'package:radili/hooks/debouncer_hook.dart';
 import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/navigation/app_router.dart';
+import 'package:radili/providers/address_search_provider.dart';
 import 'package:radili/providers/address_selected_provider.dart';
 import 'package:radili/providers/location_provider.dart';
 import 'package:radili/providers/nearby_subsidiaries_provider.dart';
@@ -37,8 +38,11 @@ class MapPage extends HookConsumerWidget {
     final t = useTranslations();
     final router = useRouter();
     final colors = useColorScheme();
-    final debouncer = useDebouncer();
+    final debouncer = useDebouncer(
+      debounceTime: const Duration(milliseconds: 400),
+    );
     final address = ref.watch(addressSelectedProvider);
+    final addresses = ref.watch(addressSearchProvider);
     final selectedSubsidiary = useState<Subsidiary?>(null);
     final query = useState(
       NearbySubsidiariesQuery(openNow: openNow, openSunday: openSunday),
@@ -53,13 +57,11 @@ class MapPage extends HookConsumerWidget {
 
     void handleFindNearby(LatLng position, LatLng northeast, LatLng southwest) {
       debouncer.debounce(
-        () => subsidiariesNotifier
-            .fetch(
-              center: position,
-              northeast: northeast,
-              southwest: southwest,
-            )
-            .firstWhere((it) => it is! AsyncLoading),
+        () => subsidiariesNotifier.fetch(
+          center: position,
+          northeast: northeast,
+          southwest: southwest,
+        ),
       );
     }
 
@@ -107,7 +109,9 @@ class MapPage extends HookConsumerWidget {
             child: SafeArea(
               bottom: false,
               child: AddressSearch(
-                isLoading: subsidiaries.isLoading || location.isLoading,
+                isLoading: subsidiaries.isLoading ||
+                    location.isLoading ||
+                    addresses.isLoading,
                 address: address,
                 onOptionSelected: addressSelectedNotifier.select,
                 suffix: Row(
@@ -144,14 +148,14 @@ class MapPage extends HookConsumerWidget {
                   label: Text(t.openNow),
                   selected: query.value.openNow,
                   onSelected: (value) {
-                    query.value = query.value.copyWith(openNow: value);
+                    query.value = NearbySubsidiariesQuery(openNow: value);
                   },
                 ),
                 ChoiceChip(
                   label: Text(t.openSunday),
                   selected: query.value.openSunday,
                   onSelected: (value) {
-                    query.value = query.value.copyWith(openSunday: value);
+                    query.value = NearbySubsidiariesQuery(openSunday: value);
                   },
                 ),
               ],

@@ -13,6 +13,7 @@ class AddressSearch extends HookConsumerWidget {
   final EdgeInsets padding;
   final Widget? suffix;
   final bool isLoading;
+  final bool showSearchIcon;
 
   const AddressSearch({
     Key? key,
@@ -21,6 +22,7 @@ class AddressSearch extends HookConsumerWidget {
     this.address,
     this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
     this.suffix,
+    this.showSearchIcon = true,
   }) : super(key: key);
 
   @override
@@ -38,6 +40,21 @@ class AddressSearch extends HookConsumerWidget {
         controller.text = name;
       }
     });
+
+    final Widget? prefix;
+    if (isLoading) {
+      prefix = const SizedBox(
+        width: 36,
+        height: 36,
+        child: Loading(
+          constraints: BoxConstraints(maxWidth: 36),
+        ),
+      );
+    } else if (showSearchIcon) {
+      prefix = const Icon(Icons.search);
+    } else {
+      prefix = null;
+    }
 
     return TypeAheadField<AddressInfo>(
       itemBuilder: (_, AddressInfo option) => ListTile(
@@ -57,6 +74,7 @@ class AddressSearch extends HookConsumerWidget {
       },
       textFieldConfiguration: TextFieldConfiguration(
         controller: controller,
+        onTapOutside: (_) => FocusScope.of(context).unfocus(),
         onTap: () {
           controller.selection = TextSelection(
             baseOffset: 0,
@@ -64,19 +82,10 @@ class AddressSearch extends HookConsumerWidget {
           );
         },
         decoration: InputDecoration(
-          prefixIcon: isLoading || addresses.isLoading
-              ? const SizedBox(
-                  width: 36,
-                  height: 36,
-                  child: Loading(
-                    constraints: BoxConstraints(maxWidth: 36),
-                  ),
-                )
-              : const Icon(Icons.search),
+          prefixIcon: prefix,
           hintText: t.mapSearchHint,
           border: InputBorder.none,
           hoverColor: Colors.transparent,
-          contentPadding: padding,
           suffixIcon: suffix,
         ),
         style: const TextStyle(fontSize: 16),

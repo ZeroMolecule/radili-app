@@ -36,14 +36,13 @@ class NearbySubsidiariesProvider
     );
   }
 
-  Stream<AsyncValue<List<Subsidiary>>> fetch({
+  Future<void> fetch({
     required LatLng center,
     required LatLng northeast,
     required LatLng southwest,
-  }) async* {
-    yield state =
-        const AsyncLoading<List<Subsidiary>>().copyWithPrevious(state);
-    yield state = await AsyncValue.guard(
+  }) async {
+    state = const AsyncLoading<List<Subsidiary>>().copyWithPrevious(state);
+    state = await AsyncValue.guard(
       () async {
         final subsidiaries = await _repository.searchNearbySubsidiaries(
           northeast: northeast,

@@ -1,8 +1,11 @@
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
 import 'package:radili/domain/data/ip_info.dart';
 import 'package:radili/domain/remote/ip_api.dart';
 import 'package:radili/domain/remote/util_api.dart';
+
+const _zgLatLng = LatLng(45.815399, 15.966568);
 
 class LocationService {
   final Location _location;
@@ -30,8 +33,7 @@ class LocationService {
   }
 
   Future<AppLocation> getFallback() async {
-    final location = await _ipApi.getLocation();
-    return AppLocation.fromLatLng(location);
+    return AppLocation.fromLatLng(_zgLatLng);
   }
 
   Future<AppLocation> getCurrent() async {

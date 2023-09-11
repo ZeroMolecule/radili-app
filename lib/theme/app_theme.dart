@@ -11,19 +11,22 @@ class AppTheme {
     const colorScheme = ColorScheme.light(
       primary: AppColors.darkBlue,
       background: Colors.white,
-      primaryContainer: AppColors.background,
+      primaryContainer: AppColors.bleachedSilk,
       surface: Colors.white,
       surfaceTint: Colors.white,
+      onSurface: AppColors.dynamicBlack,
       onBackground: AppColors.dynamicBlack,
       surfaceVariant: AppColors.arcLight,
     );
     return AppTheme._(
       _themeData.copyWith(
         colorScheme: colorScheme,
+        scaffoldBackgroundColor: colorScheme.background,
         inputDecorationTheme: const InputDecorationTheme(
           fillColor: Colors.white,
           hoverColor: Colors.white,
           filled: true,
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           border: OutlineInputBorder(),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -48,7 +51,7 @@ class AppTheme {
             ),
             minimumSize: const Size(0, 50),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
             tapTargetSize: MaterialTapTargetSize.padded,
             elevation: 0,
@@ -90,6 +93,7 @@ class AppTheme {
           ),
           labelStyle: _textTheme.labelSmall!.copyWith(
             fontWeight: FontWeight.w400,
+            color: colorScheme.onSurface,
           ),
           shadowColor: AppColors.millionGrey.withOpacity(0.2),
           elevation: 4,
@@ -104,6 +108,30 @@ class AppTheme {
               }
               return colorScheme.surface;
             },
+          ),
+        ),
+        switchTheme: SwitchThemeData(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          trackOutlineColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return colorScheme.primary;
+            }
+            return colorScheme.onSurface;
+          }),
+          thumbColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return colorScheme.primary;
+            }
+            return colorScheme.onSurface;
+          }),
+          trackColor: MaterialStateProperty.all(Colors.transparent),
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          thumbIcon: MaterialStateProperty.all(
+            const Icon(
+              Icons.circle_outlined,
+              size: 0,
+              color: Colors.transparent,
+            ),
           ),
         ),
       ),

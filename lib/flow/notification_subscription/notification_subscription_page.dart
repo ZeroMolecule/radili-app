@@ -11,6 +11,7 @@ import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/show_error_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/util/extensions/form_extensions.dart';
+import 'package:radili/widgets/section_container.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -26,7 +27,6 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
-    final colors = useColorScheme();
     final showError = useShowError();
     final router = useRouter();
 
@@ -105,140 +105,76 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colors.primaryContainer,
-                        borderRadius: BorderRadius.circular(2),
+                  SectionContainer(
+                    icon: const Icon(Icons.location_on_outlined),
+                    label: t.location,
+                    children: [
+                      AddressSearch(
+                        isLoading: false,
+                        showSearchIcon: false,
+                        address: form.control('address').value,
+                        onOptionSelected: (AddressInfo option) {
+                          form.control('address').value = option;
+                        },
+                        padding: const EdgeInsets.all(16),
                       ),
-                      child: Column(
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SectionContainer(
+                    icon: const Icon(Icons.notifications_none_outlined),
+                    label: t.notifications,
+                    children: [
+                      ReactiveSwitchListTile(
+                        formControlName: 'pushNotifications',
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          t.pushNotifications,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 16,
-                              top: 16,
-                              left: 12,
-                            ),
-                            child: Row(
+                          ReactiveSwitchListTile(
+                            formControlName: 'emailNotifications',
+                            contentPadding: EdgeInsets.zero,
+                            onChanged: (value) {
+                              form.control('email').value = null;
+                            },
+                            title: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Icon(Icons.location_on_outlined),
-                                const SizedBox(width: 8),
                                 Text(
-                                  t.location,
-                                  style: const TextStyle(fontSize: 18),
+                                  t.emailNotifications,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  t.emailNotificationsDescription,
+                                  style: const TextStyle(fontSize: 14),
                                 ),
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 16,
-                              left: 36,
-                              right: 36,
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2),
-                                color: Colors.white,
-                              ),
-                              child: AddressSearch(
-                                isLoading: false,
-                                address: form.control('address').value,
-                                onOptionSelected: (AddressInfo option) {
-                                  form.control('address').value = option;
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colors.primaryContainer,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(
-                              bottom: 16,
-                              top: 16,
-                              left: 12,
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.notifications_none_outlined),
-                                const SizedBox(width: 8),
-                                Text(
-                                  t.notifications,
-                                  style: const TextStyle(fontSize: 18),
+                          if (form.control('emailNotifications').value == true)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: ReactiveTextField(
+                                formControlName: 'email',
+                                keyboardType: TextInputType.emailAddress,
+                                onTapOutside: (_) =>
+                                    FocusScope.of(context).unfocus(),
+                                decoration: InputDecoration(
+                                  hintText: t.email,
                                 ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 36,
-                              right: 36,
-                            ),
-                            child: ReactiveSwitchListTile(
-                              formControlName: 'pushNotifications',
-                              title: Text(
-                                t.pushNotifications,
-                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                          ),
-                          const Divider(),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 16,
-                              left: 36,
-                              right: 36,
-                            ),
-                            child: ReactiveSwitchListTile(
-                              onChanged: (value) {
-                                form.control('email').value = null;
-                              },
-                              formControlName: 'emailNotifications',
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t.emailNotifications,
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                  Text(
-                                    t.emailNotificationsDescription,
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          form.control('emailNotifications').value == true
-                              ? Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 16,
-                                    left: 36,
-                                    right: 36,
-                                  ),
-                                  child: ReactiveTextField(
-                                    formControlName: 'email',
-                                    decoration:
-                                        InputDecoration(labelText: t.email),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
                         ],
                       ),
-                    ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
