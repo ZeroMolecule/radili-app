@@ -8,19 +8,22 @@ import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
+import 'package:radili/flow/map/widgets/map_popup_menu.dart';
+import 'package:radili/flow/map/widgets/my_location_button.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
 import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
-import 'package:radili/hooks/async_callback.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/debouncer_hook.dart';
+import 'package:radili/hooks/linker_hook.dart';
+import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/hooks/router_hook.dart';
+import 'package:radili/hooks/stream_callback_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/navigation/app_router.dart';
 import 'package:radili/providers/address_search_provider.dart';
 import 'package:radili/providers/address_selected_provider.dart';
 import 'package:radili/providers/location_provider.dart';
 import 'package:radili/providers/nearby_subsidiaries_provider.dart';
-import 'package:radili/widgets/responsive_icon_button.dart';
 
 @RoutePage()
 class MapPage extends HookConsumerWidget {
@@ -41,6 +44,7 @@ class MapPage extends HookConsumerWidget {
     final debouncer = useDebouncer(
       debounceTime: const Duration(milliseconds: 400),
     );
+    final linker = useLinker();
     final address = ref.watch(addressSelectedProvider);
     final addresses = ref.watch(addressSearchProvider);
     final selectedSubsidiary = useState<Subsidiary?>(null);
@@ -49,11 +53,14 @@ class MapPage extends HookConsumerWidget {
     );
 
     final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
-    final notificationSettings = ref.watch(notificationSubscriptionProvider);
     final subsidiariesNotifier = ref.watch(nearbySubsidiariesProvider.notifier);
     final subsidiaries = ref.watch(nearbySubsidiariesProvider);
     final location = ref.watch(locationProvider);
     final showSubsidiary = useShowSubsidiaryMarker();
+    final myCurrentLocationIsLoading = useState(false);
+    final subscription = ref.watch(notificationSubscriptionProvider);
+
+    final mapController = useMapControllerAnimated();
 
     void handleFindNearby(LatLng position, LatLng northeast, LatLng southwest) {
       debouncer.debounce(
@@ -65,14 +72,28 @@ class MapPage extends HookConsumerWidget {
       );
     }
 
-    final handleUseMyCurrentLocation = useAsyncCallback(
+    final handleUseMyCurrentLocation = useStreamCallback(
       addressSelectedNotifier.selectCurrent,
+      onListen: (value) {
+        final address = value.valueOrNull;
+        if (address != null) {
+          mapController.animateTo(
+            dest: address.latLng,
+            zoom: 14,
+          );
+        }
+        myCurrentLocationIsLoading.value = value.isLoading;
+      },
     );
 
     void handleEditNotificationSubscription() {
       router.navigate(
         NotificationSubscriptionRoute(address: address),
       );
+    }
+
+    void handleShowSupport() {
+      linker.launchSupportPage();
     }
 
     void onSubsidiarySelected(Subsidiary? subsidiary) {
@@ -117,19 +138,15 @@ class MapPage extends HookConsumerWidget {
                 suffix: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ResponsiveIconButton(
-                      icon: const Icon(Icons.my_location_outlined),
+                    MyLocationButton(
+                      isLoading: myCurrentLocationIsLoading.value,
                       label: t.myLocation,
                       onPressed: handleUseMyCurrentLocation,
                     ),
-                    ResponsiveIconButton(
-                      onPressed: handleEditNotificationSubscription,
-                      icon: Icon(
-                        notificationSettings.valueOrNull != null
-                            ? Icons.notifications_active
-                            : Icons.notifications_outlined,
-                      ),
-                      label: t.notifyMe,
+                    MapPopupMenu(
+                      onNotifyMePressed: handleEditNotificationSubscription,
+                      onSupportPressed: handleShowSupport,
+                      isNotifyMeEnabled: subscription.valueOrNull != null,
                     ),
                   ],
                 ),
@@ -143,6 +160,7 @@ class MapPage extends HookConsumerWidget {
               onPositionChanged: handleFindNearby,
               onSubsidiaryPressed: onSubsidiarySelected,
               subsidiary: selectedSubsidiary.value,
+              controller: mapController,
               actions: [
                 ChoiceChip(
                   label: Text(t.openNow),

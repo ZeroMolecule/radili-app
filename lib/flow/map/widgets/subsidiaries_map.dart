@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
@@ -25,6 +26,7 @@ class SubsidiariesMap extends HookConsumerWidget {
   final Subsidiary? subsidiary;
   final double zoom;
   final List<Widget>? actions;
+  final AnimatedMapController? controller;
 
   const SubsidiariesMap({
     Key? key,
@@ -35,6 +37,7 @@ class SubsidiariesMap extends HookConsumerWidget {
     this.onSubsidiaryPressed,
     this.subsidiary,
     this.actions,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -43,7 +46,8 @@ class SubsidiariesMap extends HookConsumerWidget {
     const clusterSize = 50.0;
     const clusterRadius = 90;
 
-    final controller = useMapControllerAnimated();
+    final localController = useMapControllerAnimated();
+    final controller = this.controller ?? localController;
     final cameraBounds = useState<LatLngBounds?>(null);
     final location = ref.watch(locationProvider);
     final isLoading = location.isLoading && !location.hasValue;

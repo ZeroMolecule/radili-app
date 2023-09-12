@@ -26,15 +26,22 @@ class AddressSelectedNotifier extends StateNotifier<AddressInfo?> {
     state = address;
   }
 
-  Future<void> selectCurrent() async {
-    final location = await _locationService.getCurrent();
-    if (location != null) {
+  Stream<AsyncValue<AddressInfo?>> selectCurrent() async* {
+    if (state != null) {
+      yield AsyncData(state);
+    }
+    yield const AsyncLoading();
+    try {
+      final location = await _locationService.getCurrent();
       final address = await _storesRepository.reverseSearchAddress(
         location.latLng,
       );
       if (address != null) {
         state = address;
       }
+      yield AsyncData(state);
+    } catch (e, stack) {
+      yield AsyncError(e, stack);
     }
   }
 }

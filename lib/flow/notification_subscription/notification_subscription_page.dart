@@ -5,7 +5,6 @@ import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
 import 'package:radili/hooks/async_callback.dart';
-import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/form_hook.dart';
 import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/show_error_hook.dart';
@@ -52,6 +51,7 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
           validators: [Validators.required],
         ),
       },
+      keys: [subscription.valueOrNull, address],
     );
 
     final handleSubmit = useAsyncCallback(
@@ -68,22 +68,23 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
       keys: [form, notifier, showError, t],
     );
 
-    return ReactiveForm(
-      formGroup: form,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(t.backButton),
-          centerTitle: false,
-          leading: IconButton(
-            onPressed: Navigator.of(context).pop,
-            icon: const Icon(Icons.arrow_back),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t.backButton),
+        centerTitle: false,
+        leading: IconButton(
+          onPressed: Navigator.of(context).pop,
+          icon: const Icon(Icons.arrow_back),
         ),
-        body: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: MultiSliver(
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: ReactiveForm(
+              key: ValueKey(form),
+              formGroup: form,
+              child: MultiSliver(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
@@ -188,8 +189,8 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

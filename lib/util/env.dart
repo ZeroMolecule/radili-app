@@ -23,6 +23,11 @@ abstract class Env {
   @EnviedField(varName: 'SENTRY_ENVIRONMENT')
   static const String sentryEnvironment = _Env.sentryEnvironment;
 
+  @EnviedField(varName: 'URL_SUPPORT_PAGE')
+  static const String urlSupportPage = _Env.urlSupportPage;
+
+  static final Uri uriSupportPage = Uri.parse(urlSupportPage);
+
   static void init() {
     if (kDebugMode) {
       print('''
@@ -33,6 +38,7 @@ abstract class Env {
         VAPID_KEY=$vapidKey
         SENTRY_DSN=$sentryDsn
         SENTRY_ENVIRONMENT=$sentryEnvironment
+        URL_SUPPORT_PAGE=$urlSupportPage
     ''');
     }
   }
