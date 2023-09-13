@@ -137,6 +137,11 @@ class SubsidiariesMap extends HookConsumerWidget {
         },
         enableMultiFingerGestureRace: true,
         onTap: (_, __) => onSubsidiaryPressed?.call(null),
+        interactiveFlags: InteractiveFlag.pinchMove |
+            InteractiveFlag.drag |
+            InteractiveFlag.pinchZoom |
+            InteractiveFlag.doubleTapZoom |
+            InteractiveFlag.flingAnimation,
       ),
       children: [
         if (!isLoading)
