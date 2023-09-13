@@ -63,7 +63,6 @@ android {
 
     buildTypes {
         all {
-            signingConfig signingConfigs.debug
         }
     }
 }
