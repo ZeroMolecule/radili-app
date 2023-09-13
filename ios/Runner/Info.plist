@@ -6,6 +6,8 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your permission to access your location so we can show you the nearby stores that are open on Sunday.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need your permission to access your location so we can show you the nearby stores that are open on Sunday.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
