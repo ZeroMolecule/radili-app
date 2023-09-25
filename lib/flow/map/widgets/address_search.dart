@@ -116,12 +116,21 @@ class _AddressSearchResults extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final show = useState(false);
-    useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        show.value = data.isNotEmpty;
-      });
-      return null;
-    }, [data]);
+
+    useValueChanged<AddressSearchResults, void>(
+      data,
+      (_, __) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          show.value = data.isNotEmpty;
+        });
+      },
+    );
+
+    useValueChanged<bool, void>(show.value, (_, __) {
+      if (!show.value) {
+        FocusScope.of(context).unfocus();
+      }
+    });
 
     void handleAddressPressed(AddressInfo address) {
       show.value = false;
@@ -133,9 +142,12 @@ class _AddressSearchResults extends HookWidget {
       onSubsidiarySelected(subsidiary);
     }
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => show.value = false,
+    return PortalTarget(
+      visible: show.value,
+      portalFollower: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => show.value = false,
+      ),
       child: PortalTarget(
         visible: show.value,
         anchor: const Aligned(
@@ -186,10 +198,7 @@ class _AddressSearchResults extends HookWidget {
             ],
           ),
         ),
-        child: IgnorePointer(
-          ignoring: show.value,
-          child: child,
-        ),
+        child: child,
       ),
     );
   }

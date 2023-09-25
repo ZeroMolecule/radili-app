@@ -173,7 +173,7 @@ class SubsidiariesMap extends HookConsumerWidget {
                 count: markers.length,
                 size: clusterSize,
               ),
-              centerMarkerOnClick: true,
+              centerMarkerOnClick: false,
               onMarkerTap: (marker) {
                 final key = marker.key;
                 if (key is ValueKey<Subsidiary>) {
