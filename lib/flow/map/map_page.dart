@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
@@ -99,13 +98,6 @@ class MapPage extends HookConsumerWidget {
     void onSubsidiarySelected(Subsidiary? subsidiary) {
       selectedSubsidiary.value = subsidiary;
       if (subsidiary != null) {
-        addressSelectedNotifier.select(
-          AddressInfo(
-            rawLat: subsidiary.coordinates.latitude.toString(),
-            rawLon: subsidiary.coordinates.longitude.toString(),
-            displayName: subsidiary.address ?? '',
-          ),
-        );
         showSubsidiary(subsidiary);
       }
     }

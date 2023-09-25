@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:radili/domain/data/address_details.dart';
 import 'package:radili/domain/data/address_info.dart';
+import 'package:radili/domain/data/address_search_results.dart';
+import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/hooks/debouncer_hook.dart';
+import 'package:radili/hooks/stream_callback_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/providers/address_search_provider.dart';
 import 'package:radili/widgets/loading.dart';
@@ -28,14 +33,24 @@ class AddressSearch extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
-    final addresses = ref.watch(addressSearchProvider);
+    final searchResults = ref.watch(addressSearchProvider);
     final notifier = ref.watch(addressSearchProvider.notifier);
     final controller = useTextEditingController(
-      text: address?.displayName,
+      text: address?.details.combined(place: false),
     );
+    final key = useRef(GlobalKey());
+    final debouncer = useDebouncer();
 
-    useValueChanged<String?, void>(address?.displayName, (oldValue, oldResult) {
-      final name = address?.displayName;
+    final handleSearch = useStreamCallback(
+      () => notifier.search(controller.text),
+    );
+    void debounceSearch() async {
+      debouncer.debounce(handleSearch);
+    }
+
+    useValueChanged<AddressDetails?, void>(address?.details,
+        (oldValue, oldResult) {
+      final name = address?.details.combined(place: false);
       if (name != null && name != controller.text) {
         controller.text = name;
       }
@@ -46,9 +61,7 @@ class AddressSearch extends HookConsumerWidget {
       prefix = const SizedBox(
         width: 36,
         height: 36,
-        child: Loading(
-          constraints: BoxConstraints(maxWidth: 36),
-        ),
+        child: Loading(constraints: BoxConstraints(maxWidth: 36)),
       );
     } else if (showSearchIcon) {
       prefix = const Icon(Icons.search);
@@ -56,24 +69,16 @@ class AddressSearch extends HookConsumerWidget {
       prefix = null;
     }
 
-    return TypeAheadField<AddressInfo>(
-      itemBuilder: (_, AddressInfo option) => ListTile(
-        title: Text(option.displayName),
-      ),
-      debounceDuration: const Duration(seconds: 1),
-      suggestionsCallback: (query) => notifier
-          .search(query)
-          .firstWhere((element) => !element.isLoading)
-          .then((value) => value.valueOrNull ?? []),
-      loadingBuilder: (_) => const SizedBox.shrink(),
-      errorBuilder: (_, __) => const SizedBox.shrink(),
-      noItemsFoundBuilder: (_) => const SizedBox.shrink(),
-      onSuggestionSelected: (option) {
-        controller.text = option.displayName;
-        onOptionSelected(option);
-      },
-      textFieldConfiguration: TextFieldConfiguration(
+    return _AddressSearchResults(
+      data: searchResults.valueOrNull ?? AddressSearchResults.empty,
+      onAddressSelected: onOptionSelected,
+      onSubsidiarySelected: (_) {},
+      child: TextField(
+        key: key.value,
         controller: controller,
+        onChanged: (_) {
+          debouncer.debounce(handleSearch);
+        },
         onTapOutside: (_) => FocusScope.of(context).unfocus(),
         onTap: () {
           controller.selection = TextSelection(
@@ -89,6 +94,102 @@ class AddressSearch extends HookConsumerWidget {
           suffixIcon: suffix,
         ),
         style: const TextStyle(fontSize: 16),
+      ),
+    );
+  }
+}
+
+class _AddressSearchResults extends HookWidget {
+  final AddressSearchResults data;
+  final Widget child;
+  final Function(AddressInfo option) onAddressSelected;
+  final Function(Subsidiary option) onSubsidiarySelected;
+
+  const _AddressSearchResults({
+    super.key,
+    required this.data,
+    required this.child,
+    required this.onAddressSelected,
+    required this.onSubsidiarySelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final show = useState(false);
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        show.value = data.isNotEmpty;
+      });
+      return null;
+    }, [data]);
+
+    void handleAddressPressed(AddressInfo address) {
+      show.value = false;
+      onAddressSelected(address);
+    }
+
+    void handleSubsidiaryPressed(Subsidiary subsidiary) {
+      show.value = false;
+      onSubsidiarySelected(subsidiary);
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => show.value = false,
+      child: PortalTarget(
+        visible: show.value,
+        anchor: const Aligned(
+          follower: Alignment.topLeft,
+          target: Alignment.bottomLeft,
+          widthFactor: 1,
+        ),
+        portalFollower: Card(
+          child: CustomScrollView(
+            shrinkWrap: true,
+            slivers: [
+              if (data.subsidiaries.isNotEmpty)
+                SliverList.builder(
+                  itemCount: data.subsidiaries.length,
+                  itemBuilder: (ctx, index) {
+                    final subsidiary = data.subsidiaries[index];
+                    return ListTile(
+                      onTap: () => handleSubsidiaryPressed(subsidiary),
+                      title: Text(subsidiary.label ?? subsidiary.address ?? ''),
+                    );
+                  },
+                ),
+              if (data.cities.isNotEmpty)
+                SliverList.builder(
+                  itemCount: data.cities.length,
+                  itemBuilder: (ctx, index) {
+                    final city = data.cities[index];
+                    return ListTile(
+                      onTap: () => handleAddressPressed(city),
+                      title: Text(city.details.place),
+                      leading: const Icon(Icons.location_city_outlined),
+                    );
+                  },
+                ),
+              if (data.addresses.isNotEmpty)
+                SliverList.builder(
+                  itemCount: data.addresses.length,
+                  itemBuilder: (ctx, index) {
+                    final address = data.addresses[index];
+                    return ListTile(
+                      onTap: () => handleAddressPressed(address),
+                      title: Text(address.details.combined(place: false)),
+                      subtitle: Text(address.details.place),
+                      leading: const Icon(Icons.location_on_outlined),
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
+        child: IgnorePointer(
+          ignoring: show.value,
+          child: child,
+        ),
       ),
     );
   }

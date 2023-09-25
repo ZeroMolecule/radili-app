@@ -35,8 +35,7 @@ class NotificationSubscriptionNotifier
         return await _repository.createSubscription(
           isPushNotificationsSelected: isPushNotificationsSelected,
           email: email,
-          coordinates: address.latLng,
-          address: address.displayName,
+          address: address,
         );
       } else {
         await _repository.deleteSubscription();

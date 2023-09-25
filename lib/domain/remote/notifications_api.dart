@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:latlong2/latlong.dart' hide Path;
+import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/notification_subscription.dart';
 import 'package:radili/domain/remote/strapi/strapi.dart';
 import 'package:radili/domain/remote/strapi/strapi_response.dart';
@@ -33,9 +33,8 @@ class NotificationsApi extends __NotificationsApi {
   Future<NotificationSubscription> subscribeToNotifications({
     String? email,
     String? pushToken,
-    String? address,
+    required AddressInfo address,
     int? id,
-    required LatLng coordinates,
   }) async {
     final response = await _subscribeToNotifications(
       body: {
@@ -43,10 +42,9 @@ class NotificationsApi extends __NotificationsApi {
           'id': id,
           'email': email,
           'pushToken': pushToken,
-          'address': address,
-          'coordinates': {
-            'lat': coordinates.latitude,
-            'lng': coordinates.longitude,
+          'address': {
+            ...address.toJson()..remove('details'),
+            ...address.details.toJson(),
           },
         },
       },

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 
 class _Event {
-  final Future Function() primaryHandler;
+  final FutureOr Function() primaryHandler;
   final Function(Object, StackTrace?)? errorHandler;
 
   _Event(this.primaryHandler, this.errorHandler);
@@ -42,7 +42,7 @@ class Debouncer {
   }
 
   void debounce(
-    Future Function() function, {
+    FutureOr Function() function, {
     Function(Object, StackTrace?)? onError,
   }) {
     _stream.add(_Event(function, onError));

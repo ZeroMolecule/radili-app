@@ -13,8 +13,8 @@ class StoresRepository {
 
   StoresRepository(this._nominatimApi, this._storesApi, this._subsidiariesBox);
 
-  Future<List<AddressInfo>> searchAddress(String address) {
-    return _nominatimApi.search(address: address);
+  Future<List<AddressInfo>> searchAddress(String query) {
+    return _nominatimApi.search(query: query);
   }
 
   Future<AddressInfo?> reverseSearchAddress(LatLng position) {

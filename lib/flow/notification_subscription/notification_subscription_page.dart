@@ -47,7 +47,7 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
           validators: [Validators.required],
         ),
         'address': FormControl<AddressInfo>(
-          value: subscription.valueOrNull?.addressInfo ?? address,
+          value: subscription.valueOrNull?.address ?? address,
           validators: [Validators.required],
         ),
       },
