@@ -110,6 +110,12 @@ class AppTheme {
             },
           ),
         ),
+        listTileTheme: const ListTileThemeData(
+          subtitleTextStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         switchTheme: SwitchThemeData(
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           trackOutlineColor: MaterialStateProperty.resolveWith((states) {

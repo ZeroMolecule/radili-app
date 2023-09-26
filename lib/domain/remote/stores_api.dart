@@ -21,6 +21,11 @@ abstract class _StoresApi {
   Future<StrapiResponse> _getNearbySubsidiaries({
     @Queries() Map<String, dynamic>? query,
   });
+
+  @GET('/subsidiaries')
+  Future<StrapiResponse> _findSubsidiaries({
+    @Queries() Map<String, dynamic>? query,
+  });
 }
 
 class StoresApi extends __StoresApi {
@@ -44,4 +49,27 @@ class StoresApi extends __StoresApi {
     });
     return Strapi.parseList(response.raw, fromJson: Subsidiary.fromJson);
   }
+
+  Future<List<Subsidiary>> searchSubsidiaries(String query) async {
+    final response = await _findSubsidiaries(
+      query: _subsidiariesQuery({
+        'filters[\$or][0][label][\$containsi]': query,
+        'filters[\$or][1][address][\$containsi]': query,
+      }),
+    );
+    return Strapi.parseList(
+      response.raw,
+      fromJson: Subsidiary.fromJson,
+    );
+  }
+}
+
+Map<String, dynamic> _subsidiariesQuery([Map<String, dynamic>? extra]) {
+  return {
+    'populate[0]': 'store.icon',
+    'populate[1]': 'store.cover',
+    'populate[2]': 'store.marker',
+    'populate[3]': 'workHours',
+    ...?extra,
+  };
 }

@@ -11,6 +11,7 @@ import 'package:radili/hooks/stream_callback_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/providers/address_search_provider.dart';
 import 'package:radili/widgets/loading.dart';
+import 'package:radili/widgets/store_icon.dart';
 
 class AddressSearch extends HookConsumerWidget {
   final AddressInfo? address;
@@ -165,8 +166,10 @@ class _AddressSearchResults extends HookWidget {
                   itemBuilder: (ctx, index) {
                     final subsidiary = data.subsidiaries[index];
                     return ListTile(
+                      leading: StoreIcon.subsidiary(subsidiary, size: 24),
                       onTap: () => handleSubsidiaryPressed(subsidiary),
-                      title: Text(subsidiary.label ?? subsidiary.address ?? ''),
+                      title: Text(subsidiary.address ?? subsidiary.label ?? ''),
+                      subtitle: Text(subsidiary.store.name),
                     );
                   },
                 ),

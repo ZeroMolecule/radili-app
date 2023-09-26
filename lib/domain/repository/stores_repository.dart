@@ -43,4 +43,10 @@ class StoresRepository {
     yield await _subsidiariesBox.getAll(query);
     yield* _subsidiariesBox.watchAll(query).distinct();
   }
+
+  Future<List<Subsidiary>> searchSubsidiaries(String query) async {
+    final subsidiaries = await _storesApi.searchSubsidiaries(query);
+    await _subsidiariesBox.upsert(subsidiaries);
+    return subsidiaries;
+  }
 }
