@@ -37,17 +37,22 @@ class AddressInfo with _$AddressInfo {
           'lat': latLng.latitude,
           'lng': latLng.longitude,
         },
-        'boundingBox': boundingBox,
+        'boundingBox': _boundingBoxToJson(boundingBox),
         'details': details.toJson(),
       };
 }
 
 LatLng _parseLatLng(Map<String, dynamic> json) {
   final obj = json['coordinates'] ?? json['latlng'] ?? json;
-  return LatLng(
-    double.tryParse(obj['lat'] ?? obj['latitude'] ?? '') ?? 0.0,
-    double.tryParse(obj['lon'] ?? obj['lng'] ?? obj['longitude'] ?? '') ?? 0.0,
-  );
+  var lat = obj['lat'] ?? obj['latitude'];
+  var lng = obj['lng'] ?? obj['lon'] ?? obj['longitude'];
+  if (lat is String) {
+    lat = double.tryParse(lat);
+  }
+  if (lng is String) {
+    lng = double.tryParse(lng);
+  }
+  return LatLng(lat ?? 0.0, lng ?? 0.0);
 }
 
 LatLngBounds _parseBoundingBox(dynamic json) {
@@ -67,6 +72,13 @@ LatLngBounds _parseBoundingBox(dynamic json) {
   final northEast = LatLng(array.elementAt(1), array.elementAt(3));
   return LatLngBounds(southWest, northEast);
 }
+
+List<double> _boundingBoxToJson(LatLngBounds boundingBox) => [
+      boundingBox.southWest.latitude,
+      boundingBox.northEast.latitude,
+      boundingBox.southWest.longitude,
+      boundingBox.northEast.longitude,
+    ];
 
 AddressDetails _parseAddressDetails(Map<String, dynamic> json) {
   final address = json['address'];

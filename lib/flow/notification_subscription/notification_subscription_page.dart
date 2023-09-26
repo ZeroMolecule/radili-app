@@ -1,15 +1,18 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/address_info.dart';
+import 'package:radili/domain/data/notification_subscription.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
-import 'package:radili/hooks/async_callback.dart';
 import 'package:radili/hooks/form_hook.dart';
 import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/show_error_hook.dart';
+import 'package:radili/hooks/stream_callback_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/util/extensions/form_extensions.dart';
+import 'package:radili/widgets/app_button.dart';
 import 'package:radili/widgets/section_container.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -54,19 +57,27 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
       keys: [subscription.valueOrNull, address],
     );
 
-    final handleSubmit = useAsyncCallback(
-      () async {
-        form.throwIfInvalid({'address': t.errorAddressRequired});
-        await notifier.save(
+    final isLoading = useState(false);
+
+    final handleSubmit = useStreamCallback(() async* {
+      final error = form.findError({'address': t.errorAddressRequired});
+      if (error != null) {
+        yield AsyncError<NotificationSubscription>(error, StackTrace.empty);
+      } else {
+        yield* notifier.save(
           isPushNotificationsSelected: form.control('pushNotifications').value,
           email: form.control('email').value,
           address: form.control('address').value,
         );
-      },
-      onError: showError,
-      onDone: router.pop,
-      keys: [form, notifier, showError, t],
-    );
+      }
+    }, onListen: (value) {
+      isLoading.value = value.isLoading;
+      value.whenOrNull(
+        skipLoadingOnRefresh: false,
+        data: (_) => router.pop(),
+        error: showError,
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -178,7 +189,8 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
                   const SizedBox(height: 16),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: ElevatedButton(
+                    child: AppButton(
+                      isLoading: isLoading.value,
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(160, 50),
                       ),

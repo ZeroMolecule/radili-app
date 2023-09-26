@@ -22,7 +22,7 @@ class NotificationsRepository {
     if (isPushNotificationsSelected) {
       await PushNotificationService.init();
       token = await PushNotificationService.getToken().timeout(
-        const Duration(seconds: 5),
+        const Duration(seconds: 10),
       );
     }
     final stored = await _sharedPreferences.getNotificationSubscription();

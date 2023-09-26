@@ -20,4 +20,13 @@ extension ReactiveFormGroupExtensions on FormGroup {
       throw FormError(handledErrors[error.key]);
     }
   }
+
+  Object? findError(Map<String, Object> errors) {
+    try {
+      throwIfInvalid(errors);
+      return null;
+    } catch (e) {
+      return e;
+    }
+  }
 }

@@ -6,18 +6,20 @@ void Function() useStreamCallback<T>(
   Function(T value)? onListen,
 }) {
   final subscription = useRef(CompositeSubscription());
+  final onListenRef = useRef(onListen)..value = onListen;
+  final cbRef = useRef(cb)..value = cb;
 
   useEffect(() => subscription.value.dispose, [subscription]);
 
-  return () {
+  return useCallback(() {
     subscription.value.clear();
-    final stream = cb();
+    final stream = cbRef.value();
     subscription.value.add(
       stream.listen((value) {
-        onListen?.call(value);
+        onListenRef.value?.call(value);
       }),
     );
-  };
+  }, [onListenRef, cbRef, subscription]);
 }
 
 void Function(A arg) useStreamCallbackArg<T, A>(

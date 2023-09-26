@@ -25,12 +25,15 @@ class NotificationSubscriptionNotifier
     state = await AsyncValue.guard(_repository.getSubscription);
   }
 
-  Future<void> save({
+  Stream<AsyncValue<NotificationSubscription?>> save({
     required bool isPushNotificationsSelected,
     required AddressInfo address,
     String? email,
-  }) async {
-    state = await AsyncValue.guard(() async {
+  }) async* {
+    yield state =
+        const AsyncLoading<NotificationSubscription?>().copyWithPrevious(state);
+
+    yield state = await AsyncValue.guard(() async {
       if (isPushNotificationsSelected || email != null) {
         return await _repository.createSubscription(
           isPushNotificationsSelected: isPushNotificationsSelected,
