@@ -17,7 +17,6 @@ import 'package:radili/util/extensions/map_extensions.dart';
 class SubsidiariesMap extends HookConsumerWidget {
   final List<Subsidiary> subsidiaries;
   final Function(
-    LatLng center,
     LatLng northeast,
     LatLng southwest,
   )? onPositionChanged;
@@ -29,7 +28,7 @@ class SubsidiariesMap extends HookConsumerWidget {
   final AnimatedMapController? controller;
 
   const SubsidiariesMap({
-    Key? key,
+    super.key,
     required this.subsidiaries,
     this.position,
     this.zoom = 16,
@@ -38,7 +37,7 @@ class SubsidiariesMap extends HookConsumerWidget {
     this.subsidiary,
     this.actions,
     this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,7 +62,7 @@ class SubsidiariesMap extends HookConsumerWidget {
       final latLng = location.valueOrNull?.latLng;
       final mapController = controller.mapControllerOrNull;
       if (latLng != null && mapController != null) {
-        mapController.move(latLng, 13);
+        mapController.move(latLng, 14);
       }
       return null;
     }, [location, controller]);
@@ -80,7 +79,7 @@ class SubsidiariesMap extends HookConsumerWidget {
               point: subsidiary.coordinates,
               width: markerSize,
               height: markerSize,
-              builder: (ctx) => SubsidiaryMarker(
+              child: SubsidiaryMarker(
                 subsidiary: subsidiary,
                 markerSize: markerSize,
               ),
@@ -129,10 +128,9 @@ class SubsidiariesMap extends HookConsumerWidget {
         ),
         onPositionChanged: (position, _) {
           cameraBounds.value = position.bounds;
-          final latLng = position.center;
           final bounds = position.bounds;
-          if (latLng != null && bounds != null) {
-            onPositionChanged?.call(latLng, bounds.northEast, bounds.southWest);
+          if (bounds != null) {
+            onPositionChanged?.call(bounds.northEast, bounds.southWest);
           }
         },
         enableMultiFingerGestureRace: true,
@@ -156,11 +154,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             options: MarkerClusterLayerOptions(
               maxClusterRadius: clusterRadius,
               size: const Size(clusterSize, clusterSize),
-              anchorPos: AnchorPos.align(AnchorAlign.center),
-              fitBoundsOptions: const FitBoundsOptions(
-                padding: EdgeInsets.all(50),
-                maxZoom: 15,
-              ),
+              alignment: Alignment.center,
               animationsOptions: const AnimationsOptions(
                 spiderfy: Duration(milliseconds: 0),
                 centerMarker: Duration(milliseconds: 0),

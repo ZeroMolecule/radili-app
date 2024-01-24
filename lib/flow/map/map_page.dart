@@ -6,21 +6,20 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
+import 'package:radili/flow/map/providers/address_selected_provider.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
 import 'package:radili/flow/map/widgets/map_popup_menu.dart';
 import 'package:radili/flow/map/widgets/my_location_button.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
 import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
+import 'package:radili/hooks/async_action_hook.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/debouncer_hook.dart';
 import 'package:radili/hooks/linker_hook.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/hooks/router_hook.dart';
-import 'package:radili/hooks/stream_callback_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/navigation/app_router.dart';
-import 'package:radili/providers/address_search_provider.dart';
-import 'package:radili/providers/address_selected_provider.dart';
 import 'package:radili/providers/location_provider.dart';
 import 'package:radili/providers/nearby_subsidiaries_provider.dart';
 
@@ -40,50 +39,43 @@ class MapPage extends HookConsumerWidget {
     final t = useTranslations();
     final router = useRouter();
     final colors = useColorScheme();
-    final debouncer = useDebouncer(
-      debounceTime: const Duration(milliseconds: 400),
-    );
+    final debouncer = useDebouncer();
     final linker = useLinker();
-    final address = ref.watch(addressSelectedProvider);
-    final addresses = ref.watch(addressSearchProvider);
+    final mapController = useMapControllerAnimated();
+
+    final actionFetchAddress = useAsyncAction();
+
     final selectedSubsidiary = useState<Subsidiary?>(null);
     final query = useState(
       NearbySubsidiariesQuery(openNow: openNow, openSunday: openSunday),
     );
 
     final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
-    final subsidiariesNotifier = ref.watch(nearbySubsidiariesProvider.notifier);
-    final subsidiaries = ref.watch(nearbySubsidiariesProvider);
+    final subsidiariesNotifier = ref.watch(
+      nearbySubsidiariesProvider(query.value).notifier,
+    );
     final location = ref.watch(locationProvider);
+    final address = ref.watch(addressSelectedProvider).valueOrNull;
+    final subsidiaries = ref.watch(nearbySubsidiariesProvider(query.value));
     final showSubsidiary = useShowSubsidiaryMarker();
-    final myCurrentLocationIsLoading = useState(false);
     final subscription = ref.watch(notificationSubscriptionProvider);
 
-    final mapController = useMapControllerAnimated();
-
-    void handleFindNearby(LatLng position, LatLng northeast, LatLng southwest) {
-      debouncer.debounce(
-        () => subsidiariesNotifier.fetch(
-          center: position,
-          northeast: northeast,
-          southwest: southwest,
-        ),
-      );
+    void handleFindNearby(LatLng northeast, LatLng southwest) {
+      debouncer
+          .debounceAsync(
+            () => subsidiariesNotifier.fetch(
+              northeast: northeast,
+              southwest: southwest,
+            ),
+          )
+          .ignore();
     }
 
-    final handleUseMyCurrentLocation = useStreamCallback(
-      addressSelectedNotifier.selectCurrent,
-      onListen: (value) {
-        final address = value.valueOrNull;
-        if (address != null) {
-          mapController.animateTo(
-            dest: address.latLng,
-            zoom: 14,
-          );
-        }
-        myCurrentLocationIsLoading.value = value.isLoading;
-      },
-    );
+    void handleUseMyCurrentLocation() {
+      actionFetchAddress.run(() async {
+        await addressSelectedNotifier.setCurrent();
+      });
+    }
 
     void handleEditNotificationSubscription() {
       router.navigate(
@@ -102,10 +94,6 @@ class MapPage extends HookConsumerWidget {
       }
     }
 
-    useValueChanged<NearbySubsidiariesQuery?, void>(query.value, (_, __) {
-      subsidiariesNotifier.watch(query.value);
-    });
-
     return Scaffold(
       body: Column(
         children: [
@@ -122,16 +110,14 @@ class MapPage extends HookConsumerWidget {
             child: SafeArea(
               bottom: false,
               child: AddressSearch(
-                isLoading: subsidiaries.isLoading ||
-                    location.isLoading ||
-                    addresses.isLoading,
+                isLoading: subsidiaries.isLoading || location.isLoading,
                 address: address,
-                onOptionSelected: addressSelectedNotifier.select,
+                onOptionSelected: addressSelectedNotifier.set,
                 suffix: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     MyLocationButton(
-                      isLoading: myCurrentLocationIsLoading.value,
+                      isLoading: location.isLoading,
                       label: t.myLocation,
                       onPressed: handleUseMyCurrentLocation,
                     ),

@@ -45,6 +45,7 @@ Future<void> _beforeRun() async {
   );
   Env.init();
   await AppHive.init();
+  await AppHive.clearStaleData();
   FlutterNativeSplash.remove();
 }
 

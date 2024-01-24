@@ -9,6 +9,8 @@ import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 const _boxName = 'subsidiaries_box';
 
 class SubsidiariesBox {
+  const SubsidiariesBox();
+
   Future<Box<SubsidiaryCollection>> _box() {
     return Hive.openBox(_boxName);
   }
@@ -57,5 +59,10 @@ class SubsidiariesBox {
       return mapped.toList();
     }
     return mapped.where((s) => query.validateSubsidiary(s)).toList();
+  }
+
+  Future<void> clearAll() async {
+    final box = await _box();
+    await box.clear();
   }
 }

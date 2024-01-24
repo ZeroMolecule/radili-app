@@ -28,7 +28,7 @@ abstract class _NotificationsApi {
 }
 
 class NotificationsApi extends __NotificationsApi {
-  NotificationsApi(Dio dio) : super(dio);
+  NotificationsApi(super.dio);
 
   Future<NotificationSubscription> subscribeToNotifications({
     String? email,

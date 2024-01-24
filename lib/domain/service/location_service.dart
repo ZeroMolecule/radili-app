@@ -2,17 +2,15 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
 import 'package:radili/domain/data/ip_info.dart';
-import 'package:radili/domain/remote/ip_api.dart';
-import 'package:radili/domain/remote/util_api.dart';
 
 const _zgLatLng = LatLng(45.815399, 15.966568);
 
 class LocationService {
   final Location _location;
-  final IpApi _ipApi;
-  final UtilApi _utilApi;
 
-  LocationService(this._location, this._ipApi, this._utilApi);
+  LocationAccuracy? _accuracy;
+
+  LocationService(this._location);
 
   Future<bool> isPermissionEnabled() async {
     final permissionStatus = await _location.hasPermission();
@@ -36,9 +34,12 @@ class LocationService {
     return AppLocation.fromLatLng(_zgLatLng);
   }
 
-  Future<AppLocation> getCurrent() async {
+  Future<AppLocation> getCurrent({
+    LocationAccuracy accuracy = LocationAccuracy.high,
+  }) async {
     final isPermissionAllowed = await requestPermissions();
     if (isPermissionAllowed) {
+      await _applyAccuracy(accuracy);
       final data = await _location.getLocation();
       final location = data.toAppLocation();
       if (location != null) {
@@ -46,6 +47,25 @@ class LocationService {
       }
     }
     return await getFallback();
+  }
+
+  Stream<AppLocation> watchCurrent() async* {
+    final isPermissionAllowed = await requestPermissions();
+    if (isPermissionAllowed) {
+      await _applyAccuracy(LocationAccuracy.high);
+      yield* _location.onLocationChanged
+          .map((data) => data.toAppLocation())
+          .where((location) => location != null)
+          .map((location) => location!);
+    }
+    yield await getFallback();
+  }
+
+  Future<void> _applyAccuracy(LocationAccuracy accuracy) async {
+    if (_accuracy != accuracy) {
+      _accuracy = accuracy;
+      await _location.changeSettings(accuracy: accuracy);
+    }
   }
 }
 

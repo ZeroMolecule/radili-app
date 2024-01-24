@@ -7,7 +7,6 @@ import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/address_search_results.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/hooks/debouncer_hook.dart';
-import 'package:radili/hooks/stream_callback_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/providers/address_search_provider.dart';
 import 'package:radili/widgets/loading.dart';
@@ -22,43 +21,42 @@ class AddressSearch extends HookConsumerWidget {
   final bool showSearchIcon;
 
   const AddressSearch({
-    Key? key,
+    super.key,
     required this.onOptionSelected,
     this.isLoading = false,
     this.address,
     this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
     this.suffix,
     this.showSearchIcon = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
-    final searchResults = ref.watch(addressSearchProvider);
-    final notifier = ref.watch(addressSearchProvider.notifier);
+    final query = useState('');
+    final searchResults = ref.watch(addressSearchProvider(query.value));
     final controller = useTextEditingController(
       text: address?.details.combined(place: false),
     );
     final key = useRef(GlobalKey());
     final debouncer = useDebouncer();
 
-    final handleSearch = useStreamCallback(
-      () => notifier.search(controller.text),
-    );
-    void debounceSearch() async {
-      debouncer.debounce(handleSearch);
+    void handleSearch(String value) {
+      debouncer.debounce(() => query.value = value);
     }
 
-    useValueChanged<AddressDetails?, void>(address?.details,
-        (oldValue, oldResult) {
-      final name = address?.details.combined(place: false);
-      if (name != null && name != controller.text) {
-        controller.text = name;
-      }
-    });
+    useValueChanged<AddressDetails?, void>(
+      address?.details,
+      (oldValue, oldResult) {
+        final name = address?.details.combined(place: false);
+        if (name != null && name != controller.text) {
+          controller.text = name;
+        }
+      },
+    );
 
     final Widget? prefix;
-    if (isLoading) {
+    if (isLoading || searchResults.isLoading) {
       prefix = const SizedBox(
         width: 36,
         height: 36,
@@ -77,9 +75,7 @@ class AddressSearch extends HookConsumerWidget {
       child: TextField(
         key: key.value,
         controller: controller,
-        onChanged: (_) {
-          debouncer.debounce(handleSearch);
-        },
+        onChanged: handleSearch,
         onTapOutside: (_) => FocusScope.of(context).unfocus(),
         onTap: () {
           controller.selection = TextSelection(

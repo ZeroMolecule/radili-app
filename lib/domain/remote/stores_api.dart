@@ -29,7 +29,7 @@ abstract class _StoresApi {
 }
 
 class StoresApi extends __StoresApi {
-  StoresApi(Dio dio) : super(dio);
+  StoresApi(super.dio);
 
   Future<List<Store>> getStores() async {
     final response = await _getStores(query: {'populate': '*'});

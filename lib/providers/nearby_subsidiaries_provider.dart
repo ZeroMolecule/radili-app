@@ -1,64 +1,34 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
 import 'package:radili/providers/di/repository_providers.dart';
 import 'package:radili/util/extensions/iterable_extensions.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final nearbySubsidiariesProvider = StateNotifierProvider.autoDispose<
-    NearbySubsidiariesProvider, AsyncValue<List<Subsidiary>>>((ref) {
-  final repository = ref.watch(storesRepositoryProvider);
-  return NearbySubsidiariesProvider(repository);
-});
+part 'nearby_subsidiaries_provider.g.dart';
 
-class NearbySubsidiariesProvider
-    extends StateNotifier<AsyncValue<List<Subsidiary>>> {
-  final StoresRepository _repository;
-  NearbySubsidiariesQuery? _query;
+@riverpod
+class NearbySubsidiaries extends _$NearbySubsidiaries {
+  StoresRepository get _storesRepository => ref.read(storesRepositoryProvider);
 
-  final CompositeSubscription _subscriptions = CompositeSubscription();
-
-  NearbySubsidiariesProvider(
-    this._repository,
-  ) : super(const AsyncLoading()) {
-    watch();
-  }
-
-  Future<void> watch([NearbySubsidiariesQuery? query]) async {
-    _query = query;
-    await _subscriptions.clear();
-    _subscriptions.add(
-      _repository.watchSubsidiaries(query).listen((event) {
-        state = AsyncData(event);
-      }),
-    );
+  @override
+  Stream<List<Subsidiary>> build(NearbySubsidiariesQuery query) {
+    return _storesRepository.watchSubsidiaries(query);
   }
 
   Future<void> fetch({
-    required LatLng center,
     required LatLng northeast,
     required LatLng southwest,
   }) async {
-    state = const AsyncLoading<List<Subsidiary>>().copyWithPrevious(state);
-    state = await AsyncValue.guard(
-      () async {
-        final subsidiaries = await _repository.searchNearbySubsidiaries(
-          northeast: northeast,
-          southwest: southwest,
-          query: _query,
-        );
-        return [...?state.valueOrNull, ...subsidiaries]
-            .distinctBy((it) => it.id)
-            .toList();
-      },
+    final nearby = await _storesRepository.searchNearbySubsidiaries(
+      northeast: northeast,
+      southwest: southwest,
+      query: query,
     );
-  }
 
-  @override
-  void dispose() {
-    _subscriptions.dispose();
-    super.dispose();
+    await update(
+      (value) => [...value, ...nearby].distinctBy((it) => it.id).toList(),
+    );
   }
 }

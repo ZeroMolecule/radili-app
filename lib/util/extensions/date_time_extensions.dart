@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 String dayKey(int day) {
   switch (day) {
     case DateTime.monday:
@@ -16,5 +18,17 @@ String dayKey(int day) {
       return 'sunday';
     default:
       return '';
+  }
+}
+
+extension DateTimeExtensions on DateTime {
+  int get weekNumber {
+    final dayOfYear = int.parse(DateFormat('D').format(this));
+    final woy = ((dayOfYear - weekday + 10) / 7).floor();
+    return woy;
+  }
+
+  bool isSameWeekAs(DateTime other) {
+    return weekNumber == other.weekNumber;
   }
 }

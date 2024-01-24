@@ -33,15 +33,16 @@ class MapPopupMenu extends HookWidget {
       icon: const Icon(Icons.more_vert_outlined),
       onSelected: handleSelected,
       itemBuilder: (ctx) => [
-        PopupMenuItem(
-          value: _Option.notifyMe,
-          child: _PopupMenuItem(
-            icon: isNotifyMeEnabled
-                ? Icons.notifications_rounded
-                : Icons.notification_add_outlined,
-            text: isNotifyMeEnabled ? t.notifyMeEnabled : t.notifyMe,
+        if (false)
+          PopupMenuItem(
+            value: _Option.notifyMe,
+            child: _PopupMenuItem(
+              icon: isNotifyMeEnabled
+                  ? Icons.notifications_rounded
+                  : Icons.notification_add_outlined,
+              text: isNotifyMeEnabled ? t.notifyMeEnabled : t.notifyMe,
+            ),
           ),
-        ),
         PopupMenuItem(
           value: _Option.showSupport,
           child: _PopupMenuItem(

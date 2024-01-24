@@ -31,7 +31,7 @@ abstract class _NominatimApi {
 }
 
 class NominatimApi extends __NominatimApi {
-  NominatimApi(Dio dio) : super(dio);
+  NominatimApi(super.dio);
 
   Future<List<AddressInfo>> search({required String query}) async {
     final results = await _search(query: '$query,hrvatska');

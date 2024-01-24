@@ -22,9 +22,9 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
   final AddressInfo? address;
 
   const NotificationSubscriptionPage({
-    Key? key,
+    super.key,
     this.address,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

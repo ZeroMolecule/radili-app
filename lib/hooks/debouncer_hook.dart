@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/util/debouncer.dart';
 
 Debouncer useDebouncer({
-  Duration debounceTime = const Duration(seconds: 1),
+  Duration debounceTime = const Duration(milliseconds: 500),
   List<Object?>? keys,
 }) {
   return use(_DebouncerHook(
