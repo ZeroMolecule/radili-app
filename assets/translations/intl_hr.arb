@@ -12,11 +12,11 @@
   "noDataForWorkHours": "Zatvoreno",
   "workingHours": "Radno vrijeme",
   "dayOfTheWeek": "{value, select, monday{Ponedjeljak} tuesday{Utorak} wednesday{Srijeda} thursday{Četvrtak} friday{Petak} saturday{Subota} sunday{Nedjelja} other{Nepoznato}}",
-    "@dayOfTheWeek": {
-      "placeholders": {
-        "value": {}
-      }
-    },
+  "@dayOfTheWeek": {
+    "placeholders": {
+      "value": {}
+    }
+  },
   "notifyMe": "Obavijesti me",
   "notifyMeEnabled": "Primam obavijesti",
   "saveNotificationSettings": "Spremi",
@@ -36,5 +36,18 @@
   "myLocation": "Moja lokacija",
   "openNow": "Otvoreno danas",
   "openSunday": "Otvoreno ovu nedjelju",
-  "support": "Podrška"
+  "support": "Podrška",
+  "supportContactInfo": "Kontakt informacije",
+  "supportSummary": "Sažetak",
+  "supportEmailHint": "E-mail*",
+  "supportNameHint": "Ime",
+  "supportSummaryHint": "Ovdje opišite problem ili neispravnost koju ste uočili*",
+  "supportSubmit": "Pošalji",
+  "supportTitle": "Prijava neispravnosti",
+  "supportDescription": "Prijavite neispravnost ili problem koji ste uočili u aplikaciji.",
+  "supportPrompt": "Radno vrijeme nije točno? Javite nam!",
+  "supportPromptAction": "Pošalji",
+  "ok": "U redu",
+  "supportSuccessTitle": "Poruka zaprimljena",
+  "suportSuccessDescription": "Ispraviti ćemo nedostatak u najkraćem mogućem roku. Ovisno o vrsti prijave, netko iz naše podrše će Vas kontaktirati putem priloženog maila."
 }

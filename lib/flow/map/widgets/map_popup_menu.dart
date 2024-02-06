@@ -5,12 +5,15 @@ import 'package:radili/hooks/translations_hook.dart';
 class MapPopupMenu extends HookWidget {
   final Function() onNotifyMePressed;
   final Function() onSupportPressed;
+  final Function() onSubmitTicketPressed;
+
   final bool isNotifyMeEnabled;
 
   const MapPopupMenu({
     super.key,
     required this.onNotifyMePressed,
     required this.onSupportPressed,
+    required this.onSubmitTicketPressed,
     required this.isNotifyMeEnabled,
   });
 
@@ -26,6 +29,9 @@ class MapPopupMenu extends HookWidget {
         case _Option.showSupport:
           onSupportPressed();
           break;
+        case _Option.submitTicket:
+          onSubmitTicketPressed();
+          break;
       }
     }
 
@@ -33,21 +39,18 @@ class MapPopupMenu extends HookWidget {
       icon: const Icon(Icons.more_vert_outlined),
       onSelected: handleSelected,
       itemBuilder: (ctx) => [
-        if (false)
-          PopupMenuItem(
-            value: _Option.notifyMe,
-            child: _PopupMenuItem(
-              icon: isNotifyMeEnabled
-                  ? Icons.notifications_rounded
-                  : Icons.notification_add_outlined,
-              text: isNotifyMeEnabled ? t.notifyMeEnabled : t.notifyMe,
-            ),
-          ),
         PopupMenuItem(
           value: _Option.showSupport,
           child: _PopupMenuItem(
             icon: Icons.launch_outlined,
             text: t.support,
+          ),
+        ),
+        PopupMenuItem(
+          value: _Option.submitTicket,
+          child: _PopupMenuItem(
+            icon: Icons.support_agent_outlined,
+            text: t.supportTitle,
           ),
         ),
       ],
@@ -84,4 +87,5 @@ class _PopupMenuItem extends HookWidget {
 enum _Option {
   notifyMe,
   showSupport,
+  submitTicket,
 }

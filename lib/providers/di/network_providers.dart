@@ -4,6 +4,7 @@ import 'package:radili/domain/remote/interceptors/authorization_interceptor.dart
 import 'package:radili/domain/remote/nominatim_api.dart';
 import 'package:radili/domain/remote/notifications_api.dart';
 import 'package:radili/domain/remote/stores_api.dart';
+import 'package:radili/domain/remote/support_api.dart';
 import 'package:radili/util/env.dart';
 
 final _dioProvider = Provider<Dio>((ref) {
@@ -27,4 +28,8 @@ final storesApiProvider = Provider<StoresApi>((ref) {
 
 final notificationsApiProvider = Provider<NotificationsApi>((ref) {
   return NotificationsApi(ref.watch(_dioProvider));
+});
+
+final supportApiProvider = Provider<SupportApi>((ref) {
+  return SupportApi(ref.watch(_dioProvider));
 });

@@ -94,6 +94,10 @@ class MapPage extends HookConsumerWidget {
       }
     }
 
+    void handleSubmitTicket() {
+      router.push(TicketCreateRoute());
+    }
+
     return Scaffold(
       body: Column(
         children: [
@@ -124,6 +128,7 @@ class MapPage extends HookConsumerWidget {
                     MapPopupMenu(
                       onNotifyMePressed: handleEditNotificationSubscription,
                       onSupportPressed: handleShowSupport,
+                      onSubmitTicketPressed: handleSubmitTicket,
                       isNotifyMeEnabled: subscription.valueOrNull != null,
                     ),
                   ],

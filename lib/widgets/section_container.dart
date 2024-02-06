@@ -7,13 +7,15 @@ class SectionContainer extends HookWidget {
   final Widget icon;
   final String label;
   final List<Widget> children;
+  final Widget divider;
 
   const SectionContainer({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     required this.children,
-  }) : super(key: key);
+    this.divider = const Divider(height: 12),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class SectionContainer extends HookWidget {
                       padding: const EdgeInsets.only(left: 44, right: 16),
                       child: e,
                     ),
-                    if (index < children.length - 1) const Divider(height: 12),
+                    if (index < children.length - 1) divider,
                   ])
               .flattened,
         ],

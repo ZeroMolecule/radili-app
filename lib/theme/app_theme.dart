@@ -33,6 +33,7 @@ class AppTheme {
               color: Colors.white,
             ),
           ),
+          hintStyle: TextStyle(fontSize: 14),
         ),
         dividerTheme: const DividerThemeData(
           thickness: 1,
@@ -76,9 +77,7 @@ class AppTheme {
           ),
         ),
         iconButtonTheme: IconButtonThemeData(
-          style: IconButton.styleFrom(
-            foregroundColor: colorScheme.primary,
-          ),
+          style: IconButton.styleFrom(),
         ),
         cardTheme: CardTheme(
           shape: RoundedRectangleBorder(
@@ -140,6 +139,16 @@ class AppTheme {
             ),
           ),
         ),
+        appBarTheme: const AppBarTheme(
+          iconTheme: IconThemeData(color: AppColors.dynamicBlack),
+          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
+          titleTextStyle: TextStyle(
+            color: AppColors.dynamicBlack,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
@@ -157,9 +166,11 @@ class AppTheme {
 
 final _textTheme = GoogleFonts.interTextTheme(
   const TextTheme(
-    bodyLarge: TextStyle(fontSize: 18),
-    bodyMedium: TextStyle(fontSize: 16),
-    bodySmall: TextStyle(fontSize: 14),
+    headlineLarge: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+    headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    bodyLarge: TextStyle(fontSize: 16),
+    bodyMedium: TextStyle(fontSize: 14),
+    bodySmall: TextStyle(fontSize: 12),
     labelSmall: TextStyle(fontSize: 14),
   ),
 );

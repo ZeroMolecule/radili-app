@@ -7,7 +7,7 @@ class ErrorParser {
 
   ErrorParser(this._translations);
 
-  String parse(Object error) {
+  String parse(Object? error) {
     try {
       if (error is DioException) {
         return error.response?.data?['error']?['message'] ?? error.message;
