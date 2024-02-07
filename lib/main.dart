@@ -61,6 +61,7 @@ class App extends HookConsumerWidget {
     return PointerInterceptor(
       child: Portal(
         child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
           routeInformationParser: router.defaultRouteParser(),
           routerDelegate: AutoRouterDelegate(router),
           localizationsDelegates: const [

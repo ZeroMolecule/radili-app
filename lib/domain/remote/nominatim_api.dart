@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/address_type.dart';
 import 'package:radili/util/extensions/iterable_extensions.dart';
+import 'package:radili/util/extensions/string_extensions.dart';
 import 'package:retrofit/http.dart';
 
 part 'nominatim_api.g.dart';
@@ -34,7 +35,9 @@ class NominatimApi extends __NominatimApi {
   NominatimApi(super.dio);
 
   Future<List<AddressInfo>> search({required String query}) async {
-    final results = await _search(query: '$query,hrvatska');
+    final results = await _search(
+      query: '${query.removeDiacritics()},hrvatska',
+    );
     return results
         .distinctBy((it) => it.details)
         .where(

@@ -14,4 +14,24 @@ extension StringExtensions on String {
     }
     return initials.join('');
   }
+
+  String removeDiacritics() {
+    const accentMap = {
+      '[čć]': 'c',
+      '[đ]': 'd',
+      '[š]': 's',
+      '[ž]': 'z',
+      '[ČĆ]': 'C',
+      '[Đ]': 'D',
+      '[Š]': 'S',
+      '[Ž]': 'Z',
+    };
+
+    var str = this;
+    accentMap.forEach((pattern, replacement) {
+      str = str.replaceAll(RegExp(pattern), replacement);
+    });
+
+    return str;
+  }
 }
