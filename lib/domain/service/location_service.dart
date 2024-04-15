@@ -2,6 +2,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
 import 'package:radili/domain/data/ip_info.dart';
+import 'package:retry/retry.dart';
 
 const _zgLatLng = LatLng(45.815399, 15.966568);
 
@@ -37,15 +38,19 @@ class LocationService {
   Future<AppLocation> getCurrent({
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) async {
-    final isPermissionAllowed = await requestPermissions();
-    if (isPermissionAllowed) {
-      await _applyAccuracy(accuracy);
-      final data = await _location.getLocation();
-      final location = data.toAppLocation();
-      if (location != null) {
-        return location;
-      }
-    }
+    const r = RetryOptions(maxAttempts: 3);
+    try {
+      final result = await r.retry(
+        () async {
+          await _applyAccuracy(accuracy);
+          final data = await _location.getLocation();
+          final location = data.toAppLocation();
+          return location ?? await getFallback();
+        },
+      );
+      return result;
+    } catch (e) {}
+
     return await getFallback();
   }
 
