@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:radili/domain/local/adapters/location_adapter.dart';
 import 'package:radili/domain/local/adapters/remote_asset_adapter.dart';
 import 'package:radili/domain/local/adapters/work_hours_adapter.dart';
 import 'package:radili/domain/local/boxes/meta_box.dart';
@@ -15,6 +16,7 @@ class AppHive {
   // custom types
   static const int remoteAssetTypeId = 100;
   static const int workHoursTypeId = 101;
+  static const int locationTypeId = 102;
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -23,6 +25,7 @@ class AppHive {
 
     Hive.registerAdapter(RemoteAssetAdapter());
     Hive.registerAdapter(WorkHoursAdapter());
+    Hive.registerAdapter(LocationAdapter());
   }
 
   static Future<void> clearStaleData() async {
