@@ -27,8 +27,11 @@ class RemoteAsset with _$RemoteAsset {
   }
 
   Uri get thumbnailOr => thumbnail ?? this.uri;
+
   Uri get smallOr => small ?? this.uri;
+
   Uri get mediumOr => medium ?? this.uri;
+
   Uri get largeOr => large ?? this.uri;
 }
 

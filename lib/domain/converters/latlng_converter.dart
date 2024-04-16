@@ -3,6 +3,7 @@ import 'package:latlong2/latlong.dart';
 
 class LatLngConverter extends JsonConverter<LatLng?, Map<String, dynamic>?> {
   const LatLngConverter();
+
   @override
   LatLng? fromJson(Map<String, dynamic>? json) {
     if (json is Map && json != null) {

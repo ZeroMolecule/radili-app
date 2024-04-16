@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,7 @@ import 'package:radili/generated/l10n.dart';
 import 'package:radili/providers/di/navigation_providers.dart';
 import 'package:radili/providers/di/theme_providers.dart';
 import 'package:radili/util/env.dart';
-import 'package:responsive_framework/breakpoint.dart';
-import 'package:responsive_framework/responsive_breakpoints.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
@@ -38,14 +38,19 @@ void main() async {
 
 Future<void> _beforeRun() async {
   usePathUrlStrategy();
+
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseAnalytics.instance.setConsent();
+
   Env.init();
+
   await AppHive.init();
   await AppHive.clearStaleData();
+
   FlutterNativeSplash.remove();
 }
 
