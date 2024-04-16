@@ -26,7 +26,12 @@ abstract class Env {
   @EnviedField(varName: 'URL_SUPPORT_PAGE')
   static const String urlSupportPage = _Env.urlSupportPage;
 
+  @EnviedField(varName: 'URL_PROJECT_PAGE')
+  static const String urlProjectPage = _Env.urlProjectPage;
+
   static final Uri uriSupportPage = Uri.parse(urlSupportPage);
+
+  static final Uri uriProjectPage = Uri.parse(urlProjectPage);
 
   static void init() {
     if (kDebugMode) {
@@ -39,6 +44,7 @@ abstract class Env {
         SENTRY_DSN=$sentryDsn
         SENTRY_ENVIRONMENT=$sentryEnvironment
         URL_SUPPORT_PAGE=$urlSupportPage
+        URL_PROJECT_PAGE=$urlProjectPage
     ''');
     }
   }

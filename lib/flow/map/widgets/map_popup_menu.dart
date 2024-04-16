@@ -6,6 +6,7 @@ class MapPopupMenu extends HookWidget {
   final Function() onNotifyMePressed;
   final Function() onSupportPressed;
   final Function() onSubmitTicketPressed;
+  final Function() onProjectPagePressed;
 
   final bool isNotifyMeEnabled;
 
@@ -15,6 +16,7 @@ class MapPopupMenu extends HookWidget {
     required this.onSupportPressed,
     required this.onSubmitTicketPressed,
     required this.isNotifyMeEnabled,
+    required this.onProjectPagePressed,
   });
 
   @override
@@ -32,6 +34,8 @@ class MapPopupMenu extends HookWidget {
         case _Option.submitTicket:
           onSubmitTicketPressed();
           break;
+        case _Option.projectPage:
+          onProjectPagePressed();
       }
     }
 
@@ -51,6 +55,13 @@ class MapPopupMenu extends HookWidget {
           child: _PopupMenuItem(
             icon: Icons.support_agent_outlined,
             text: t.supportTitle,
+          ),
+        ),
+        PopupMenuItem(
+          value: _Option.projectPage,
+          child: _PopupMenuItem(
+            icon: Icons.public_outlined,
+            text: t.projectPage,
           ),
         ),
       ],
@@ -88,4 +99,5 @@ enum _Option {
   notifyMe,
   showSupport,
   submitTicket,
+  projectPage,
 }

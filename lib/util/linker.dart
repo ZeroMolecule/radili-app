@@ -7,4 +7,10 @@ class Linker {
       await launchUrl(Env.uriSupportPage);
     }
   }
+
+  Future<void> launchProjectPage() async {
+    if (await canLaunchUrl(Env.uriProjectPage)) {
+      await launchUrl(Env.uriProjectPage);
+    }
+  }
 }

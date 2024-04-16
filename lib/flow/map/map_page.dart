@@ -87,6 +87,10 @@ class MapPage extends HookConsumerWidget {
       linker.launchSupportPage();
     }
 
+    void handleShowProjectPage() {
+      linker.launchProjectPage();
+    }
+
     void onSubsidiarySelected(Subsidiary? subsidiary) {
       selectedSubsidiary.value = subsidiary;
       if (subsidiary != null) {
@@ -129,6 +133,7 @@ class MapPage extends HookConsumerWidget {
                       onNotifyMePressed: handleEditNotificationSubscription,
                       onSupportPressed: handleShowSupport,
                       onSubmitTicketPressed: handleSubmitTicket,
+                      onProjectPagePressed: handleShowProjectPage,
                       isNotifyMeEnabled: subscription.valueOrNull != null,
                     ),
                   ],
