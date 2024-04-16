@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCDKYwYSwZfFsS3faP83xLE_gXfjZg4mcs',
-    appId: '1:51796373713:android:7174a4db7f25b9491015f0',
+    appId: '1:51796373713:android:c22d66829f899a961015f0',
     messagingSenderId: '51796373713',
     projectId: 'radi-li',
     storageBucket: 'radi-li.appspot.com',
@@ -66,12 +66,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDNCrw7JL-BYLp_yixPRb9ptUsloooWJ7o',
-    appId: '1:51796373713:ios:4acc7a448f0044281015f0',
+    appId: '1:51796373713:ios:f4094eb6b212792f1015f0',
     messagingSenderId: '51796373713',
     projectId: 'radi-li',
     storageBucket: 'radi-li.appspot.com',
-    iosClientId:
-        '51796373713-5ntoolqhe469o92osko9u09fm9nedgsn.apps.googleusercontent.com',
-    iosBundleId: 'com.zeromolecule.radili.radili',
+    iosClientId: '51796373713-jiei1db0vbffk36li1ud7q7lo3smjef4.apps.googleusercontent.com',
+    iosBundleId: 'com.zeromolecule.radili',
   );
+
 }

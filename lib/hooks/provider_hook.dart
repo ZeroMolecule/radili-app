@@ -26,7 +26,7 @@ class _UseProviderHookState<T> extends HookState<T, _UseProviderHook<T>> {
     super.initHook();
     _subscription ??= ProviderScope.containerOf(context, listen: false).listen(
       hook.provider,
-          (previous, next) {
+      (previous, next) {
         setState(() {
           _value = next;
         });

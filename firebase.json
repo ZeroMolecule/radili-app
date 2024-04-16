@@ -1,16 +1,1 @@
-{
-  "hosting": {
-    "public": "build/web",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  }
-}
+{"hosting":{"public":"build/web","ignore":["firebase.json","**/.*","**/node_modules/**"],"rewrites":[{"source":"**","destination":"/index.html"}]},"flutter":{"platforms":{"android":{"default":{"projectId":"radi-li","appId":"1:51796373713:android:c22d66829f899a961015f0","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"radi-li","appId":"1:51796373713:ios:f4094eb6b212792f1015f0","uploadDebugSymbols":true,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"radi-li","configurations":{"android":"1:51796373713:android:c22d66829f899a961015f0","ios":"1:51796373713:ios:f4094eb6b212792f1015f0","web":"1:51796373713:web:f29119969e1ec0b71015f0"}}}}}}
