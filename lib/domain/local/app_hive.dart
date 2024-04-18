@@ -6,7 +6,6 @@ import 'package:radili/domain/local/boxes/meta_box.dart';
 import 'package:radili/domain/local/boxes/subsidiaries_box.dart';
 import 'package:radili/domain/local/collections/store_collection.dart';
 import 'package:radili/domain/local/collections/subsidiary_collection.dart';
-import 'package:radili/util/extensions/date_time_extensions.dart';
 
 class AppHive {
   // collections
@@ -34,7 +33,8 @@ class AppHive {
 
     final lastCleared = await metaBox.getLastCacheCleared();
     final now = DateTime.now();
-    if (lastCleared == null || !lastCleared.isSameWeekAs(now)) {
+    if (lastCleared == null ||
+        lastCleared.difference(now).abs() > const Duration(hours: 1)) {
       await subsidiariesBox.clearAll();
       await metaBox.setLastCacheCleared(now);
     }
