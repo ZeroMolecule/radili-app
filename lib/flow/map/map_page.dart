@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
@@ -59,6 +60,7 @@ class MapPage extends HookConsumerWidget {
     final subsidiaries = ref.watch(nearbySubsidiariesProvider(query.value));
     final showSubsidiary = useShowSubsidiaryMarker();
     final subscription = ref.watch(notificationSubscriptionProvider);
+    final mapPosition = useState<LatLng?>(null);
 
     void handleFindNearby(LatLng northeast, LatLng southwest) {
       debouncer
@@ -102,6 +104,24 @@ class MapPage extends HookConsumerWidget {
       router.push(TicketCreateRoute());
     }
 
+    useValueChanged<Subsidiary?, void>(selectedSubsidiary.value, (_, __) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final position = selectedSubsidiary.value?.coordinates;
+        if (position != null) {
+          mapPosition.value = position;
+        }
+      });
+    });
+
+    useValueChanged<AddressInfo?, void>(address, (oldValue, oldResult) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final position = address?.latLng;
+        if (position != null) {
+          mapPosition.value = position;
+        }
+      });
+    });
+
     return Scaffold(
       body: Column(
         children: [
@@ -120,7 +140,8 @@ class MapPage extends HookConsumerWidget {
               child: AddressSearch(
                 isLoading: subsidiaries.isLoading || location.isLoading,
                 address: address,
-                onOptionSelected: addressSelectedNotifier.set,
+                onAddressSelected: addressSelectedNotifier.set,
+                onSubsidiarySelected: onSubsidiarySelected,
                 suffix: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -143,7 +164,7 @@ class MapPage extends HookConsumerWidget {
           ),
           Expanded(
             child: SubsidiariesMap(
-              position: address?.latLng,
+              position: mapPosition.value,
               subsidiaries: subsidiaries.valueOrNull ?? [],
               onPositionChanged: handleFindNearby,
               onSubsidiaryPressed: onSubsidiarySelected,

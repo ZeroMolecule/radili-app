@@ -125,9 +125,10 @@ class NotificationSubscriptionPage extends HookConsumerWidget {
                         isLoading: false,
                         showSearchIcon: false,
                         address: form.control('address').value,
-                        onOptionSelected: (AddressInfo option) {
+                        onAddressSelected: (AddressInfo option) {
                           form.control('address').value = option;
                         },
+                        onSubsidiarySelected: (_) {},
                         padding: const EdgeInsets.all(16),
                       ),
                     ],

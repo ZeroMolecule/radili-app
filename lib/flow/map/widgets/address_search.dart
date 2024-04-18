@@ -14,7 +14,8 @@ import 'package:radili/widgets/store_icon.dart';
 
 class AddressSearch extends HookConsumerWidget {
   final AddressInfo? address;
-  final Function(AddressInfo option) onOptionSelected;
+  final Function(AddressInfo option) onAddressSelected;
+  final Function(Subsidiary subsidiary) onSubsidiarySelected;
   final EdgeInsets padding;
   final Widget? suffix;
   final bool isLoading;
@@ -22,7 +23,8 @@ class AddressSearch extends HookConsumerWidget {
 
   const AddressSearch({
     super.key,
-    required this.onOptionSelected,
+    required this.onAddressSelected,
+    required this.onSubsidiarySelected,
     this.isLoading = false,
     this.address,
     this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -70,8 +72,8 @@ class AddressSearch extends HookConsumerWidget {
 
     return _AddressSearchResults(
       data: searchResults.valueOrNull ?? AddressSearchResults.empty,
-      onAddressSelected: onOptionSelected,
-      onSubsidiarySelected: (_) {},
+      onAddressSelected: onAddressSelected,
+      onSubsidiarySelected: onSubsidiarySelected,
       child: TextField(
         key: key.value,
         controller: controller,
