@@ -5,12 +5,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/marker_cluster.dart';
 import 'package:radili/flow/map/widgets/subsidiary_marker.dart';
+import 'package:radili/hooks/location_stream_hook.dart';
 import 'package:radili/hooks/map_controller_animated_hook.dart';
 import 'package:radili/providers/location_provider.dart';
 import 'package:radili/util/extensions/map_extensions.dart';
@@ -51,6 +53,15 @@ class SubsidiariesMap extends HookConsumerWidget {
     final cameraBounds = useState<LatLngBounds?>(null);
     final location = ref.watch(locationProvider);
     final isLoading = location.isLoading && !location.hasValue;
+    final locationStream = useLocationStream();
+    final locationMarkerStream = useMemoized(() {
+      return locationStream.map(
+        (event) => LocationMarkerPosition(
+            latitude: event.latitude,
+            longitude: event.longitude,
+            accuracy: event.accuracy),
+      );
+    }, [locationStream]);
 
     useEffect(() {
       if (position != null && controller.isAttached) {
@@ -61,10 +72,12 @@ class SubsidiariesMap extends HookConsumerWidget {
 
     useEffect(() {
       final latLng = location.valueOrNull?.latLng;
-      final mapController = controller.mapControllerOrNull;
-      if (latLng != null && mapController != null) {
-        mapController.move(latLng, 14);
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final mapController = controller.mapControllerOrNull;
+        if (latLng != null && mapController != null) {
+          mapController.move(latLng, 14);
+        }
+      });
       return null;
     }, [location, controller]);
 
@@ -123,9 +136,11 @@ class SubsidiariesMap extends HookConsumerWidget {
       options: MapOptions(
         minZoom: 8,
         maxZoom: 18,
-        bounds: LatLngBounds(
-          const LatLng(42.3649, 13.3836),
-          const LatLng(46.5547, 19.4481),
+        initialCameraFit: CameraFit.insideBounds(
+          bounds: LatLngBounds(
+            const LatLng(42.3649, 13.3836),
+            const LatLng(46.5547, 19.4481),
+          ),
         ),
         onPositionChanged: (position, _) {
           cameraBounds.value = position.bounds;
@@ -134,13 +149,16 @@ class SubsidiariesMap extends HookConsumerWidget {
             onPositionChanged?.call(bounds.northEast, bounds.southWest);
           }
         },
-        enableMultiFingerGestureRace: true,
+        interactionOptions: const InteractionOptions(
+          enableMultiFingerGestureRace: true,
+          enableScrollWheel: true,
+          flags: InteractiveFlag.pinchMove |
+              InteractiveFlag.drag |
+              InteractiveFlag.pinchZoom |
+              InteractiveFlag.doubleTapZoom |
+              InteractiveFlag.flingAnimation,
+        ),
         onTap: (_, __) => onSubsidiaryPressed?.call(null),
-        interactiveFlags: InteractiveFlag.pinchMove |
-            InteractiveFlag.drag |
-            InteractiveFlag.pinchZoom |
-            InteractiveFlag.doubleTapZoom |
-            InteractiveFlag.flingAnimation,
       ),
       children: [
         if (!isLoading)
@@ -151,6 +169,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             subdomains: const ['a', 'b', 'c', 'd'],
             tileDisplay: const TileDisplay.instantaneous(),
           ),
+        CurrentLocationLayer(positionStream: locationMarkerStream),
         if (!isLoading)
           MarkerClusterLayerWidget(
             options: MarkerClusterLayerOptions(
