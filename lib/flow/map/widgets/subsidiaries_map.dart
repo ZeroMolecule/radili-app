@@ -55,12 +55,12 @@ class SubsidiariesMap extends HookConsumerWidget {
     final isLoading = location.isLoading && !location.hasValue;
     final locationStream = useLocationStream();
     final locationMarkerStream = useMemoized(() {
-      return locationStream.map(
-        (event) => LocationMarkerPosition(
-            latitude: event.latitude,
-            longitude: event.longitude,
-            accuracy: event.accuracy),
-      );
+      return locationStream.where((it) => !it.isMock).map(
+            (event) => LocationMarkerPosition(
+                latitude: event.latitude,
+                longitude: event.longitude,
+                accuracy: event.accuracy),
+          );
     }, [locationStream]);
 
     useEffect(() {

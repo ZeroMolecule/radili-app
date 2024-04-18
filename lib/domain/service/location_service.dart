@@ -34,7 +34,7 @@ class LocationService {
   }
 
   Future<AppLocation> getFallback() async {
-    return AppLocation.fromLatLng(_zgLatLng);
+    return AppLocation.fromLatLng(_zgLatLng, isMock: true);
   }
 
   Future<AppLocation?> getCached() async {

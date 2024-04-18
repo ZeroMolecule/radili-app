@@ -19,12 +19,16 @@ class AppLocation with _$AppLocation {
   factory AppLocation.fromJson(Map<String, dynamic> json) =>
       _$AppLocationFromJson(json);
 
-  factory AppLocation.fromLatLng(LatLng latLng) => AppLocation(
+  factory AppLocation.fromLatLng(
+    LatLng latLng, {
+    bool isMock = false,
+  }) =>
+      AppLocation(
         latitude: latLng.latitude,
         longitude: latLng.longitude,
         accuracy: 0.0,
         heading: 0.0,
-        isMock: false,
+        isMock: isMock,
       );
 
   LatLng get latLng => LatLng(latitude, longitude);
