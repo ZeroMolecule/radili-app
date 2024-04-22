@@ -29,9 +29,14 @@ abstract class Env {
   @EnviedField(varName: 'URL_PROJECT_PAGE')
   static const String urlProjectPage = _Env.urlProjectPage;
 
+  @EnviedField(varName: 'URL_DISCOUNTS_PAGE')
+  static const String urlDiscountsPage = _Env.urlDiscountsPage;
+
   static final Uri uriSupportPage = Uri.parse(urlSupportPage);
 
   static final Uri uriProjectPage = Uri.parse(urlProjectPage);
+
+  static final Uri uriDiscountsPage = Uri.parse(urlDiscountsPage);
 
   static void init() {
     if (kDebugMode) {

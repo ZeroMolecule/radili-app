@@ -34,35 +34,44 @@ FutureOr Function(Subsidiary subsidiary) useShowSubsidiaryMarker() {
 
     showDialog(
       context: context,
-      builder: (ctx) => Center(
-        child: ConstrainedBox(
-          constraints: constraints,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Card(
-                margin: const EdgeInsets.only(bottom: 16, left: 12, right: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: SubsidiaryItem(
-                    subsidiary: subsidiary,
-                    isSelected: true,
-                    onSupportPressed: handleSupportPressed,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: constraints,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Card(
+                    margin: const EdgeInsets.only(
+                      bottom: 16,
+                      left: 12,
+                      right: 12,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SubsidiaryItem(
+                        subsidiary: subsidiary,
+                        isSelected: true,
+                        onSupportPressed: handleSupportPressed,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.close_rounded),
-                color: colors.onSurface,
-                style: IconButton.styleFrom(
-                  backgroundColor: colors.surface,
-                  shape: const CircleBorder(),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.close_rounded),
+                  color: colors.onSurface,
+                  style: IconButton.styleFrom(
+                    backgroundColor: colors.surface,
+                    shape: const CircleBorder(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
