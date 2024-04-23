@@ -24,8 +24,16 @@ class StoreDiscounts extends HookWidget {
       children: [
         ConstrainedBox(
           constraints: constraints,
-          child: InAppWebView(
-            initialUrlRequest: URLRequest(url: WebUri.uri(uri)),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              const Center(child: CircularProgressIndicator()),
+              Positioned.fill(
+                child: InAppWebView(
+                  initialUrlRequest: URLRequest(url: WebUri.uri(uri)),
+                ),
+              ),
+            ],
           ),
         ),
       ],
