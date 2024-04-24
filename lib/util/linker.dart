@@ -22,6 +22,7 @@ class Linker {
         'limit': '21',
         'ref': 'radili_dev',
         'provider': store.slug,
+        'card': 'condensed',
       },
     );
   }

@@ -11,7 +11,7 @@ class StoreDiscounts extends HookWidget {
   const StoreDiscounts({
     super.key,
     required this.store,
-    this.constraints = const BoxConstraints(minHeight: 460, maxHeight: 460),
+    this.constraints = const BoxConstraints(minHeight: 320, maxHeight: 320),
   });
 
   @override

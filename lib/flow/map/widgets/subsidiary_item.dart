@@ -37,7 +37,7 @@ class SubsidiaryItem extends HookWidget {
         children: [
           if (cover != null)
             Container(
-              height: 100,
+              constraints: const BoxConstraints(maxHeight: 140),
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -45,7 +45,10 @@ class SubsidiaryItem extends HookWidget {
                   topRight: Radius.circular(8),
                 ),
               ),
-              child: CachedNetworkImage(imageUrl: cover.toString()),
+              child: CachedNetworkImage(
+                imageUrl: cover.toString(),
+                fit: BoxFit.fitWidth,
+              ),
             ),
           Padding(
             padding: const EdgeInsets.only(top: 16),
@@ -82,10 +85,7 @@ class SubsidiaryItem extends HookWidget {
           Builder(builder: (context) {
             switch (tabIndex) {
               case 1:
-                return Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: StoreDiscounts(store: subsidiary.store),
-                );
+                return StoreDiscounts(store: subsidiary.store);
               default:
                 return Padding(
                   padding: const EdgeInsets.only(top: 16),
