@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/workhours_block.dart';
+import 'package:radili/generated/assets.gen.dart';
+import 'package:radili/generated/colors.gen.dart';
+import 'package:radili/hooks/linker_hook.dart';
 import 'package:radili/hooks/theme_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/widgets/store_discounts.dart';
@@ -23,12 +26,21 @@ class SubsidiaryItem extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final t = useTranslations();
-    final textTheme = useTheme().material.textTheme;
+    final theme = useTheme();
+    final linker = useLinker();
+    final textTheme = theme.material.textTheme;
     final cover = subsidiary.store.cover?.largeOr;
     final tabController = useTabController(initialLength: 2);
 
     final tabIndex =
         useListenableSelector(tabController, () => tabController.index);
+
+    void handleOpenCatalogue() async {
+      final url = subsidiary.store.catalogueUrl;
+      if (url != null) {
+        await linker.launch(url);
+      }
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -65,21 +77,44 @@ class SubsidiaryItem extends HookWidget {
             style: textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
-          TabBar(
-            controller: tabController,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            labelPadding: const EdgeInsets.only(right: 12),
-            indicatorSize: TabBarIndicatorSize.label,
-            tabs: [
-              _Tab(
-                text: t.subsidiaryWorkHours,
-                icon: Icons.access_time_rounded,
+          Row(
+            children: [
+              Expanded(
+                child: TabBar(
+                  controller: tabController,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  labelPadding: const EdgeInsets.only(right: 12),
+                  indicatorSize: TabBarIndicatorSize.label,
+                  tabs: [
+                    _Tab(
+                      text: t.subsidiaryWorkHours,
+                      icon: Icons.access_time_rounded,
+                    ),
+                    if (subsidiary.store.jelposkupiloSupported)
+                      _Tab(
+                        text: t.subsidiaryDiscounts,
+                        icon: Icons.local_offer_outlined,
+                      ),
+                  ],
+                ),
               ),
-              _Tab(
-                text: t.subsidiaryDiscounts,
-                icon: Icons.local_offer_outlined,
-              ),
+              if (subsidiary.store.catalogueUrl != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: TextButton.icon(
+                    style: theme.linkButton,
+                    label: Text(t.subsidiaryCatalogue),
+                    icon: Assets.icons.book.svg(
+                      height: 16,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.darkBlue,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    onPressed: handleOpenCatalogue,
+                  ),
+                ),
             ],
           ),
           Builder(builder: (context) {

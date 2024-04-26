@@ -19,6 +19,8 @@ class StoreCollection with _$StoreCollection {
     @HiveField(3) RemoteAsset? icon,
     @HiveField(4) RemoteAsset? cover,
     @HiveField(5) RemoteAsset? marker,
+    @HiveField(6) String? catalogueUrl,
+    @HiveField(7) bool? jelposkupiloSupported,
   }) = _StoreCollection;
 
   factory StoreCollection.fromStore(Store store) => StoreCollection(
@@ -28,5 +30,7 @@ class StoreCollection with _$StoreCollection {
         icon: store.icon,
         cover: store.cover,
         marker: store.marker,
+        catalogueUrl: store.catalogueUrl?.toString(),
+        jelposkupiloSupported: store.jelposkupiloSupported,
       );
 }
