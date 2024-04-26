@@ -10,6 +10,9 @@
     }
   },
   "noDataForWorkHours": "Zatvoreno",
+  "subsidiaryWorkHours": "Radno vrijeme",
+  "subsidiaryDiscounts": "Akcije",
+  "subsidiaryCatalogue": "Katalog",
   "workingHours": "Radno vrijeme",
   "dayOfTheWeek": "{value, select, monday{Ponedjeljak} tuesday{Utorak} wednesday{Srijeda} thursday{Četvrtak} friday{Petak} saturday{Subota} sunday{Nedjelja} other{Nepoznato}}",
   "@dayOfTheWeek": {
@@ -50,5 +53,6 @@
   "supportPromptAction": "Pošalji",
   "ok": "U redu",
   "supportSuccessTitle": "Poruka zaprimljena",
-  "suportSuccessDescription": "Ispraviti ćemo nedostatak u najkraćem mogućem roku. Ovisno o vrsti prijave, netko iz naše podrše će Vas kontaktirati putem priloženog maila."
+  "suportSuccessDescription": "Ispraviti ćemo nedostatak u najkraćem mogućem roku. Ovisno o vrsti prijave, netko iz naše podrše će Vas kontaktirati putem priloženog maila.",
+  "jelposkupiloSource": "izvor: "
 }

@@ -71,7 +71,6 @@ dependencies:
   responsive_framework: ^1.4.0
   retrofit: ^4.1.0
   rxdart: ^0.27.7
-  sentry_flutter: ^7.19.0
   shared_preferences: ^2.2.3
   sliver_tools: ^0.2.12
   url_launcher: ^6.2.6
@@ -80,7 +79,8 @@ dependencies:
   retry: ^3.1.2
   firebase_analytics: ^10.10.1
   flutter_map_cancellable_tile_provider: ^2.0.0
-  package_info_plus: ^7.0.0
+  sentry_flutter: ^7.20.0
+  flutter_inappwebview: ^6.0.0
 
 dependency_overrides:
   intl: ^0.19.0

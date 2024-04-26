@@ -1,16 +1,36 @@
+import 'package:radili/domain/data/store.dart';
 import 'package:radili/util/env.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Linker {
-  Future<void> launchSupportPage() async {
-    if (await canLaunchUrl(Env.uriSupportPage)) {
-      await launchUrl(Env.uriSupportPage);
-    }
+  Future<bool> launch(Uri uri) {
+    return _launchUrl(uri);
   }
 
-  Future<void> launchProjectPage() async {
-    if (await canLaunchUrl(Env.uriProjectPage)) {
-      await launchUrl(Env.uriProjectPage);
-    }
+  Future<bool> launchSupportPage() {
+    return _launchUrl(Env.uriSupportPage);
   }
+
+  Future<bool> launchProjectPage() {
+    return _launchUrl(Env.uriProjectPage);
+  }
+
+  Uri buildDiscountsLink(Store store) {
+    return Env.uriDiscountsPage.replace(
+      queryParameters: {
+        'mode': 'light',
+        'limit': '21',
+        'ref': 'radili_dev',
+        'provider': store.slug,
+        'card': 'condensed',
+      },
+    );
+  }
+}
+
+Future<bool> _launchUrl(dynamic url) async {
+  final target = url?.toString() ?? '';
+  if (!await canLaunchUrlString(target)) return false;
+
+  return await launchUrlString(target);
 }

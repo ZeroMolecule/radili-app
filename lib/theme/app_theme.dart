@@ -7,6 +7,11 @@ class AppTheme {
 
   const AppTheme._(this.material);
 
+  ButtonStyle get linkButton => TextButton.styleFrom(
+        foregroundColor: AppColors.darkBlue,
+        padding: EdgeInsets.zero,
+      );
+
   factory AppTheme.light() {
     const colorScheme = ColorScheme.light(
       primary: AppColors.darkBlue,
@@ -149,6 +154,7 @@ class AppTheme {
             fontWeight: FontWeight.w600,
           ),
         ),
+        tabBarTheme: const TabBarTheme(dividerHeight: 0),
       ),
     );
   }

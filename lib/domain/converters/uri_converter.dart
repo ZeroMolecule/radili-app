@@ -8,10 +8,15 @@ class UriConverter extends JsonConverter<Uri?, String?> {
 
   @override
   Uri? fromJson(String? json) {
-    final uri = json == null ? null : Uri.tryParse(json);
-    if (uri?.isAbsolute == false) {
+    if (json == null) return null;
+
+    final uri = Uri.tryParse(json);
+    if (uri == null) return null;
+
+    if (!uri.isAbsolute) {
       return Uri.parse(Env.apiUrl).resolve(uri.toString());
     }
+
     return uri;
   }
 

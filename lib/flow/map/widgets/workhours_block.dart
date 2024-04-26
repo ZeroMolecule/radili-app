@@ -12,10 +12,10 @@ class WorkHoursBlock extends HookWidget {
   final bool expanded;
 
   const WorkHoursBlock({
-    Key? key,
+    super.key,
     required this.workHours,
     this.expanded = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,9 @@ class _CollapsedWorkHours extends HookWidget {
   final WorkHours workHours;
 
   const _CollapsedWorkHours({
-    Key? key,
+    super.key,
     required this.workHours,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,16 +63,15 @@ class _ExpandedWorkHours extends HookWidget {
   final WorkHours workHours;
 
   const _ExpandedWorkHours({
-    Key? key,
+    super.key,
     required this.workHours,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final textTheme = useTheme().material.textTheme;
     final t = useTranslations();
     final currentWeekDay = DateTime.now().weekday;
-    final colors = useColorScheme();
 
     final workHoursByDay = useMemoized(() {
       return workHours.byDay().entries.map((e) {
@@ -116,21 +115,7 @@ class _ExpandedWorkHours extends HookWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 4),
-          child: Text(
-            t.workingHours,
-            style: textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: workHoursByDay,
-        ),
-      ],
+      children: workHoursByDay,
     );
   }
 }
