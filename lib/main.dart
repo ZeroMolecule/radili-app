@@ -22,7 +22,7 @@ void main() async {
   await SentryFlutter.init(
     (options) {
       options.dsn = Env.sentryDsn;
-      options.beforeSend = (SentryEvent event, {Hint? hint}) async {
+      options.beforeSend = (SentryEvent event, Hint hint) async {
         if (kDebugMode) {
           return null;
         }

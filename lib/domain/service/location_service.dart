@@ -44,13 +44,19 @@ class LocationService {
   Future<AppLocation?> getCurrent({
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) async {
+    try {
+      await _requestPermission();
+    } catch (e) {
+      return null;
+    }
+
     const r = RetryOptions(maxAttempts: 2);
     try {
       final result = await r.retry(
         () async {
           await _applyAccuracy(accuracy);
-          final data = await _location.getLocation();
-          final location = data.toAppLocation();
+          final data = await _getLocation();
+          final location = data!.toAppLocation();
           return location;
         },
       );
@@ -67,6 +73,20 @@ class LocationService {
     if (_accuracy != accuracy) {
       _accuracy = accuracy;
       await _location.changeSettings(accuracy: accuracy);
+    }
+  }
+
+  Future<LocationData?> _getLocation() async {
+    final status = await _location.requestPermission();
+    if (!status.isGranted) return null;
+
+    return await _location.getLocation();
+  }
+
+  Future<void> _requestPermission() async {
+    final status = await _location.requestPermission();
+    if (!status.isGranted) {
+      throw Exception('Location permission not granted');
     }
   }
 }

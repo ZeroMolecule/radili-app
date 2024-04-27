@@ -169,7 +169,15 @@ class SubsidiariesMap extends HookConsumerWidget {
             subdomains: const ['a', 'b', 'c', 'd'],
             tileDisplay: const TileDisplay.instantaneous(),
           ),
-        CurrentLocationLayer(positionStream: locationMarkerStream),
+        if (false)
+          CurrentLocationLayer(
+            positionStream: locationMarkerStream,
+            headingStream: const Stream.empty(),
+            alignDirectionStream: const Stream.empty(),
+            alignPositionStream: const Stream.empty(),
+            alignPositionOnUpdate: AlignOnUpdate.never,
+            alignDirectionOnUpdate: AlignOnUpdate.never,
+          ),
         if (!isLoading)
           MarkerClusterLayerWidget(
             options: MarkerClusterLayerOptions(
