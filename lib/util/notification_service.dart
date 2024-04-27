@@ -1,6 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:radili/util/env.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 class PushNotificationService {
   static late final PushNotificationService _instance =
@@ -23,9 +22,7 @@ class PushNotificationService {
     try {
       await PushNotificationService
           ._setForegroundNotificationPresentationOptions();
-    } catch (e) {
-      Sentry.captureException(e);
-    }
+    } catch (e) {}
   }
 
   static Future<void> _setForegroundNotificationPresentationOptions() async {
