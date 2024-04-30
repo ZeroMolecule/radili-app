@@ -18,7 +18,7 @@ class SupportApi extends __SupportApi {
     required String email,
     required String? name,
     required String summary,
-    required int? subsidiaryId,
+    required String? subsidiaryId,
   }) async {
     await _createTicket({
       'data': {

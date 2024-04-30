@@ -2,9 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/flow/map/map_page.dart';
-import 'package:radili/flow/notification_subscription/notification_subscription_page.dart';
-import 'package:radili/flow/success/success_page.dart';
-import 'package:radili/flow/ticket_create/ticket_create_page.dart';
 
 part 'app_router.gr.dart';
 
@@ -15,18 +12,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: MapRoute.page,
           initial: true,
-        ),
-        AutoRoute(
-          page: NotificationSubscriptionRoute.page,
-          path: '/notification-settings',
-        ),
-        AutoRoute(
-          page: TicketCreateRoute.page,
-          path: '/ticket-create',
-        ),
-        AutoRoute(
-          page: SuccessRoute.page,
-          path: '/success',
         ),
       ];
 }

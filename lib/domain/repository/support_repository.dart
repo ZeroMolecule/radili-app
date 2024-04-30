@@ -9,7 +9,7 @@ class SupportRepository {
     required String email,
     required String? name,
     required String summary,
-    required int? subsidiaryId,
+    required String? subsidiaryId,
   }) async {
     await _supportApi.createTicket(
       email: email,

@@ -8,9 +8,10 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:radili/domain/local/app_hive.dart';
+import 'package:radili/domain/local/app_database.dart';
 import 'package:radili/firebase_options.dart';
 import 'package:radili/generated/l10n.dart';
+import 'package:radili/providers/di/di.dart';
 import 'package:radili/providers/di/navigation_providers.dart';
 import 'package:radili/providers/di/theme_providers.dart';
 import 'package:radili/util/env.dart';
@@ -27,14 +28,15 @@ Future<void> _beforeRun() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Future.wait([
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    AppDatabase.init(),
+  ]);
 
   FirebaseAnalytics.instance.setConsent();
-
   Env.init();
 
-  await AppHive.init();
-  await AppHive.clearStaleData();
+  await injectDependencies();
 
   FlutterNativeSplash.remove();
 }

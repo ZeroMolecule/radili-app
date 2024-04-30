@@ -8,7 +8,6 @@ import 'package:radili/hooks/breakpoints_hook.dart';
 import 'package:radili/hooks/color_scheme_hook.dart';
 import 'package:radili/hooks/router_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
-import 'package:radili/navigation/app_router.dart';
 
 FutureOr Function(Subsidiary subsidiary) useShowSubsidiaryMarker() {
   final t = useTranslations();
@@ -28,9 +27,7 @@ FutureOr Function(Subsidiary subsidiary) useShowSubsidiaryMarker() {
   }, [breakpoints]);
 
   return (Subsidiary subsidiary) async {
-    void handleSupportPressed() async {
-      router.popAndPush(TicketCreateRoute(subsidiaryId: subsidiary.id));
-    }
+    void handleSupportPressed() async {}
 
     showDialog(
       context: context,

@@ -1,6 +1,6 @@
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
-import 'package:radili/providers/di/repository_providers.dart';
+import 'package:radili/providers/di/di.dart';
 import 'package:radili/providers/location_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,7 +8,7 @@ part 'address_selected_provider.g.dart';
 
 @riverpod
 class AddressSelected extends _$AddressSelected {
-  StoresRepository get _storesRepository => ref.read(storesRepositoryProvider);
+  StoresRepository get _storesRepository => di.get();
 
   @override
   Future<AddressInfo?> build() async {

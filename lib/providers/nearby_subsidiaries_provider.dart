@@ -2,7 +2,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
-import 'package:radili/providers/di/repository_providers.dart';
+import 'package:radili/providers/di/di.dart';
 import 'package:radili/util/extensions/iterable_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -10,7 +10,7 @@ part 'nearby_subsidiaries_provider.g.dart';
 
 @riverpod
 class NearbySubsidiaries extends _$NearbySubsidiaries {
-  StoresRepository get _storesRepository => ref.read(storesRepositoryProvider);
+  StoresRepository get _storesRepository => di.get();
 
   @override
   Stream<List<Subsidiary>> build(NearbySubsidiariesQuery query) {

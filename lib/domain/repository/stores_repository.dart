@@ -1,7 +1,7 @@
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/domain/local/boxes/subsidiaries_box.dart';
+import 'package:radili/domain/local/subsidiaries_box.dart';
 import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/domain/remote/nominatim_api.dart';
 import 'package:radili/domain/remote/stores_api.dart';
@@ -11,7 +11,11 @@ class StoresRepository {
   final StoresApi _storesApi;
   final SubsidiariesBox _subsidiariesBox;
 
-  StoresRepository(this._nominatimApi, this._storesApi, this._subsidiariesBox);
+  StoresRepository(
+    this._nominatimApi,
+    this._storesApi,
+    this._subsidiariesBox,
+  );
 
   Future<List<AddressInfo>> searchAddress(String query) {
     return _nominatimApi.search(query: query);
@@ -30,7 +34,7 @@ class StoresRepository {
       northeast: northeast,
       southwest: southwest,
     );
-    await _subsidiariesBox.upsert(subsidiaries);
+    await _subsidiariesBox.save(subsidiaries);
     if (query == null) {
       return subsidiaries;
     }
@@ -40,13 +44,13 @@ class StoresRepository {
   Stream<List<Subsidiary>> watchSubsidiaries([
     NearbySubsidiariesQuery? query,
   ]) async* {
-    yield await _subsidiariesBox.getAll(query);
-    yield* _subsidiariesBox.watchAll(query).distinct();
+    //  yield await _subsidiariesBox.getAll(query);
+    //   yield* _subsidiariesBox.watchAll(query).distinct();
   }
 
   Future<List<Subsidiary>> searchSubsidiaries(String query) async {
     final subsidiaries = await _storesApi.searchSubsidiaries(query);
-    await _subsidiariesBox.upsert(subsidiaries);
+    await _subsidiariesBox.save(subsidiaries, deleteOld: false);
     return subsidiaries;
   }
 }

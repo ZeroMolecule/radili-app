@@ -44,9 +44,9 @@ class SubsidiariesMap extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const markerSize = 45.0;
-    const clusterSize = 50.0;
-    const clusterRadius = 90;
+    const markerSize = 36.0;
+    const clusterSize = 36.0;
+    const clusterRadius = 50;
 
     final localController = useMapControllerAnimated();
     final controller = this.controller ?? localController;
@@ -169,15 +169,7 @@ class SubsidiariesMap extends HookConsumerWidget {
             subdomains: const ['a', 'b', 'c', 'd'],
             tileDisplay: const TileDisplay.instantaneous(),
           ),
-        if (false)
-          CurrentLocationLayer(
-            positionStream: locationMarkerStream,
-            headingStream: const Stream.empty(),
-            alignDirectionStream: const Stream.empty(),
-            alignPositionStream: const Stream.empty(),
-            alignPositionOnUpdate: AlignOnUpdate.never,
-            alignDirectionOnUpdate: AlignOnUpdate.never,
-          ),
+        CurrentLocationLayer(positionStream: locationMarkerStream),
         if (!isLoading)
           MarkerClusterLayerWidget(
             options: MarkerClusterLayerOptions(

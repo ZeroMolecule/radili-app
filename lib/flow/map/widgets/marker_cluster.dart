@@ -6,10 +6,10 @@ class MarkerCluster extends HookWidget {
   final int count;
 
   const MarkerCluster({
-    Key? key,
+    super.key,
     this.size = 45,
     required this.count,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

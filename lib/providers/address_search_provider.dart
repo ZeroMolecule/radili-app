@@ -6,7 +6,7 @@ import 'package:radili/domain/data/address_type.dart';
 import 'package:radili/domain/data/app_location.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/repository/stores_repository.dart';
-import 'package:radili/providers/di/repository_providers.dart';
+import 'package:radili/providers/di/di.dart';
 import 'package:radili/providers/location_provider.dart';
 import 'package:radili/util/extensions/latlng_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,7 +18,8 @@ Future<AddressSearchResults> addressSearch(
   AddressSearchRef ref,
   String query,
 ) async {
-  final repo = ref.watch(storesRepositoryProvider);
+  final repo = di.get<StoresRepository>();
+
   final location = ref.watch(locationProvider).valueOrNull;
   query = query.trim();
   if (query.isEmpty) return AddressSearchResults.empty;

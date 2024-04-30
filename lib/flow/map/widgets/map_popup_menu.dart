@@ -3,19 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/hooks/translations_hook.dart';
 
 class MapPopupMenu extends HookWidget {
-  final Function() onNotifyMePressed;
   final Function() onSupportPressed;
-  final Function() onSubmitTicketPressed;
   final Function() onProjectPagePressed;
-
-  final bool isNotifyMeEnabled;
 
   const MapPopupMenu({
     super.key,
-    required this.onNotifyMePressed,
     required this.onSupportPressed,
-    required this.onSubmitTicketPressed,
-    required this.isNotifyMeEnabled,
     required this.onProjectPagePressed,
   });
 
@@ -25,14 +18,8 @@ class MapPopupMenu extends HookWidget {
 
     void handleSelected(_Option option) {
       switch (option) {
-        case _Option.notifyMe:
-          onNotifyMePressed();
-          break;
         case _Option.showSupport:
           onSupportPressed();
-          break;
-        case _Option.submitTicket:
-          onSubmitTicketPressed();
           break;
         case _Option.projectPage:
           onProjectPagePressed();
@@ -48,13 +35,6 @@ class MapPopupMenu extends HookWidget {
           child: _PopupMenuItem(
             icon: Icons.launch_outlined,
             text: t.support,
-          ),
-        ),
-        PopupMenuItem(
-          value: _Option.submitTicket,
-          child: _PopupMenuItem(
-            icon: Icons.support_agent_outlined,
-            text: t.supportTitle,
           ),
         ),
         PopupMenuItem(
@@ -96,8 +76,6 @@ class _PopupMenuItem extends HookWidget {
 }
 
 enum _Option {
-  notifyMe,
   showSupport,
-  submitTicket,
   projectPage,
 }
