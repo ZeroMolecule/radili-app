@@ -6,7 +6,7 @@ import 'package:radili/providers/di/di.dart';
 
 Future<void> injectStorage() async {
   di.registerSingleton(AppBox(await Hive.openLazyBox('app')));
-  di.registerSingleton(SubsidiariesBox(await Hive.openLazyBox('subsidiaries')));
+  di.registerSingleton(SubsidiariesBox(await Hive.openBox('storesubs')));
 
   di.registerSingleton(AppSharedPreferences());
 }

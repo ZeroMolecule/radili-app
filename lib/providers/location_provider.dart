@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'location_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<AppLocation> location(LocationRef ref) async* {
   final service = di.get<LocationService>();
   final cached = await service.getCached();

@@ -4,9 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:hive/hive.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/subsidiaries_query.dart';
+import 'package:radili/util/extensions/latlng_extensions.dart';
 
 class SubsidiariesBox {
-  final LazyBox _box;
+  final Box<String> _box;
 
   const SubsidiariesBox(this._box);
 
@@ -16,35 +17,29 @@ class SubsidiariesBox {
   }) async {
     if (deleteOld) await _box.clear();
 
-    final json = subsidiaries.map((subsidiary) => subsidiary.toJson()).toList();
-    await _box.put('subsidiaries', jsonEncode(json));
+    await _box.putAll({
+      for (var subsidiary in subsidiaries)
+        subsidiary.id: jsonEncode(subsidiary.toJson()),
+    });
   }
 
   Future<List<Subsidiary>> getAll(SubsidiariesQuery query) async {
-    final records = await _box.get('subsidiaries');
-    if (records is! String || records.isEmpty) return [];
-
-    final decoded = jsonDecode(records);
-    if (decoded is! List) return [];
-
-    final bounds = query.bounds;
-    return decoded.map((it) => Subsidiary.fromJson(it)).where((it) {
-      if (bounds == null) return true;
-
-      return bounds.contains(it.coordinates);
-    }).toList();
+    var result = _box.values
+        .map((it) => Subsidiary.fromJson(jsonDecode(it)))
+        .where(query.isMatch);
+    if (query.location != null) {
+      result = result.sortedBy(
+        (it) => it.coordinates.distanceTo(query.location!).abs(),
+      );
+    }
+    if (query.limit != null) {
+      result = result.take(query.limit!);
+    }
+    return result.toList();
   }
 
   Future<Subsidiary?> get(String id) async {
-    final records = await _box.get('subsidiaries');
-    if (records is! List) return null;
-
-    final record = records.firstWhereOrNull(
-      (it) {
-        final decoded = jsonDecode(it);
-        return decoded['id'] == id;
-      },
-    );
+    final record = _box.get(id);
 
     if (record == null) return null;
 

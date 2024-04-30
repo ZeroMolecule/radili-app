@@ -19,7 +19,13 @@ class SubsidiariesRepository {
 
     final lastFetchedAt = await _appBox.getSubsidiariesRefreshAt();
 
-    if (_shouldRefresh(lastFetchedAt)) {
+    if (query.search != null && query.search!.isNotEmpty) {
+      final searchResults = await _api.searchSubsidiaries(query.search!);
+      await _box.save(searchResults, deleteOld: false);
+      yield await _box.getAll(query);
+    }
+
+    if (stored.isEmpty || _shouldRefresh(lastFetchedAt)) {
       final refreshAt = DateTime.now();
 
       // fetch nearby first

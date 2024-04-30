@@ -9,7 +9,9 @@ import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
 import 'package:radili/flow/map/providers/address_selected_provider.dart';
 import 'package:radili/flow/map/widgets/address_search.dart';
+import 'package:radili/flow/map/widgets/map_page_scaffold.dart';
 import 'package:radili/flow/map/widgets/map_popup_menu.dart';
+import 'package:radili/flow/map/widgets/map_search.dart';
 import 'package:radili/flow/map/widgets/my_location_button.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
 import 'package:radili/hooks/async_action_hook.dart';
@@ -35,6 +37,8 @@ class MapPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return _Test();
+
     final t = useTranslations();
     final router = useRouter();
     final colors = useColorScheme();
@@ -47,7 +51,7 @@ class MapPage extends HookConsumerWidget {
     final selectedSubsidiary = useState<Subsidiary?>(null);
 
     final query = useState(SubsidiariesQuery.empty);
-    final subsidiariesState = ref.watch(subsidiariesStateProvider(query.value));
+    final subsidiariesState = ref.watch(subsidiariesProvider(query.value));
 
     final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
     final location = ref.watch(locationProvider);
@@ -156,6 +160,46 @@ class MapPage extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _Test extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    void handleAddressPressed(AddressInfo address) {}
+    void handleSubsidiaryPressed(Subsidiary subsidiary) {}
+
+    return MapPageScaffold(
+      search: MapSearch(
+        onAddressPressed: handleAddressPressed,
+        onSubsidiaryPressed: handleSubsidiaryPressed,
+        search: null,
+      ),
+      map: const _Placeholder(label: 'Map', color: Colors.green),
+      filter: const _Placeholder(label: 'Filter', color: Colors.blue),
+      list: const _Placeholder(label: 'List', color: Colors.red),
+    );
+  }
+}
+
+class _Placeholder extends HookWidget {
+  final String label;
+  final Color color;
+
+  const _Placeholder({
+    super.key,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: color,
+      child: Center(
+        child: Text(label),
       ),
     );
   }
