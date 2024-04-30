@@ -49,10 +49,14 @@ class MapSearch extends HookConsumerWidget {
     final addresses = ref.watch(addressesProvider(addressesQuery));
 
     void handleAddressPressed(AddressInfo address) {
+      inputNode.unfocus();
+      controller.text = address.details.combined(place: false);
       onAddressPressed(address);
     }
 
     void handleSubsidiaryPressed(Subsidiary subsidiary) {
+      inputNode.unfocus();
+      controller.text = subsidiary.display ?? '';
       onSubsidiaryPressed(subsidiary);
     }
 

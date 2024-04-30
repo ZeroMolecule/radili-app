@@ -25,6 +25,8 @@ class Subsidiary with _$Subsidiary {
       _$SubsidiaryFromJson(json);
 
   LatLng get coordinates => LatLng(lat, lng);
+
+  String? get display => address ?? label;
 }
 
 String _stringify(double value) => value.toString();
