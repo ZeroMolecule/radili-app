@@ -34,9 +34,9 @@ class MapPageScaffold extends HookWidget {
             child: map,
           ),
           Positioned(
-            top: breakpoints.isDesktop ? 0 : 12,
-            left: breakpoints.isDesktop ? 0 : 8,
-            right: breakpoints.isDesktop ? 0 : 8,
+            top: 0,
+            left: 0,
+            right: 0,
             bottom: breakpoints.isDesktop ? size.height - 80 : null,
             child: Container(
               color: breakpoints.isDesktop ? Colors.white : null,

@@ -148,28 +148,40 @@ class MapPage extends HookConsumerWidget {
               ),
             ),
           ),
-          Expanded(
-            child: SubsidiariesMap(
-              position: mapPosition.value,
-              subsidiaries: subsidiariesState.valueOrNull ?? [],
-              onPositionChanged: handleUpdatePosition,
-              onSubsidiaryPressed: onSubsidiarySelected,
-              subsidiary: selectedSubsidiary.value,
-              controller: mapController,
-              actions: [],
-            ),
-          ),
         ],
       ),
     );
   }
 }
 
-class _Test extends HookWidget {
+class _Test extends HookConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    void handleAddressPressed(AddressInfo address) {}
-    void handleSubsidiaryPressed(Subsidiary subsidiary) {}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final query = useState(const SubsidiariesQuery());
+    final subsidiaries = ref.watch(subsidiariesProvider(query.value));
+    final showSubsidiary = useShowSubsidiaryMarker();
+
+    final mapPosition = useState<LatLng?>(null);
+
+    void handleAddressPressed(AddressInfo? address) {
+      if (address != null) {
+        mapPosition.value = address.latLng;
+      }
+    }
+
+    void handleSubsidiaryPressed(Subsidiary? subsidiary) {
+      if (subsidiary != null) {
+        mapPosition.value = subsidiary.coordinates;
+        showSubsidiary(subsidiary);
+      }
+    }
+
+    void handlePositionChanged(LatLng northeast, LatLng southwest) {
+      query.value = query.value.copyWith(
+        northeast: northeast,
+        southwest: southwest,
+      );
+    }
 
     return MapPageScaffold(
       search: MapSearch(
@@ -177,7 +189,12 @@ class _Test extends HookWidget {
         onSubsidiaryPressed: handleSubsidiaryPressed,
         search: null,
       ),
-      map: const _Placeholder(label: 'Map', color: Colors.green),
+      map: SubsidiariesMap(
+        subsidiaries: subsidiaries.valueOrNull,
+        position: mapPosition.value,
+        onPositionChanged: handlePositionChanged,
+        onSubsidiaryPressed: handleSubsidiaryPressed,
+      ),
       filter: const _Placeholder(label: 'Filter', color: Colors.blue),
       list: const _Placeholder(label: 'List', color: Colors.red),
     );

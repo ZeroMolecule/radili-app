@@ -3,5 +3,5 @@ import 'package:radili/domain/service/location_service.dart';
 import 'package:radili/providers/di/di.dart';
 
 void injectServices() {
-  di.registerSingleton(LocationService(Location()));
+  di.registerSingleton(LocationService(Location(), di.get()));
 }

@@ -7,7 +7,9 @@ import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/addresses_query.dart';
 import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/flow/map/widgets/map_search_results.dart';
+import 'package:radili/hooks/breakpoints_hook.dart';
 import 'package:radili/hooks/memoized_disposable_hook.dart';
+import 'package:radili/hooks/theme_hook.dart';
 import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/providers/addresses_provider.dart';
 import 'package:radili/providers/subsidiaries_provider.dart';
@@ -28,6 +30,8 @@ class MapSearch extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = useTranslations();
+    final theme = useTheme();
+    final breakpoint = useBreakpoints();
 
     final inputNode = useMemoizedDisposable(
       () => FocusNode(),
@@ -73,24 +77,35 @@ class MapSearch extends HookConsumerWidget {
         onAddressPressed: handleAddressPressed,
         onSubsidiaryPressed: handleSubsidiaryPressed,
       ),
-      child: TextField(
-        focusNode: inputNode,
-        controller: controller,
-        onTapOutside: (_) {
-          inputNode.unfocus();
-        },
-        onTap: () {
-          controller.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: controller.text.length,
-          );
-        },
-        decoration: InputDecoration(
-          hintText: t.mapSearchHint,
-          border: InputBorder.none,
-          hoverColor: Colors.transparent,
+      child: Container(
+        margin: EdgeInsets.only(
+          left: breakpoint.isDesktop ? 24 : 8,
+          right: breakpoint.isDesktop ? 24 : 8,
+          top: breakpoint.isDesktop ? 8 : 12,
         ),
-        style: const TextStyle(fontSize: 16),
+        decoration: BoxDecoration(
+          boxShadow: [theme.shadow],
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: TextField(
+          focusNode: inputNode,
+          controller: controller,
+          onTapOutside: (_) {
+            inputNode.unfocus();
+          },
+          onTap: () {
+            controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: controller.text.length,
+            );
+          },
+          decoration: InputDecoration(
+            hintText: t.mapSearchHint,
+            border: InputBorder.none,
+            hoverColor: Colors.transparent,
+          ),
+          style: const TextStyle(fontSize: 16),
+        ),
       ),
     );
   }

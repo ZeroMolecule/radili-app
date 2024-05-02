@@ -12,6 +12,12 @@ class AppTheme {
         padding: EdgeInsets.zero,
       );
 
+  BoxShadow get shadow => BoxShadow(
+        color: AppColors.millionGrey.withOpacity(0.2),
+        blurRadius: 25,
+        offset: const Offset(0, 5),
+      );
+
   factory AppTheme.light() {
     const colorScheme = ColorScheme.light(
       primary: AppColors.darkBlue,
@@ -86,7 +92,7 @@ class AppTheme {
         ),
         cardTheme: CardTheme(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(2),
           ),
         ),
         chipTheme: ChipThemeData(

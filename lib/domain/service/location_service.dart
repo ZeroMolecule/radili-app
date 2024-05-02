@@ -2,16 +2,18 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
 import 'package:radili/domain/data/ip_info.dart';
+import 'package:radili/domain/local/app_box.dart';
 import 'package:retry/retry.dart';
 
 const _zgLatLng = LatLng(45.815399, 15.966568);
 
 class LocationService {
+  final AppBox _appBox;
   final Location _location;
 
   LocationAccuracy? _accuracy;
 
-  LocationService(this._location);
+  LocationService(this._location, this._appBox);
 
   Future<bool> isPermissionEnabled() async {
     final permissionStatus = await _location.hasPermission();
@@ -35,9 +37,8 @@ class LocationService {
     return AppLocation.fromLatLng(_zgLatLng, isMock: true);
   }
 
-  Future<AppLocation?> getCached() async {
-    // return await _locationBox.getLocation();
-    return null;
+  Future<AppLocation?> getCached() {
+    return _appBox.getLocation();
   }
 
   Future<AppLocation?> getCurrent({
