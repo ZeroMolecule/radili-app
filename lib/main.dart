@@ -7,9 +7,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:radili/domain/local/app_database.dart';
 import 'package:radili/firebase_options.dart';
+import 'package:radili/generated/i18n/translations.g.dart';
 import 'package:radili/generated/l10n.dart';
 import 'package:radili/providers/di/di.dart';
 import 'package:radili/providers/di/navigation_providers.dart';
@@ -19,13 +19,14 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 void main() async {
   await _beforeRun();
-  runApp(const ProviderScope(child: App()));
+  runApp(ProviderScope(child: TranslationProvider(child: const App())));
 }
 
 Future<void> _beforeRun() async {
   usePathUrlStrategy();
 
   final binding = WidgetsFlutterBinding.ensureInitialized();
+  LocaleSettings.useDeviceLocale(); // and this
   FlutterNativeSplash.preserve(widgetsBinding: binding);
 
   await Future.wait([
@@ -50,31 +51,30 @@ class App extends HookConsumerWidget {
     final themeLight = ref.watch(themeLightProvider);
     final themeDark = ref.watch(themeDarkProvider);
 
-    return PointerInterceptor(
-      child: Portal(
-        child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          routeInformationParser: router.defaultRouteParser(),
-          routerDelegate: AutoRouterDelegate(router),
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            Translations.delegate,
+    return Portal(
+      child: MaterialApp.router(
+        locale: TranslationProvider.of(context).flutterLocale,
+        debugShowCheckedModeBanner: false,
+        routeInformationParser: router.defaultRouteParser(),
+        routerDelegate: AutoRouterDelegate(router),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          Translations.delegate,
+        ],
+        supportedLocales: AppLocaleUtils.supportedLocales,
+        onGenerateTitle: (ctx) => AppTranslations.of(ctx).common.appName,
+        theme: themeLight.material,
+        darkTheme: themeDark.material,
+        themeMode: ThemeMode.light,
+        builder: (context, child) => ResponsiveBreakpoints.builder(
+          child: child!,
+          breakpoints: [
+            const Breakpoint(start: 0, end: 600, name: PHONE),
+            const Breakpoint(start: 601, end: 900, name: TABLET),
+            const Breakpoint(start: 901, end: double.infinity, name: DESKTOP),
           ],
-          supportedLocales: Translations.delegate.supportedLocales,
-          onGenerateTitle: (context) => Translations.of(context).appName,
-          theme: themeLight.material,
-          darkTheme: themeDark.material,
-          themeMode: ThemeMode.light,
-          builder: (context, child) => ResponsiveBreakpoints.builder(
-            child: child!,
-            breakpoints: [
-              const Breakpoint(start: 0, end: 600, name: PHONE),
-              const Breakpoint(start: 601, end: 900, name: TABLET),
-              const Breakpoint(start: 901, end: double.infinity, name: DESKTOP),
-            ],
-          ),
         ),
       ),
     );

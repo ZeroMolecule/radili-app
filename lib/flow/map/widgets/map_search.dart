@@ -7,10 +7,10 @@ import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/addresses_query.dart';
 import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/flow/map/widgets/map_search_results.dart';
+import 'package:radili/generated/i18n/translations.g.dart';
 import 'package:radili/hooks/breakpoints_hook.dart';
 import 'package:radili/hooks/memoized_disposable_hook.dart';
 import 'package:radili/hooks/theme_hook.dart';
-import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/providers/addresses_provider.dart';
 import 'package:radili/providers/subsidiaries_provider.dart';
 
@@ -29,7 +29,7 @@ class MapSearch extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = useTranslations();
+    final t = AppTranslations.of(context);
     final theme = useTheme();
     final breakpoint = useBreakpoints();
 
@@ -81,7 +81,7 @@ class MapSearch extends HookConsumerWidget {
         margin: EdgeInsets.only(
           left: breakpoint.isDesktop ? 24 : 8,
           right: breakpoint.isDesktop ? 24 : 8,
-          top: breakpoint.isDesktop ? 8 : 12,
+          top: breakpoint.isDesktop ? 0 : 12,
         ),
         decoration: BoxDecoration(
           boxShadow: [theme.shadow],
@@ -100,11 +100,10 @@ class MapSearch extends HookConsumerWidget {
             );
           },
           decoration: InputDecoration(
-            hintText: t.mapSearchHint,
+            hintText: t.map.search.placeholder,
             border: InputBorder.none,
             hoverColor: Colors.transparent,
           ),
-          style: const TextStyle(fontSize: 16),
         ),
       ),
     );

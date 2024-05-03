@@ -23,18 +23,20 @@ class MapPageScaffold extends HookWidget {
 
     const sidebarWidth = 335.0;
 
+    final safeArea = MediaQuery.of(context).viewPadding;
+
     return Scaffold(
       body: Stack(
         children: [
           Positioned(
             top: breakpoints.isDesktop ? 80 : 0,
-            left: breakpoints.isDesktop ? sidebarWidth : 0,
+            left: false && breakpoints.isDesktop ? sidebarWidth : 0,
             bottom: 0,
             right: 0,
             child: map,
           ),
           Positioned(
-            top: 0,
+            top: safeArea.top,
             left: 0,
             right: 0,
             bottom: breakpoints.isDesktop ? size.height - 80 : null,
@@ -45,14 +47,23 @@ class MapPageScaffold extends HookWidget {
                   : null,
               child: Flex(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: breakpoints.isDesktop
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
                 direction:
                     breakpoints.isDesktop ? Axis.horizontal : Axis.vertical,
                 children: [
-                  SizedBox(
-                    width: breakpoints.isDesktop ? sidebarWidth : null,
-                    child: search,
+                  Flexible(
+                    flex: 0,
+                    fit: FlexFit.loose,
+                    child: SizedBox(
+                      width: breakpoints.isDesktop ? sidebarWidth : null,
+                      child: search,
+                    ),
                   ),
                   Flexible(
+                    flex: breakpoints.isDesktop ? 1 : 0,
                     fit: FlexFit.loose,
                     child: filter,
                   ),
@@ -60,13 +71,14 @@ class MapPageScaffold extends HookWidget {
               ),
             ),
           ),
-          Positioned(
-            top: breakpoints.isDesktop ? 80 : null,
-            left: 0,
-            right: breakpoints.isDesktop ? size.width - sidebarWidth : 0,
-            bottom: breakpoints.isDesktop ? 0 : 24,
-            child: list,
-          ),
+          if (false)
+            Positioned(
+              top: breakpoints.isDesktop ? 80 : null,
+              left: 0,
+              right: breakpoints.isDesktop ? size.width - sidebarWidth : 0,
+              bottom: breakpoints.isDesktop ? 0 : 24,
+              child: list,
+            ),
         ],
       ),
     );

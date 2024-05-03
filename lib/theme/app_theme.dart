@@ -180,9 +180,9 @@ final _textTheme = GoogleFonts.interTextTheme(
   const TextTheme(
     headlineLarge: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
     headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(fontSize: 16),
+    bodyLarge: TextStyle(fontSize: 14),
     bodyMedium: TextStyle(fontSize: 14),
-    bodySmall: TextStyle(fontSize: 12),
+    bodySmall: TextStyle(fontSize: 14),
     labelSmall: TextStyle(fontSize: 14),
   ),
 );

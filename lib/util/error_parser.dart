@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:radili/generated/l10n.dart';
+import 'package:radili/generated/i18n/translations.g.dart';
 import 'package:radili/util/errors/form_error.dart';
 
 class ErrorParser {
-  final Translations _translations;
+  final AppTranslations _translations;
 
   ErrorParser(this._translations);
 
@@ -21,6 +21,6 @@ class ErrorParser {
     } catch (e) {
       // something went wrong with parsing the error
     }
-    return _translations.errorMessage;
+    return _translations.common.error;
   }
 }

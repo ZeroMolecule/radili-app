@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/generated/colors.gen.dart';
-import 'package:radili/hooks/translations_hook.dart';
+import 'package:radili/generated/i18n/translations.g.dart';
 
 class SupportPrompt extends HookWidget {
   final Function() onSendPressed;
@@ -13,7 +13,7 @@ class SupportPrompt extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = useTranslations();
+    final t = AppTranslations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -26,7 +26,7 @@ class SupportPrompt extends HookWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              t.supportPrompt,
+              t.support.prompt.title,
               style: const TextStyle(fontSize: 14),
             ),
           ),

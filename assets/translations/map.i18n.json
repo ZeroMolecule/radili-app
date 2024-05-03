@@ -1,0 +1,16 @@
+{
+  "filter": {
+    "day": {
+      "label": "Datum",
+      "withDate": "${day: String}, ${date: String}"
+    },
+    "store": "Trgovine"
+  },
+  "search": {
+    "placeholder": "Pronađi lokaciju"
+  },
+  "menu": {
+    "support": "Podrška",
+    "about": "O projektu"
+  }
+}

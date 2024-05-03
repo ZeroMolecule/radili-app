@@ -30,15 +30,14 @@ class SubsidiariesRepository {
 
       // fetch nearby first
       if (query.northeast != null && query.southwest != null) {
-        yield await _api.getNearbySubsidiaries(
-          northeast: query.northeast!,
-          southwest: query.southwest!,
-        );
+        yield await _api.getNearbySubsidiaries(query);
       }
 
       final all = await _api.getNearbySubsidiaries(
-        northeast: const LatLng(47, 20),
-        southwest: const LatLng(41, 12),
+        const SubsidiariesQuery(
+          northeast: LatLng(47, 20),
+          southwest: LatLng(41, 12),
+        ),
       );
       await _box.save(all);
 

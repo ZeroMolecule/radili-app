@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/store.dart';
 import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/domain/remote/strapi/strapi.dart';
 import 'package:radili/domain/remote/strapi/strapi_response.dart';
+import 'package:radili/util/extensions/date_time_extensions.dart';
 import 'package:retrofit/http.dart';
 
 part 'stores_api.g.dart';
@@ -34,13 +35,30 @@ class StoresApi extends __StoresApi {
     return Strapi.parseList(response.raw, fromJson: Store.fromJson);
   }
 
-  Future<List<Subsidiary>> getNearbySubsidiaries({
-    required LatLng northeast,
-    required LatLng southwest,
-  }) async {
+  Future<List<Subsidiary>> getNearbySubsidiaries(
+    SubsidiariesQuery query,
+  ) async {
     final response = await _getNearbySubsidiaries(where: {
-      'northeast': [northeast.latitude, northeast.longitude].join(','),
-      'southwest': [southwest.latitude, southwest.longitude].join(','),
+      if (query.northeast != null)
+        'northeast': [
+          query.northeast!.latitude,
+          query.northeast!.longitude,
+        ].join(','),
+      if (query.southwest != null)
+        'southwest': [
+          query.southwest!.latitude,
+          query.southwest!.longitude,
+        ].join(','),
+      if (query.stores != null && query.stores!.isNotEmpty)
+        'store': {
+          'slug': {
+            'in': {
+              for (var i = 0; i < query.stores!.length; i++)
+                i.toString(): query.stores![i].slug
+            },
+          }
+        },
+      if (query.day != null) 'workHours': dayKey(query.day!)
     });
     return Strapi.parseList(response.raw, fromJson: Subsidiary.fromJson);
   }

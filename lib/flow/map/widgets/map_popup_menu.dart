@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:radili/hooks/translations_hook.dart';
+import 'package:radili/generated/i18n/translations.g.dart';
 
 class MapPopupMenu extends HookWidget {
   final Function() onSupportPressed;
@@ -14,7 +14,7 @@ class MapPopupMenu extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = useTranslations();
+    final t = AppTranslations.of(context);
 
     void handleSelected(_Option option) {
       switch (option) {
@@ -34,14 +34,14 @@ class MapPopupMenu extends HookWidget {
           value: _Option.showSupport,
           child: _PopupMenuItem(
             icon: Icons.launch_outlined,
-            text: t.support,
+            text: t.map.menu.support,
           ),
         ),
         PopupMenuItem(
           value: _Option.projectPage,
           child: _PopupMenuItem(
             icon: Icons.public_outlined,
-            text: t.projectPage,
+            text: t.map.menu.about,
           ),
         ),
       ],

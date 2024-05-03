@@ -22,6 +22,10 @@ String dayKey(int day) {
 }
 
 extension DateTimeExtensions on DateTime {
+  String toFormattedString([String pattern = 'd.M.']) {
+    return DateFormat(pattern).format(this);
+  }
+
   int get weekNumber {
     final dayOfYear = int.parse(DateFormat('D').format(this));
     final woy = ((dayOfYear - weekday + 10) / 7).floor();

@@ -53,8 +53,13 @@ class MapSearchResults extends HookWidget {
                 return ListTile(
                   leading: StoreIcon.subsidiary(subsidiary, size: 24),
                   onTap: () => onSubsidiaryPressed(subsidiary),
-                  title: Text(subsidiary.display ?? ''),
-                  subtitle: Text(subsidiary.store.name),
+                  title: Text(
+                    subsidiary.display ?? '',
+                  ),
+                  subtitle: Text(
+                    subsidiary.store.name,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 );
               },
             ),

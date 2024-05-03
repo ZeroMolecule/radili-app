@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:radili/hooks/color_scheme_hook.dart';
+import 'package:radili/hooks/theme_hook.dart';
 
 class SectionContainer extends HookWidget {
   final Widget icon;
@@ -19,10 +19,11 @@ class SectionContainer extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = useColorScheme();
+    final theme = useTheme();
+
     return Container(
       decoration: BoxDecoration(
-        color: colors.primaryContainer,
+        color: theme.material.colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(8.0),
       ),
       padding: const EdgeInsets.symmetric(vertical: 16),
