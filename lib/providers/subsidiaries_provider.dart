@@ -16,7 +16,7 @@ Stream<List<Subsidiary>> subsidiaries(
   await ref.debounce(const Duration(milliseconds: 250));
   final repo = di.get<SubsidiariesRepository>();
 
-  final location = await ref.read(locationProvider.future);
+  final location = ref.read(locationProvider).valueOrNull;
 
-  yield* repo.watch(query.copyWith(location: location.latLng));
+  yield* repo.watch(query.copyWith(location: location?.latLng));
 }

@@ -161,6 +161,10 @@ class AppTheme {
           ),
         ),
         tabBarTheme: const TabBarTheme(dividerHeight: 0),
+        popupMenuTheme: const PopupMenuThemeData(
+          shape: BeveledRectangleBorder(),
+          elevation: 0,
+        ),
       ),
     );
   }
@@ -181,9 +185,10 @@ final _textTheme = GoogleFonts.interTextTheme(
     headlineLarge: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
     headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     bodyLarge: TextStyle(fontSize: 14),
-    bodyMedium: TextStyle(fontSize: 14),
-    bodySmall: TextStyle(fontSize: 14),
-    labelSmall: TextStyle(fontSize: 14),
+    bodyMedium: TextStyle(fontSize: 13),
+    bodySmall: TextStyle(fontSize: 12),
+    labelLarge: TextStyle(fontSize: 14),
+    labelSmall: TextStyle(fontSize: 12),
   ),
 );
 

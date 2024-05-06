@@ -6,6 +6,7 @@ import 'package:overflow_view/overflow_view.dart';
 import 'package:radili/generated/colors.gen.dart';
 import 'package:radili/hooks/theme_hook.dart';
 import 'package:radili/theme/app_theme.dart';
+import 'package:radili/widgets/app_card.dart';
 
 class DropdownPicker<T> extends HookWidget {
   final Widget icon;
@@ -59,15 +60,19 @@ class DropdownPicker<T> extends HookWidget {
           mode: mode,
           onChanged: handleChanged,
         ),
-        child: _Button(
-          icon: icon,
-          label: label,
-          constraints: constraints,
-          value: value,
-          items: items,
-          mode: mode,
-          onPressed: () => visible.value = !visible.value,
-          visible: visible.value,
+        child: Material(
+          elevation: 0,
+          color: Colors.transparent,
+          child: _Button(
+            icon: icon,
+            label: label,
+            constraints: constraints,
+            value: value,
+            items: items,
+            mode: mode,
+            onPressed: () => visible.value = !visible.value,
+            visible: visible.value,
+          ),
         ),
       ),
     );
@@ -170,86 +175,76 @@ class _Button<T> extends HookWidget {
       return null;
     }, [visible]);
 
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [theme.shadow],
-      ),
-      child: Material(
-        elevation: 0,
-        color: theme.material.colorScheme.surface,
-        child: ConstrainedBox(
-          constraints: constraints,
-          child: InkWell(
-            onTap: onPressed,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconTheme(
-                    data: IconThemeData(
-                      size: 12,
-                      color: theme.material.colorScheme.primary,
-                    ),
-                    child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: theme.material.colorScheme.primary.withOpacity(
-                          .12,
-                        ),
-                      ),
-                      child: icon,
-                    ),
+    return AppCard(
+      child: ConstrainedBox(
+        constraints: constraints,
+        child: InkWell(
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 6,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconTheme(
+                  data: IconThemeData(
+                    size: 12,
+                    color: theme.material.colorScheme.primary,
                   ),
-                  const SizedBox(width: 12),
-                  if (content.isEmpty)
-                    Expanded(
-                      child: Text(label),
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: theme.material.colorScheme.primary.withOpacity(
+                        .12,
+                      ),
                     ),
-                  if (content.isNotEmpty)
-                    Expanded(
-                      child: OverflowView.flexible(
-                        direction: Axis.horizontal,
-                        spacing: 4,
-                        children: content,
-                        builder: (context, count) => Container(
-                          margin: const EdgeInsets.only(left: 6),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
+                    child: icon,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (content.isEmpty)
+                  Expanded(
+                    child: Text(label),
+                  ),
+                if (content.isNotEmpty)
+                  Expanded(
+                    child: OverflowView.flexible(
+                      direction: Axis.horizontal,
+                      spacing: 4,
+                      children: content,
+                      builder: (context, count) => Container(
+                        margin: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          color: theme.material.colorScheme.primary.withOpacity(
+                            .12,
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(2),
-                            color:
-                                theme.material.colorScheme.primary.withOpacity(
-                              .12,
-                            ),
-                          ),
-                          child: Text(
-                            '+$count',
-                            style: TextStyle(
-                              color: theme.material.colorScheme.primary,
-                            ),
+                        ),
+                        child: Text(
+                          '+$count',
+                          style: TextStyle(
+                            color: theme.material.colorScheme.primary,
                           ),
                         ),
                       ),
                     ),
-                  RotationTransition(
-                    turns: controller,
-                    child: const Icon(
-                      Icons.keyboard_arrow_down_outlined,
-                      size: 16,
-                    ),
                   ),
-                ],
-              ),
+                RotationTransition(
+                  turns: controller,
+                  child: const Icon(
+                    Icons.keyboard_arrow_down_outlined,
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -274,15 +269,8 @@ class _Dropdown<T> extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = useTheme();
-
-    return Container(
-      margin: const EdgeInsets.only(top: 6),
-      decoration: BoxDecoration(
-        color: theme.material.colorScheme.surface,
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [theme.shadow],
-      ),
+    return AppCard(
+      margin: const EdgeInsets.only(top: 8),
       child: CustomScrollView(
         shrinkWrap: true,
         slivers: [
@@ -332,27 +320,25 @@ class _Item<T> extends HookWidget {
   Widget build(BuildContext context) {
     final theme = useTheme();
 
-    return Container(
-      color: isSelected
+    return ListTile(
+      selectedTileColor: isSelected
           ? theme.material.colorScheme.primary.withOpacity(.12)
           : null,
-      child: ListTile(
-        selected: isSelected,
-        titleTextStyle: TextStyle(
-          color: mode == DropdownPickerMode.single && isSelected
-              ? theme.material.colorScheme.primary
-              : AppColors.doveGrey,
-        ),
-        visualDensity: VisualDensity.compact,
-        dense: true,
-        leading: _buildLeading(),
-        trailing: _buildTrailing(theme),
-        title: Text(value.label, style: const TextStyle(fontSize: 14)),
-        onTap: () {
-          final selected = selection?.contains(value.value) ?? false;
-          onPressed(!selected);
-        },
+      selected: isSelected,
+      titleTextStyle: TextStyle(
+        color: mode == DropdownPickerMode.single && isSelected
+            ? theme.material.colorScheme.primary
+            : AppColors.doveGrey,
       ),
+      visualDensity: VisualDensity.compact,
+      dense: true,
+      leading: _buildLeading(),
+      trailing: _buildTrailing(theme),
+      title: Text(value.label),
+      onTap: () {
+        final selected = selection?.contains(value.value) ?? false;
+        onPressed(!selected);
+      },
     );
   }
 

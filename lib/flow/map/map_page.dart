@@ -9,8 +9,10 @@ import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
 import 'package:radili/flow/map/widgets/map_filter.dart';
 import 'package:radili/flow/map/widgets/map_page_scaffold.dart';
+import 'package:radili/flow/map/widgets/map_popup_menu.dart';
 import 'package:radili/flow/map/widgets/map_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
+import 'package:radili/hooks/linker_hook.dart';
 
 @RoutePage()
 class MapPage extends HookConsumerWidget {
@@ -25,13 +27,7 @@ class MapPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _Test();
-  }
-}
-
-class _Test extends HookConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+    final linker = useLinker();
     final query = useState(SubsidiariesQuery(day: DateTime.now().weekday));
     final showSubsidiary = useShowSubsidiaryMarker();
 
@@ -73,6 +69,11 @@ class _Test extends HookConsumerWidget {
         query: query.value,
         onQueryChanged: (value) => query.value = value,
       ),
+      menu: MapPopupMenu(
+        onProjectPagePressed: linker.launchProjectPage,
+        onBugReportPressed: linker.launchBugReportPage,
+        onSuggestIdeasPressed: linker.launchIdeasPage,
+      ),
       list: const _Placeholder(label: 'List', color: Colors.red),
     );
   }
@@ -92,9 +93,7 @@ class _Placeholder extends HookWidget {
   Widget build(BuildContext context) {
     return Container(
       color: color,
-      child: Center(
-        child: Text(label),
-      ),
+      child: Center(child: Text(label)),
     );
   }
 }

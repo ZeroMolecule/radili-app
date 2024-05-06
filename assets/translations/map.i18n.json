@@ -11,6 +11,8 @@
   },
   "menu": {
     "support": "Podrška",
-    "about": "O projektu"
+    "about": "O projektu",
+    "bugReport": "Greške i neispravnosti",
+    "suggestIdeas": "Prijedlozi i ideje"
   }
 }

@@ -71,12 +71,12 @@ class SubsidiariesMap extends HookConsumerWidget {
       child: FlutterMap(
         mapController: controller.mapController,
         options: MapOptions(
-          minZoom: 8,
+          minZoom: 7,
           maxZoom: 18,
           initialCameraFit: CameraFit.insideBounds(
             bounds: LatLngBounds(
-              const LatLng(42.3649, 13.3836),
-              const LatLng(46.5547, 19.4481),
+              const LatLng(46.639041, 23.63818),
+              const LatLng(42.252754, 10.145589),
             ),
           ),
           onPositionChanged: (position, _) {

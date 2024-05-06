@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:radili/domain/data/app_location.dart';
 
 class AppBox {
-  final LazyBox _box;
+  final Box _box;
 
   const AppBox(this._box);
 
@@ -11,10 +11,10 @@ class AppBox {
   }
 
   Future<AppLocation?> getLocation() async {
-    final json = await _box.get('location');
-    if (json is! Map<String, Object?>) return null;
+    final json = _box.get('location');
+    if (json is! Map) return null;
 
-    return AppLocation.fromJson(json);
+    return AppLocation.fromJson(json.cast());
   }
 
   Future<void> saveSubsidiariesRefreshAt(DateTime timestamp) async {

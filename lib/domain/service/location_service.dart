@@ -57,12 +57,10 @@ class LocationService {
           await _applyAccuracy(accuracy);
           final data = await _location.getLocation();
           final location = data.toAppLocation();
+          if (location != null) await _appBox.saveLocation(location);
           return location;
         },
       );
-      if (result != null) {
-        // await _locationBox.setLocation(result);
-      }
       return result;
     } catch (e) {}
 

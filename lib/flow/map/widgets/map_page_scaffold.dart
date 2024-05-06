@@ -7,6 +7,7 @@ class MapPageScaffold extends HookWidget {
   final Widget map;
   final Widget filter;
   final Widget list;
+  final Widget menu;
 
   const MapPageScaffold({
     super.key,
@@ -14,6 +15,7 @@ class MapPageScaffold extends HookWidget {
     required this.map,
     required this.filter,
     required this.list,
+    required this.menu,
   });
 
   @override
@@ -54,19 +56,38 @@ class MapPageScaffold extends HookWidget {
                 direction:
                     breakpoints.isDesktop ? Axis.horizontal : Axis.vertical,
                 children: [
-                  Flexible(
-                    flex: 0,
-                    fit: FlexFit.loose,
-                    child: SizedBox(
-                      width: breakpoints.isDesktop ? sidebarWidth : null,
-                      child: search,
+                  SizedBox(
+                    width: breakpoints.isDesktop ? sidebarWidth : null,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: breakpoints.isDesktop ? 0 : 12,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(child: search),
+                          if (!breakpoints.isDesktop) ...[
+                            Center(child: menu),
+                            const SizedBox(width: 8),
+                          ]
+                        ],
+                      ),
                     ),
                   ),
                   Flexible(
-                    flex: breakpoints.isDesktop ? 1 : 0,
-                    fit: FlexFit.loose,
+                    flex: 0,
                     child: filter,
                   ),
+                  if (breakpoints.isDesktop) ...[
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 18,
+                      ),
+                      child: menu,
+                    ),
+                  ]
                 ],
               ),
             ),

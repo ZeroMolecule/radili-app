@@ -81,7 +81,6 @@ class MapSearch extends HookConsumerWidget {
         margin: EdgeInsets.only(
           left: breakpoint.isDesktop ? 24 : 8,
           right: breakpoint.isDesktop ? 24 : 8,
-          top: breakpoint.isDesktop ? 0 : 12,
         ),
         decoration: BoxDecoration(
           boxShadow: [theme.shadow],

@@ -30,7 +30,9 @@ class SubsidiaryItem extends HookWidget {
     final linker = useLinker();
     final textTheme = theme.material.textTheme;
     final cover = subsidiary.store.cover?.largeOr;
-    final tabController = useTabController(initialLength: 2);
+    final tabController = useTabController(
+      initialLength: subsidiary.store.jelposkupiloSupported ? 2 : 1,
+    );
 
     final tabIndex =
         useListenableSelector(tabController, () => tabController.index);
@@ -49,7 +51,7 @@ class SubsidiaryItem extends HookWidget {
         children: [
           if (cover != null)
             Container(
-              constraints: const BoxConstraints(maxHeight: 140),
+              height: 140,
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -57,9 +59,30 @@ class SubsidiaryItem extends HookWidget {
                   topRight: Radius.circular(8),
                 ),
               ),
-              child: CachedNetworkImage(
-                imageUrl: cover.toString(),
-                fit: BoxFit.fitWidth,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: CachedNetworkImage(
+                      imageUrl: cover.toString(),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.close_rounded),
+                      color: theme.material.colorScheme.onSurface,
+                      style: IconButton.styleFrom(
+                        backgroundColor: theme.material.colorScheme.surface,
+                        shape: const CircleBorder(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           Padding(

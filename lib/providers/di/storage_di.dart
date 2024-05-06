@@ -5,7 +5,12 @@ import 'package:radili/domain/local/subsidiaries_box.dart';
 import 'package:radili/providers/di/di.dart';
 
 Future<void> injectStorage() async {
-  di.registerSingleton(AppBox(await Hive.openLazyBox('app')));
-  di.registerSingleton(SubsidiariesBox(await Hive.openBox('storesubs')));
-  di.registerSingleton(StoresBox(await Hive.openBox('stores')));
+  final boxes = await Future.wait([
+    Hive.openBox('app'),
+    Hive.openBox<String>('storesubs'),
+    Hive.openBox<String>('stores'),
+  ]);
+  di.registerSingleton(AppBox(boxes[0]));
+  di.registerSingleton(SubsidiariesBox(boxes[1] as Box<String>));
+  di.registerSingleton(StoresBox(boxes[2] as Box<String>));
 }

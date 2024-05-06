@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/address_type.dart';
 import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/widgets/app_card.dart';
 import 'package:radili/widgets/store_icon.dart';
 
 class MapSearchResults extends HookWidget {
@@ -21,7 +22,8 @@ class MapSearchResults extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AppCard(
+      margin: const EdgeInsets.only(top: 8),
       child: CustomScrollView(
         shrinkWrap: true,
         slivers: [
@@ -31,6 +33,8 @@ class MapSearchResults extends HookWidget {
               itemBuilder: (ctx, index) {
                 final address = addresses![index];
                 return ListTile(
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
                   onTap: () => onAddressPressed(address),
                   title: Text(
                     address.type == AddressType.city
@@ -51,6 +55,8 @@ class MapSearchResults extends HookWidget {
               itemBuilder: (ctx, index) {
                 final subsidiary = subsidiaries![index];
                 return ListTile(
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
                   leading: StoreIcon.subsidiary(subsidiary, size: 24),
                   onTap: () => onSubsidiaryPressed(subsidiary),
                   title: Text(
