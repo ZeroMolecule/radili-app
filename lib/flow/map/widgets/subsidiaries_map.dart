@@ -96,10 +96,9 @@ class SubsidiariesMap extends HookConsumerWidget {
             }
           },
           interactionOptions: const InteractionOptions(
-            enableMultiFingerGestureRace: true,
-            enableScrollWheel: true,
-            flags: InteractiveFlag.pinchMove |
-                InteractiveFlag.drag |
+            enableMultiFingerGestureRace: false,
+            enableScrollWheel: false,
+            flags: InteractiveFlag.drag |
                 InteractiveFlag.pinchZoom |
                 InteractiveFlag.doubleTapZoom |
                 InteractiveFlag.flingAnimation,
