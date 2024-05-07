@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/flow/map/providers/animated_map.dart';
+import 'package:radili/flow/map/providers/map_state.dart';
 import 'package:radili/flow/map/widgets/map_markers_layer.dart';
 import 'package:radili/flow/map/widgets/map_tile_layer.dart';
 import 'package:radili/flow/map/widgets/map_user_marker_layer.dart';
@@ -15,7 +16,6 @@ import 'package:radili/providers/location_provider.dart';
 import 'package:radili/providers/subsidiaries_provider.dart';
 
 class SubsidiariesMap extends HookConsumerWidget {
-  final LatLng? position;
   final SubsidiariesQuery query;
 
   final Function(LatLng northeast, LatLng southwest) onPositionChanged;
@@ -23,7 +23,6 @@ class SubsidiariesMap extends HookConsumerWidget {
 
   const SubsidiariesMap({
     super.key,
-    this.position,
     required this.query,
     required this.onPositionChanged,
     required this.onSubsidiaryPressed,
@@ -36,6 +35,9 @@ class SubsidiariesMap extends HookConsumerWidget {
     final cameraBounds = useState<LatLngBounds?>(null);
     final location = ref.watch(locationProvider).valueOrNull;
 
+    final mapStateNotifier = ref.watch(mapStateProvider.notifier);
+    final mapState = ref.watch(mapStateProvider);
+
     final subsidiaries =
         useValueChanged<AsyncValue<List<Subsidiary>>, List<Subsidiary>?>(
       subsidiariesState,
@@ -47,21 +49,23 @@ class SubsidiariesMap extends HookConsumerWidget {
     );
 
     void moveMapFocus(LatLng? coordinates, {double? zoom}) {
-      if (coordinates != null) {
+      if (coordinates != null && !mapState.dirty) {
         controller.animateTo(dest: coordinates, zoom: zoom);
       }
     }
 
     useOnValueChanged(location?.latLng, () {
-      moveMapFocus(
-        location?.latLng,
-        zoom: controller.mapController.camera.zoom < 15 ? 15 : null,
-      );
+      if (mapState.position == null) {
+        moveMapFocus(
+          location?.latLng,
+          zoom: controller.mapController.camera.zoom < 15 ? 15 : null,
+        );
+      }
     });
 
-    useOnValueChanged(position, () {
+    useOnValueChanged(mapState.position, () {
       moveMapFocus(
-        position,
+        mapState.position,
         zoom: controller.mapController.camera.zoom < 15 ? 15 : null,
       );
     });
@@ -79,13 +83,16 @@ class SubsidiariesMap extends HookConsumerWidget {
               const LatLng(42.252754, 10.145589),
             ),
           ),
-          onPositionChanged: (position, _) {
+          onPositionChanged: (position, userAction) {
             final bounds = position.bounds;
             if (bounds != null) {
               onPositionChanged(
                 bounds.northEast,
                 bounds.southWest,
               );
+            }
+            if (userAction) {
+              mapStateNotifier.setState(dirty: true);
             }
           },
           interactionOptions: const InteractionOptions(
