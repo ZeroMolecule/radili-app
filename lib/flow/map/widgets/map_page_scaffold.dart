@@ -62,16 +62,7 @@ class MapPageScaffold extends HookWidget {
                       padding: EdgeInsets.only(
                         top: breakpoints.isDesktop ? 0 : 12,
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(child: search),
-                          if (!breakpoints.isDesktop) ...[
-                            Center(child: menu),
-                            const SizedBox(width: 8),
-                          ]
-                        ],
-                      ),
+                      child: search,
                     ),
                   ),
                   Flexible(
@@ -92,6 +83,13 @@ class MapPageScaffold extends HookWidget {
               ),
             ),
           ),
+          if (!breakpoints.isDesktop)
+            Positioned(
+              top: safeArea.top + 18,
+              right: 12,
+              bottom: breakpoints.isDesktop ? size.height - 80 : null,
+              child: menu,
+            ),
           if (false)
             Positioned(
               top: breakpoints.isDesktop ? 80 : null,

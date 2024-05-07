@@ -19,6 +19,8 @@ class DropdownPicker<T> extends HookWidget {
   final DropdownPickerMode mode;
   final BoxConstraints constraints;
 
+  final bool Function(T a, T b)? areItemsEqual;
+
   const DropdownPicker({
     super.key,
     required this.icon,
@@ -27,6 +29,7 @@ class DropdownPicker<T> extends HookWidget {
     required this.value,
     required this.onChanged,
     required this.mode,
+    this.areItemsEqual,
     this.constraints = const BoxConstraints(minWidth: 200, minHeight: 36),
   });
 
@@ -60,19 +63,16 @@ class DropdownPicker<T> extends HookWidget {
           mode: mode,
           onChanged: handleChanged,
         ),
-        child: Material(
-          elevation: 0,
-          color: Colors.transparent,
-          child: _Button(
-            icon: icon,
-            label: label,
-            constraints: constraints,
-            value: value,
-            items: items,
-            mode: mode,
-            onPressed: () => visible.value = !visible.value,
-            visible: visible.value,
-          ),
+        child: _Button(
+          icon: icon,
+          label: label,
+          constraints: constraints,
+          value: value,
+          items: items,
+          mode: mode,
+          onPressed: () => visible.value = !visible.value,
+          visible: visible.value,
+          areItemsEqual: areItemsEqual,
         ),
       ),
     );
@@ -105,6 +105,8 @@ class _Button<T> extends HookWidget {
   final BoxConstraints constraints;
   final bool visible;
 
+  final bool Function(T a, T b)? areItemsEqual;
+
   const _Button({
     super.key,
     required this.value,
@@ -115,6 +117,7 @@ class _Button<T> extends HookWidget {
     required this.icon,
     required this.label,
     required this.visible,
+    required this.areItemsEqual,
   });
 
   @override
@@ -122,7 +125,11 @@ class _Button<T> extends HookWidget {
     final theme = useTheme();
 
     final content = (value ?? <T>{})
-        .map((e) => items.firstWhereOrNull((it) => it.value == e))
+        .map(
+          (e) => items.firstWhereOrNull(
+            (it) => areItemsEqual?.call(it.value, e) ?? it.value == e,
+          ),
+        )
         .whereNotNull()
         .map((item) {
       if (mode == DropdownPickerMode.single) return Text(item.label);

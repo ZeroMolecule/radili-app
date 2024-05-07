@@ -48,6 +48,7 @@ class MapPopupMenu extends HookWidget {
           },
         ),
         child: AppCard(
+          shadow: const [],
           borderRadius: BorderRadius.circular(2),
           child: InkWell(
             onTap: () => visible.value = !visible.value,

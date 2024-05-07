@@ -99,6 +99,11 @@ class MapSearch extends HookConsumerWidget {
             hintText: t.map.search.placeholder,
             border: InputBorder.none,
             hoverColor: Colors.transparent,
+            prefixIcon: Icon(
+              Icons.search,
+              size: 18,
+              color: theme.material.colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
         ),
       ),

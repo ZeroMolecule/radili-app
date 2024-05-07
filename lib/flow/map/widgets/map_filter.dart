@@ -47,6 +47,7 @@ class MapFilter extends HookConsumerWidget {
     final constraints = BoxConstraints(
       maxWidth: breakpoints.isDesktop ? 260 : (screenWidth - 16 - 8) / 2,
       minWidth: breakpoints.isDesktop ? 0 : (screenWidth - 16 - 8) / 2,
+      minHeight: breakpoints.isDesktop ? 48 : 42,
     );
 
     return Padding(
@@ -58,44 +59,41 @@ class MapFilter extends HookConsumerWidget {
         runAlignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.start,
         children: [
-          ConstrainedBox(
+          DropdownPicker<int>(
             constraints: constraints,
-            child: DropdownPicker<int>(
-              icon: const Icon(Icons.schedule_outlined),
-              label: t.map.filter.day.label,
-              mode: DropdownPickerMode.single,
-              items: days.map(
-                (day) => DropdownItem(
-                  value: day.weekday,
-                  label: t.map.filter.day.withDate(
-                    day: t.enums.dayShort[day.weekday],
-                    date: day.toFormattedString(),
-                  ),
+            icon: const Icon(Icons.schedule_outlined),
+            label: t.map.filter.day.label,
+            mode: DropdownPickerMode.single,
+            items: days.map(
+              (day) => DropdownItem(
+                value: day.weekday,
+                label: t.map.filter.day.withDate(
+                  day: t.enums.dayShort[day.weekday],
+                  date: day.toFormattedString(),
                 ),
               ),
-              value: {if (day != null) day!},
-              onChanged: (days) {
-                onDayChanged(days?.firstOrNull);
-              },
             ),
+            value: {if (day != null) day!},
+            onChanged: (days) {
+              onDayChanged(days?.firstOrNull);
+            },
           ),
-          ConstrainedBox(
+          DropdownPicker<Store>(
             constraints: constraints,
-            child: DropdownPicker<Store>(
-              icon: const Icon(Icons.store_outlined),
-              label: t.map.filter.store,
-              mode: DropdownPickerMode.multiple,
-              items: stores.map(
-                (store) => DropdownItem(
-                  value: store,
-                  label: store.name,
-                ),
+            icon: const Icon(Icons.store_outlined),
+            label: t.map.filter.store,
+            mode: DropdownPickerMode.multiple,
+            areItemsEqual: (a, b) => a.id == b.id,
+            items: stores.map(
+              (store) => DropdownItem(
+                value: store,
+                label: store.name,
               ),
-              value: {...?this.stores},
-              onChanged: (stores) {
-                onStoresChanged(stores?.toList());
-              },
             ),
+            value: {...?this.stores},
+            onChanged: (stores) {
+              onStoresChanged(stores?.toList());
+            },
           ),
         ],
       ),
