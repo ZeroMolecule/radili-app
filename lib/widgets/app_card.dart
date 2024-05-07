@@ -7,8 +7,10 @@ class AppCard extends HookWidget {
   final EdgeInsets? padding;
   final Color? color;
   final BorderRadius? borderRadius;
+  final double elevation;
 
   final Widget child;
+  final List<BoxShadow>? shadow;
 
   const AppCard({
     super.key,
@@ -17,6 +19,8 @@ class AppCard extends HookWidget {
     this.color,
     this.borderRadius,
     this.padding,
+    this.elevation = 0,
+    this.shadow,
   });
 
   @override
@@ -28,13 +32,14 @@ class AppCard extends HookWidget {
       decoration: BoxDecoration(
         color: color ?? theme.material.colorScheme.surface,
         borderRadius: borderRadius ?? BorderRadius.circular(4),
-        boxShadow: [theme.shadow],
+        boxShadow: shadow ?? [theme.shadow],
       ),
       child: Material(
         color: color ?? theme.material.colorScheme.surface,
-        elevation: 0,
+        elevation: elevation,
         clipBehavior: Clip.antiAlias,
         borderRadius: borderRadius ?? BorderRadius.circular(4),
+        shadowColor: Colors.transparent,
         child: child,
       ),
     );
