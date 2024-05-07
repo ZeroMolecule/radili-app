@@ -8,6 +8,7 @@ class MapPageScaffold extends HookWidget {
   final Widget filter;
   final Widget list;
   final Widget menu;
+  final Widget actionButton;
 
   const MapPageScaffold({
     super.key,
@@ -16,6 +17,7 @@ class MapPageScaffold extends HookWidget {
     required this.filter,
     required this.list,
     required this.menu,
+    required this.actionButton,
   });
 
   @override
@@ -28,6 +30,7 @@ class MapPageScaffold extends HookWidget {
     final safeArea = MediaQuery.of(context).viewPadding;
 
     return Scaffold(
+      floatingActionButton: actionButton,
       body: Stack(
         children: [
           Positioned(
