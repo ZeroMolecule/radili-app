@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart' hide Store;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radili/domain/data/store.dart';
-import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/generated/i18n/translations.g.dart';
 import 'package:radili/hooks/breakpoints_hook.dart';
 import 'package:radili/providers/stores_provider.dart';
@@ -10,13 +9,18 @@ import 'package:radili/util/extensions/date_time_extensions.dart';
 import 'package:radili/widgets/dropdown_picker.dart';
 
 class MapFilter extends HookConsumerWidget {
-  final SubsidiariesQuery query;
-  final Function(SubsidiariesQuery query) onQueryChanged;
+  final List<Store>? stores;
+  final int? day;
+
+  final Function(List<Store>? stores) onStoresChanged;
+  final Function(int? day) onDayChanged;
 
   const MapFilter({
     super.key,
-    required this.query,
-    required this.onQueryChanged,
+    required this.stores,
+    required this.day,
+    required this.onStoresChanged,
+    required this.onDayChanged,
   });
 
   @override
@@ -69,9 +73,9 @@ class MapFilter extends HookConsumerWidget {
                   ),
                 ),
               ),
-              value: {if (query.day != null) query.day!},
-              onChanged: (stores) {
-                onQueryChanged(query.copyWith(day: stores?.firstOrNull));
+              value: {if (day != null) day!},
+              onChanged: (days) {
+                onDayChanged(days?.firstOrNull);
               },
             ),
           ),
@@ -87,9 +91,9 @@ class MapFilter extends HookConsumerWidget {
                   label: store.name,
                 ),
               ),
-              value: query.stores?.toSet() ?? {},
+              value: {...?this.stores},
               onChanged: (stores) {
-                onQueryChanged(query.copyWith(stores: stores?.toList()));
+                onStoresChanged(stores?.toList());
               },
             ),
           ),

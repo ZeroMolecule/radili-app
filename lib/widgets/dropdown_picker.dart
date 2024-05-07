@@ -121,45 +121,41 @@ class _Button<T> extends HookWidget {
   Widget build(BuildContext context) {
     final theme = useTheme();
 
-    final content = useMemoized<List<Widget>>(() {
-      if (value == null || value!.isEmpty || items.isEmpty) return [];
+    final content = (value ?? <T>{})
+        .map((e) => items.firstWhereOrNull((it) => it.value == e))
+        .whereNotNull()
+        .map((item) {
+      if (mode == DropdownPickerMode.single) return Text(item.label);
 
-      return value!
-          .map((e) => items.firstWhereOrNull((it) => it.value == e))
-          .whereNotNull()
-          .map((item) {
-        if (mode == DropdownPickerMode.single) return Text(item.label);
-
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.material.colorScheme.primary.withOpacity(.12),
-            borderRadius: BorderRadius.circular(2),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 4,
-            vertical: 2,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.check,
-                size: 12,
+      return Container(
+        decoration: BoxDecoration(
+          color: theme.material.colorScheme.primary.withOpacity(.12),
+          borderRadius: BorderRadius.circular(2),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 4,
+          vertical: 2,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check,
+              size: 12,
+              color: theme.material.colorScheme.primary,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              item.label,
+              style: TextStyle(
                 color: theme.material.colorScheme.primary,
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(width: 4),
-              Text(
-                item.label,
-                style: TextStyle(
-                  color: theme.material.colorScheme.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList();
-    }, [value, items, mode]);
+            ),
+          ],
+        ),
+      );
+    }).toList();
 
     final controller = useAnimationController(
       duration: const Duration(milliseconds: 400),
@@ -351,7 +347,9 @@ class _Item<T> extends HookWidget {
       child: Checkbox(
         visualDensity: VisualDensity.compact,
         value: isSelected,
-        onChanged: (value) => onPressed(value ?? false),
+        onChanged: (value) {
+          if (value != null) onPressed(value);
+        },
         side: const BorderSide(color: AppColors.doveGrey, width: 1),
       ),
     );

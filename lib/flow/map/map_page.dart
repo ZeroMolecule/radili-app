@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
 import 'package:radili/flow/map/widgets/map_filter.dart';
 import 'package:radili/flow/map/widgets/map_page_scaffold.dart';
@@ -13,22 +12,17 @@ import 'package:radili/flow/map/widgets/map_popup_menu.dart';
 import 'package:radili/flow/map/widgets/map_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
 import 'package:radili/hooks/linker_hook.dart';
+import 'package:radili/providers/subsidiaries_query_provider.dart';
 
 @RoutePage()
 class MapPage extends HookConsumerWidget {
-  final bool openSunday;
-  final bool openNow;
-
-  const MapPage({
-    super.key,
-    @queryParam this.openSunday = false,
-    @queryParam this.openNow = false,
-  });
+  const MapPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final linker = useLinker();
-    final query = useState(SubsidiariesQuery(day: DateTime.now().weekday));
+    final queryNotifier = ref.watch(subsidiariesQueryStateProvider.notifier);
+    final query = ref.watch(subsidiariesQueryStateProvider);
     final showSubsidiary = useShowSubsidiaryMarker();
 
     final mapPosition = useState<LatLng?>(null);
@@ -46,28 +40,22 @@ class MapPage extends HookConsumerWidget {
       }
     }
 
-    void handlePositionChanged(LatLng northeast, LatLng southwest) {
-      query.value = query.value.copyWith(
-        northeast: northeast,
-        southwest: southwest,
-      );
-    }
-
     return MapPageScaffold(
       search: MapSearch(
         onAddressPressed: handleAddressPressed,
         onSubsidiaryPressed: handleSubsidiaryPressed,
-        search: null,
       ),
       map: SubsidiariesMap(
-        query: query.value,
+        query: query,
         position: mapPosition.value,
-        onPositionChanged: handlePositionChanged,
+        onPositionChanged: queryNotifier.setBounds,
         onSubsidiaryPressed: handleSubsidiaryPressed,
       ),
       filter: MapFilter(
-        query: query.value,
-        onQueryChanged: (value) => query.value = value,
+        stores: query.stores,
+        day: query.day,
+        onStoresChanged: queryNotifier.setStores,
+        onDayChanged: queryNotifier.setDay,
       ),
       menu: MapPopupMenu(
         onProjectPagePressed: linker.launchProjectPage,

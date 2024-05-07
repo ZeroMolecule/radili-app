@@ -15,8 +15,6 @@ import 'package:radili/providers/addresses_provider.dart';
 import 'package:radili/providers/subsidiaries_provider.dart';
 
 class MapSearch extends HookConsumerWidget {
-  final String? search;
-
   final Function(AddressInfo address) onAddressPressed;
   final Function(Subsidiary subsidiary) onSubsidiaryPressed;
 
@@ -24,7 +22,6 @@ class MapSearch extends HookConsumerWidget {
     super.key,
     required this.onAddressPressed,
     required this.onSubsidiaryPressed,
-    required this.search,
   });
 
   @override
@@ -37,7 +34,7 @@ class MapSearch extends HookConsumerWidget {
       () => FocusNode(),
       (node) => node.dispose(),
     );
-    final controller = useTextEditingController(text: this.search);
+    final controller = useTextEditingController();
     final search = useListenableSelector(controller, () => controller.text);
 
     final subsidiariesQuery = useMemoized(
