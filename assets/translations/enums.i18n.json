@@ -1,0 +1,22 @@
+{
+  "dayShort": [
+    "",
+    "Pon",
+    "Uto",
+    "Sri",
+    "Čet",
+    "Pet",
+    "Sub",
+    "Ned"
+  ],
+  "day": [
+    "",
+    "Ponedjeljak",
+    "Utorak",
+    "Srijeda",
+    "Četvrtak",
+    "Petak",
+    "Subota",
+    "Nedjelja"
+  ]
+}

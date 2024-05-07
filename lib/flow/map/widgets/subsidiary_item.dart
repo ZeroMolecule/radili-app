@@ -5,9 +5,9 @@ import 'package:radili/domain/data/subsidiary.dart';
 import 'package:radili/flow/map/widgets/workhours_block.dart';
 import 'package:radili/generated/assets.gen.dart';
 import 'package:radili/generated/colors.gen.dart';
+import 'package:radili/generated/i18n/translations.g.dart';
 import 'package:radili/hooks/linker_hook.dart';
 import 'package:radili/hooks/theme_hook.dart';
-import 'package:radili/hooks/translations_hook.dart';
 import 'package:radili/widgets/store_discounts.dart';
 import 'package:radili/widgets/support_prompt.dart';
 
@@ -25,12 +25,14 @@ class SubsidiaryItem extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = useTranslations();
+    final t = AppTranslations.of(context);
     final theme = useTheme();
     final linker = useLinker();
     final textTheme = theme.material.textTheme;
     final cover = subsidiary.store.cover?.largeOr;
-    final tabController = useTabController(initialLength: 2);
+    final tabController = useTabController(
+      initialLength: subsidiary.store.jelposkupiloSupported ? 2 : 1,
+    );
 
     final tabIndex =
         useListenableSelector(tabController, () => tabController.index);
@@ -49,7 +51,7 @@ class SubsidiaryItem extends HookWidget {
         children: [
           if (cover != null)
             Container(
-              constraints: const BoxConstraints(maxHeight: 140),
+              height: 140,
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -57,9 +59,30 @@ class SubsidiaryItem extends HookWidget {
                   topRight: Radius.circular(8),
                 ),
               ),
-              child: CachedNetworkImage(
-                imageUrl: cover.toString(),
-                fit: BoxFit.fitWidth,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: CachedNetworkImage(
+                      imageUrl: cover.toString(),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.close_rounded),
+                      color: theme.material.colorScheme.onSurface,
+                      style: IconButton.styleFrom(
+                        backgroundColor: theme.material.colorScheme.surface,
+                        shape: const CircleBorder(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           Padding(
@@ -88,12 +111,12 @@ class SubsidiaryItem extends HookWidget {
                   indicatorSize: TabBarIndicatorSize.label,
                   tabs: [
                     _Tab(
-                      text: t.subsidiaryWorkHours,
+                      text: t.subsidiary.workHours.title,
                       icon: Icons.access_time_rounded,
                     ),
                     if (subsidiary.store.jelposkupiloSupported)
                       _Tab(
-                        text: t.subsidiaryDiscounts,
+                        text: t.subsidiary.discounts.title,
                         icon: Icons.local_offer_outlined,
                       ),
                   ],
@@ -104,7 +127,7 @@ class SubsidiaryItem extends HookWidget {
                   padding: const EdgeInsets.only(left: 16),
                   child: TextButton.icon(
                     style: theme.linkButton,
-                    label: Text(t.subsidiaryCatalogue),
+                    label: Text(t.subsidiary.catalogue.title),
                     icon: Assets.icons.book.svg(
                       height: 16,
                       colorFilter: const ColorFilter.mode(

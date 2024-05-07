@@ -5,191 +5,83 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/address_info.dart';
 import 'package:radili/domain/data/subsidiary.dart';
-import 'package:radili/domain/queries/nearby_subsidiaries_query.dart';
 import 'package:radili/flow/map/hooks/show_subsidiary_marker_hook.dart';
-import 'package:radili/flow/map/providers/address_selected_provider.dart';
-import 'package:radili/flow/map/widgets/address_search.dart';
+import 'package:radili/flow/map/widgets/map_filter.dart';
+import 'package:radili/flow/map/widgets/map_page_scaffold.dart';
 import 'package:radili/flow/map/widgets/map_popup_menu.dart';
-import 'package:radili/flow/map/widgets/my_location_button.dart';
+import 'package:radili/flow/map/widgets/map_search.dart';
 import 'package:radili/flow/map/widgets/subsidiaries_map.dart';
-import 'package:radili/flow/notification_subscription/providers/notification_subscription_provider.dart';
-import 'package:radili/hooks/async_action_hook.dart';
-import 'package:radili/hooks/color_scheme_hook.dart';
-import 'package:radili/hooks/debouncer_hook.dart';
 import 'package:radili/hooks/linker_hook.dart';
-import 'package:radili/hooks/map_controller_animated_hook.dart';
-import 'package:radili/hooks/router_hook.dart';
-import 'package:radili/hooks/translations_hook.dart';
-import 'package:radili/navigation/app_router.dart';
-import 'package:radili/providers/location_provider.dart';
-import 'package:radili/providers/nearby_subsidiaries_provider.dart';
+import 'package:radili/providers/subsidiaries_query_provider.dart';
 
 @RoutePage()
 class MapPage extends HookConsumerWidget {
-  final bool openSunday;
-  final bool openNow;
-
-  const MapPage({
-    super.key,
-    @queryParam this.openSunday = false,
-    @queryParam this.openNow = false,
-  });
+  const MapPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = useTranslations();
-    final router = useRouter();
-    final colors = useColorScheme();
-    final debouncer = useDebouncer();
     final linker = useLinker();
-    final mapController = useMapControllerAnimated();
-
-    final actionFetchAddress = useAsyncAction();
-
-    final selectedSubsidiary = useState<Subsidiary?>(null);
-    final query = useState(
-      NearbySubsidiariesQuery(openNow: openNow, openSunday: openSunday),
-    );
-
-    final addressSelectedNotifier = ref.watch(addressSelectedProvider.notifier);
-    final subsidiariesNotifier = ref.watch(
-      nearbySubsidiariesProvider(query.value).notifier,
-    );
-    final location = ref.watch(locationProvider);
-    final address = ref.watch(addressSelectedProvider).valueOrNull;
-    final subsidiaries = ref.watch(nearbySubsidiariesProvider(query.value));
+    final queryNotifier = ref.watch(subsidiariesQueryStateProvider.notifier);
+    final query = ref.watch(subsidiariesQueryStateProvider);
     final showSubsidiary = useShowSubsidiaryMarker();
-    final subscription = ref.watch(notificationSubscriptionProvider);
+
     final mapPosition = useState<LatLng?>(null);
 
-    void handleFindNearby(LatLng northeast, LatLng southwest) {
-      debouncer
-          .debounceAsync(
-            () => subsidiariesNotifier.fetch(
-              northeast: northeast,
-              southwest: southwest,
-            ),
-          )
-          .ignore();
+    void handleAddressPressed(AddressInfo? address) {
+      if (address != null) {
+        mapPosition.value = address.latLng;
+      }
     }
 
-    void handleUseMyCurrentLocation() {
-      actionFetchAddress.run(() async {
-        await addressSelectedNotifier.setCurrent();
-      });
-    }
-
-    void handleEditNotificationSubscription() {
-      router.navigate(
-        NotificationSubscriptionRoute(address: address),
-      );
-    }
-
-    void handleShowSupport() {
-      linker.launchSupportPage();
-    }
-
-    void handleShowProjectPage() {
-      linker.launchProjectPage();
-    }
-
-    void onSubsidiarySelected(Subsidiary? subsidiary) {
-      selectedSubsidiary.value = subsidiary;
+    void handleSubsidiaryPressed(Subsidiary? subsidiary) {
       if (subsidiary != null) {
+        mapPosition.value = subsidiary.coordinates;
         showSubsidiary(subsidiary);
       }
     }
 
-    void handleSubmitTicket() {
-      router.push(TicketCreateRoute());
-    }
-
-    useValueChanged<Subsidiary?, void>(selectedSubsidiary.value, (_, __) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final position = selectedSubsidiary.value?.coordinates;
-        if (position != null) {
-          mapPosition.value = position;
-        }
-      });
-    });
-
-    useValueChanged<AddressInfo?, void>(address, (oldValue, oldResult) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final position = address?.latLng;
-        if (position != null) {
-          mapPosition.value = position;
-        }
-      });
-    });
-
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: colors.background,
-              border: Border(
-                bottom: BorderSide(
-                  color: colors.onBackground.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: AddressSearch(
-                isLoading: subsidiaries.isLoading || location.isLoading,
-                address: address,
-                onAddressSelected: addressSelectedNotifier.set,
-                onSubsidiarySelected: onSubsidiarySelected,
-                suffix: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    MyLocationButton(
-                      isLoading: location.isLoading,
-                      label: t.myLocation,
-                      onPressed: handleUseMyCurrentLocation,
-                    ),
-                    MapPopupMenu(
-                      onNotifyMePressed: handleEditNotificationSubscription,
-                      onSupportPressed: handleShowSupport,
-                      onSubmitTicketPressed: handleSubmitTicket,
-                      onProjectPagePressed: handleShowProjectPage,
-                      isNotifyMeEnabled: subscription.valueOrNull != null,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: SubsidiariesMap(
-              position: mapPosition.value,
-              subsidiaries: subsidiaries.valueOrNull ?? [],
-              onPositionChanged: handleFindNearby,
-              onSubsidiaryPressed: onSubsidiarySelected,
-              subsidiary: selectedSubsidiary.value,
-              controller: mapController,
-              actions: [
-                ChoiceChip(
-                  label: Text(t.openNow),
-                  selected: query.value.openNow,
-                  onSelected: (value) {
-                    query.value = NearbySubsidiariesQuery(openNow: value);
-                  },
-                ),
-                ChoiceChip(
-                  label: Text(t.openSunday),
-                  selected: query.value.openSunday,
-                  onSelected: (value) {
-                    query.value = NearbySubsidiariesQuery(openSunday: value);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+    return MapPageScaffold(
+      search: MapSearch(
+        onAddressPressed: handleAddressPressed,
+        onSubsidiaryPressed: handleSubsidiaryPressed,
       ),
+      map: SubsidiariesMap(
+        query: query,
+        position: mapPosition.value,
+        onPositionChanged: queryNotifier.setBounds,
+        onSubsidiaryPressed: handleSubsidiaryPressed,
+      ),
+      filter: MapFilter(
+        stores: query.stores,
+        day: query.day,
+        onStoresChanged: queryNotifier.setStores,
+        onDayChanged: queryNotifier.setDay,
+      ),
+      menu: MapPopupMenu(
+        onProjectPagePressed: linker.launchProjectPage,
+        onBugReportPressed: linker.launchBugReportPage,
+        onSuggestIdeasPressed: linker.launchIdeasPage,
+      ),
+      list: const _Placeholder(label: 'List', color: Colors.red),
+    );
+  }
+}
+
+class _Placeholder extends HookWidget {
+  final String label;
+  final Color color;
+
+  const _Placeholder({
+    super.key,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: color,
+      child: Center(child: Text(label)),
     );
   }
 }

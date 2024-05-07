@@ -13,12 +13,11 @@ class StoreIcon extends HookWidget {
   final double size;
 
   const StoreIcon({
-    Key? key,
+    super.key,
     this.uri,
     this.label,
     this.size = _defaultSize,
-  })  : assert(uri != null || label != null),
-        super(key: key);
+  }) : assert(uri != null || label != null);
 
   factory StoreIcon.store(
     Store store, {
@@ -60,10 +59,10 @@ class _Icon extends HookWidget {
   final double size;
 
   const _Icon({
-    Key? key,
+    super.key,
     required this.uri,
     this.size = _defaultSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +85,10 @@ class _Label extends HookWidget {
   final double size;
 
   const _Label({
-    Key? key,
+    super.key,
     required this.label,
     this.size = _defaultSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +114,9 @@ class _Placeholder extends HookWidget {
   final double size;
 
   const _Placeholder({
-    Key? key,
+    super.key,
     this.size = _defaultSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

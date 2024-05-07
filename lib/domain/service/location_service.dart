@@ -2,18 +2,18 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
 import 'package:radili/domain/data/ip_info.dart';
-import 'package:radili/domain/local/boxes/location_box.dart';
+import 'package:radili/domain/local/app_box.dart';
 import 'package:retry/retry.dart';
 
 const _zgLatLng = LatLng(45.815399, 15.966568);
 
 class LocationService {
+  final AppBox _appBox;
   final Location _location;
-  final LocationBox _locationBox;
 
   LocationAccuracy? _accuracy;
 
-  LocationService(this._location, this._locationBox);
+  LocationService(this._location, this._appBox);
 
   Future<bool> isPermissionEnabled() async {
     final permissionStatus = await _location.hasPermission();
@@ -37,8 +37,8 @@ class LocationService {
     return AppLocation.fromLatLng(_zgLatLng, isMock: true);
   }
 
-  Future<AppLocation?> getCached() async {
-    return await _locationBox.getLocation();
+  Future<AppLocation?> getCached() {
+    return _appBox.getLocation();
   }
 
   Future<AppLocation?> getCurrent({
@@ -55,14 +55,12 @@ class LocationService {
       final result = await r.retry(
         () async {
           await _applyAccuracy(accuracy);
-          final data = await _getLocation();
-          final location = data!.toAppLocation();
+          final data = await _location.getLocation();
+          final location = data.toAppLocation();
+          if (location != null) await _appBox.saveLocation(location);
           return location;
         },
       );
-      if (result != null) {
-        await _locationBox.setLocation(result);
-      }
       return result;
     } catch (e) {}
 
@@ -76,15 +74,11 @@ class LocationService {
     }
   }
 
-  Future<LocationData?> _getLocation() async {
-    final status = await _location.requestPermission();
-    if (!status.isGranted) return null;
-
-    return await _location.getLocation();
-  }
-
   Future<void> _requestPermission() async {
-    final status = await _location.requestPermission();
+    var status = await _location.hasPermission();
+    if (!status.isGranted) {
+      status = await _location.requestPermission();
+    }
     if (!status.isGranted) {
       throw Exception('Location permission not granted');
     }

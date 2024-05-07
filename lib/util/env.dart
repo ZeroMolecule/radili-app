@@ -32,11 +32,21 @@ abstract class Env {
   @EnviedField(varName: 'URL_DISCOUNTS_PAGE')
   static const String urlDiscountsPage = _Env.urlDiscountsPage;
 
+  @EnviedField(varName: 'URL_BUG_REPORT_PAGE')
+  static const String urlBugReportPage = _Env.urlBugReportPage;
+
+  @EnviedField(varName: 'URL_IDEAS_PAGE')
+  static const String urlIdeasPage = _Env.urlIdeasPage;
+
   static final Uri uriSupportPage = Uri.parse(urlSupportPage);
 
   static final Uri uriProjectPage = Uri.parse(urlProjectPage);
 
   static final Uri uriDiscountsPage = Uri.parse(urlDiscountsPage);
+
+  static final Uri uriBugReportPage = Uri.parse(urlBugReportPage);
+
+  static final Uri uriIdeasPage = Uri.parse(urlIdeasPage);
 
   static void init() {
     if (kDebugMode) {
@@ -50,6 +60,9 @@ abstract class Env {
         SENTRY_ENVIRONMENT=$sentryEnvironment
         URL_SUPPORT_PAGE=$urlSupportPage
         URL_PROJECT_PAGE=$urlProjectPage
+        URL_DISCOUNTS_PAGE=$urlDiscountsPage
+        URL_BUG_REPORT_PAGE=$urlBugReportPage
+        URL_IDEAS_PAGE=$urlIdeasPage
     ''');
     }
   }

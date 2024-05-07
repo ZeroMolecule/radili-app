@@ -12,6 +12,12 @@ class AppTheme {
         padding: EdgeInsets.zero,
       );
 
+  BoxShadow get shadow => BoxShadow(
+        color: AppColors.millionGrey.withOpacity(0.2),
+        blurRadius: 25,
+        offset: const Offset(0, 5),
+      );
+
   factory AppTheme.light() {
     const colorScheme = ColorScheme.light(
       primary: AppColors.darkBlue,
@@ -86,7 +92,7 @@ class AppTheme {
         ),
         cardTheme: CardTheme(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(2),
           ),
         ),
         chipTheme: ChipThemeData(
@@ -155,6 +161,10 @@ class AppTheme {
           ),
         ),
         tabBarTheme: const TabBarTheme(dividerHeight: 0),
+        popupMenuTheme: const PopupMenuThemeData(
+          shape: BeveledRectangleBorder(),
+          elevation: 0,
+        ),
       ),
     );
   }
@@ -174,10 +184,11 @@ final _textTheme = GoogleFonts.interTextTheme(
   const TextTheme(
     headlineLarge: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
     headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(fontSize: 16),
-    bodyMedium: TextStyle(fontSize: 14),
+    bodyLarge: TextStyle(fontSize: 14),
+    bodyMedium: TextStyle(fontSize: 13),
     bodySmall: TextStyle(fontSize: 12),
-    labelSmall: TextStyle(fontSize: 14),
+    labelLarge: TextStyle(fontSize: 14),
+    labelSmall: TextStyle(fontSize: 12),
   ),
 );
 
