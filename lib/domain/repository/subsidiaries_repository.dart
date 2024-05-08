@@ -25,7 +25,7 @@ class SubsidiariesRepository {
       yield await _box.getAll(query);
     }
 
-    if (stored.isEmpty || _shouldRefresh(lastFetchedAt)) {
+    if (true || stored.isEmpty || _shouldRefresh(lastFetchedAt)) {
       final refreshAt = DateTime.now();
 
       // fetch nearby first
