@@ -5,7 +5,6 @@ import 'package:radili/domain/data/store.dart';
 import 'package:radili/generated/assets.gen.dart';
 import 'package:radili/generated/colors.gen.dart';
 import 'package:radili/hooks/linker_hook.dart';
-import 'package:radili/hooks/translations_hook.dart';
 
 class StoreDiscounts extends HookWidget {
   final Store store;
@@ -56,7 +55,6 @@ class _JelposkupiloShoutout extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = useTranslations();
     final linker = useLinker();
 
     final discountsUrl = linker.buildDiscountsLink(store);

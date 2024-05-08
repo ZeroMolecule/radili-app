@@ -1,23 +1,40 @@
 import 'package:location/location.dart';
 import 'package:radili/domain/data/app_location.dart';
-import 'package:radili/providers/di/service_providers.dart';
+import 'package:radili/domain/service/location_service.dart';
+import 'package:radili/providers/di/di.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'location_provider.g.dart';
 
-@riverpod
-Stream<AppLocation> location(LocationRef ref) async* {
-  final service = ref.watch(locationServiceProvider);
-  final cached = await service.getCached();
-  if (cached != null) yield cached;
+@Riverpod(keepAlive: true)
+class Location extends _$Location {
+  LocationService get _service => di.get();
 
-  final inaccurate = await service.getCurrent(accuracy: LocationAccuracy.low);
-  if (inaccurate != null) yield inaccurate;
+  @override
+  Stream<AppLocation> build() async* {
+    final cached = await _service.getCached();
+    if (cached != null) yield cached;
 
-  final accurate = await service.getCurrent(accuracy: LocationAccuracy.high);
-  if (accurate != null) yield accurate;
+    final inaccurate =
+        await _service.getCurrent(accuracy: LocationAccuracy.low);
+    if (inaccurate != null) yield inaccurate;
 
-  if (cached == null && inaccurate == null && accurate == null) {
-    yield await service.getFallback();
+    final accurate = await _service.getCurrent(accuracy: LocationAccuracy.high);
+    if (accurate != null) yield accurate;
+
+    if (cached == null && inaccurate == null && accurate == null) {
+      yield await _service.getFallback();
+    }
+  }
+
+  Future<AppLocation?> fetch([
+    LocationAccuracy accuracy = LocationAccuracy.balanced,
+  ]) async {
+    final updated = await _service.getCurrent(accuracy: accuracy);
+    if (updated != null) {
+      state = AsyncData(updated).copyWithPrevious(state);
+      return updated;
+    }
+    return null;
   }
 }

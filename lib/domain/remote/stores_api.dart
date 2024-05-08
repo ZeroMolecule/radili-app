@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:radili/domain/data/store.dart';
 import 'package:radili/domain/data/subsidiary.dart';
+import 'package:radili/domain/queries/subsidiaries_query.dart';
 import 'package:radili/domain/remote/strapi/strapi.dart';
 import 'package:radili/domain/remote/strapi/strapi_response.dart';
+import 'package:radili/util/extensions/date_time_extensions.dart';
 import 'package:retrofit/http.dart';
 
 part 'stores_api.g.dart';
@@ -13,18 +14,16 @@ abstract class _StoresApi {
   factory _StoresApi(Dio dio) = __StoresApi;
 
   @GET('/stores')
-  Future<StrapiResponse> _getStores({
-    @Queries() Map<String, dynamic>? query,
-  });
+  Future<StrapiResponse> _getStores();
 
   @GET('/subsidiaries/nearby')
   Future<StrapiResponse> _getNearbySubsidiaries({
-    @Queries() Map<String, dynamic>? query,
+    @Query('where') Map<String, dynamic>? where,
   });
 
-  @GET('/subsidiaries')
-  Future<StrapiResponse> _findSubsidiaries({
-    @Queries() Map<String, dynamic>? query,
+  @GET('/subsidiaries/search')
+  Future<StrapiResponse> _searchSubsidiaries({
+    @Query('where') Map<String, dynamic>? where,
   });
 }
 
@@ -32,44 +31,54 @@ class StoresApi extends __StoresApi {
   StoresApi(super.dio);
 
   Future<List<Store>> getStores() async {
-    final response = await _getStores(query: {'populate': '*'});
+    final response = await _getStores();
     return Strapi.parseList(response.raw, fromJson: Store.fromJson);
   }
 
-  Future<List<Subsidiary>> getNearbySubsidiaries({
-    required LatLng northeast,
-    required LatLng southwest,
-  }) async {
-    final response = await _getNearbySubsidiaries(query: {
-      'populate[store][populate][0]': 'icon',
-      'populate[store][populate][1]': 'cover',
-      'populate[store][populate][2]': 'marker',
-      'northeast': [northeast.latitude, northeast.longitude].join(','),
-      'southwest': [southwest.latitude, southwest.longitude].join(','),
+  Future<List<Subsidiary>> getNearbySubsidiaries(
+    SubsidiariesQuery query,
+  ) async {
+    final response = await _getNearbySubsidiaries(where: {
+      if (query.northeast != null)
+        'northeast': [
+          query.northeast!.latitude,
+          query.northeast!.longitude,
+        ].join(','),
+      if (query.southwest != null)
+        'southwest': [
+          query.southwest!.latitude,
+          query.southwest!.longitude,
+        ].join(','),
+      if (query.stores != null && query.stores!.isNotEmpty)
+        'store': {
+          'slug': {
+            'in': {
+              for (var i = 0; i < query.stores!.length; i++)
+                i.toString(): query.stores![i].slug
+            },
+          }
+        },
+      if (query.day != null) 'workHours': dayKey(query.day!)
     });
     return Strapi.parseList(response.raw, fromJson: Subsidiary.fromJson);
   }
 
   Future<List<Subsidiary>> searchSubsidiaries(String query) async {
-    final response = await _findSubsidiaries(
-      query: _subsidiariesQuery({
-        'filters[\$or][0][label][\$containsi]': query,
-        'filters[\$or][1][address][\$containsi]': query,
-      }),
+    final response = await _searchSubsidiaries(
+      where: {
+        'OR': [
+          {
+            'address': {'contains': query}
+          },
+          {
+            'label': {'contains': query}
+          },
+        ]
+      },
     );
     return Strapi.parseList(
       response.raw,
       fromJson: Subsidiary.fromJson,
     );
   }
-}
-
-Map<String, dynamic> _subsidiariesQuery([Map<String, dynamic>? extra]) {
-  return {
-    'populate[0]': 'store.icon',
-    'populate[1]': 'store.cover',
-    'populate[2]': 'store.marker',
-    'populate[3]': 'workHours',
-    ...?extra,
-  };
 }

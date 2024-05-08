@@ -15,6 +15,14 @@ class Linker {
     return _launchUrl(Env.uriProjectPage);
   }
 
+  Future<bool> launchBugReportPage() {
+    return _launchUrl(Env.uriBugReportPage);
+  }
+
+  Future<bool> launchIdeasPage() {
+    return _launchUrl(Env.uriIdeasPage);
+  }
+
   Uri buildDiscountsLink(Store store) {
     return Env.uriDiscountsPage.replace(
       queryParameters: {

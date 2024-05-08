@@ -1,0 +1,12 @@
+{
+  "workHours": {
+    "title": "Radno vrijeme",
+    "closed": "Zatvoreno"
+  },
+  "discounts": {
+    "title": "Popusti"
+  },
+  "catalogue": {
+    "title": "Katalog"
+  }
+}

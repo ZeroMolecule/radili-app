@@ -8,10 +8,10 @@ class SubsidiaryMarker extends HookWidget {
   final double markerSize;
 
   const SubsidiaryMarker({
-    Key? key,
+    super.key,
     required this.subsidiary,
     required this.markerSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

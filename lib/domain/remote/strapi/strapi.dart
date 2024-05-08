@@ -22,7 +22,7 @@ class Strapi {
         return MapEntry(key, value);
       });
       return {
-        'id': response['id'] as int,
+        ...response,
         ...flatten,
       };
     }
